@@ -1,0 +1,24 @@
+# encoding: utf-8
+#
+# Author::    Paweł Wilk (mailto:pw@gnu.org)
+# Copyright:: (c) 2012 by Paweł Wilk
+# License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# 
+# This file contains version information.
+
+module AttributeFilters
+      # @private
+      DEVELOPER   = 'Paweł Wilk'
+      # @private
+      EMAIL       = 'pw@gnu.org'
+      # @private
+      VERSION     = '1.0.0'
+      # @private
+      NAME        = 'attribute-filters'
+      # @private
+      SUMMARY     = 'Concise way of filtering model attributes in Rails'
+      # @private
+      URL         = 'https://rubygems.org/gems/attribute-filters/'
+      # @private
+      DESCRIPTION = 'Simple extension for Rails that adds some syntactic sugar (filters, attribute sets) to your models.'
+end

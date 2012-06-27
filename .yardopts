@@ -1,0 +1,10 @@
+--title 'Attribute Filters for Rails'
+--protected
+--readme README.rdoc
+--no-private
+--hide-void-return
+-
+docs/HISTORY
+ChangeLog
+docs/COPYING
+docs/LGPL-LICENSE

@@ -1,0 +1,86 @@
+= Attribute Filters for Rails
+
+<b>attribute-filters version <tt>1.0.0</tt></b> (<b><tt>Sugar, ah honey honey</tt></b>)
+
+
+* https://rubygems.org/gems/attribute-filters
+* https://github.com/siefca/attribute-filters/tree
+* mailto:pw@gnu.org
+
+
+== Summary
+
+Attribute Filters adds couple of DSL keywords and some syntactic sugar
+to Rails thereby allowing you to express filtering and groupping
+model attributes in a concise and clean way.
+
+== Synopsis
+
+=== Before
+
+
+=== After
+
+
+
+== How?
+
+* See {USAGE}[http://rubydoc.info/gems/attribute-filters/file/docs/USAGE] for detailed information about the usage.
+* See {whole documentation}[http://rubydoc.info/gems/attribute-filters/] to browse all documents.
+
+== Requirements
+
+* activemodel[https://rubygems.org/gems/activemodel]
+* rake[https://rubygems.org/gems/rake]
+* rubygems[http://docs.rubygems.org/]
+* bundler[http://gembundler.com/]
+
+== Download
+
+==== Source code
+
+* https://github.com/siefca/attribute-filters/tree
+* <tt>git clone git://github.com/siefca/attribute-filters.git</tt>
+
+==== Gem
+
+* https://rubygems.org/gems/attribute-filters
+
+== Installation
+
+* <tt>gem install attribute-filters</tt>
+
+== Specs
+
+You can run RSpec examples both with
+
+* <tt>rake spec</tt> or just <tt>rake</tt>
+* run a test file directly, e.g. <tt>ruby -Ilib -Ispec spec/attribute-filters_spec.rb</tt>
+
+== Common rake tasks
+
+* <tt>bundle exec rake bundler:gemfile</tt> – regenerate the +Gemfile+
+* <tt>bundle exec rake docs</tt> – render the documentation (output in the subdirectory directory +doc+)
+* <tt>bundle exec rake gem</tt> – builds package (output in the subdirectory +pkg+)
+* <tt>bundle exec rake test</tt>, <tt>bundle exec rake testv4</tt> – performs tests
+* <tt>bundle exec rake Manifest.txt</tt> – regenerates the +Manifest.txt+ file
+* <tt>bundle exec rake ChangeLog</tt> – regenerates the +ChangeLog+ file
+
+== Credits
+
+{iConsulting}[http://www.iconsulting.pl/] supports Free Software and has
+contributed to this library by paying for me to eat when I've been coding.
+
+== License
+
+Copyright (c) 2012 by Paweł Wilk.
+
+attribute-filters is copyrighted software owned by Paweł Wilk (pw@gnu.org).
+You may redistribute and/or modify this software as long as you
+comply with either the terms of the LGPL (see {file:docs/LGPL}),
+or Ruby's license (see {file:docs/COPYING}).
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS
+OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE.

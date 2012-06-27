@@ -1,0 +1,6 @@
+
+
+- test for methods changed_attributes and ... and if not then include ActiveModel...
+
+* add rspec tests
+
