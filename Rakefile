@@ -30,6 +30,7 @@ end
 
 Hoe.plugin :bundler
 Hoe.plugin :yard
+Hoe.plugin :gemspec
 
 Hoe.spec 'attribute-filters' do
   developer               AttributeFilters::DEVELOPER, AttributeFilters::EMAIL
