@@ -2,6 +2,7 @@
 
 <b>attribute-filters version <tt>1.0.0</tt></b> (<b><tt>Sugar, ah honey honey</tt></b>)
 
+<b>THIS IS BETA!</b>
 
 * https://rubygems.org/gems/attribute-filters
 * https://github.com/siefca/attribute-filters/tree
@@ -62,7 +63,7 @@ You can run RSpec examples both with
 * <tt>bundle exec rake bundler:gemfile</tt> – regenerate the +Gemfile+
 * <tt>bundle exec rake docs</tt> – render the documentation (output in the subdirectory directory +doc+)
 * <tt>bundle exec rake gem</tt> – builds package (output in the subdirectory +pkg+)
-* <tt>bundle exec rake test</tt>, <tt>bundle exec rake testv4</tt> – performs tests
+* <tt>bundle exec rake test</tt> – performs tests
 * <tt>bundle exec rake Manifest.txt</tt> – regenerates the +Manifest.txt+ file
 * <tt>bundle exec rake ChangeLog</tt> – regenerates the +ChangeLog+ file
 
