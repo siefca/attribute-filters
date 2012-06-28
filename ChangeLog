@@ -1,3 +1,21 @@
+commit 859b490a8ab34720e4395bec6f2f72cb5fab335f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 11:38:02 2012 +0200
+
+    Removed syck parser setting from Rakefile
+
+commit b83271b8317b435db46b4f6622ecd6a796a451cc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 11:37:23 2012 +0200
+
+    Documentation updated
+
+commit 1066e01a859c686c29966ebfe1c5d1b78038ba2d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 11:37:06 2012 +0200
+
+    ChangeLog and Manifest.txt updated
+
 commit 4b39fb3796755869d6ea0321b7d9d55d62d91580
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jun 28 02:00:46 2012 +0200

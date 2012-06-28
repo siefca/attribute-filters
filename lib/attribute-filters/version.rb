@@ -12,7 +12,7 @@ module AttributeFilters
       # @private
       EMAIL       = 'pw@gnu.org'
       # @private
-      VERSION     = '1.0.0'
+      VERSION     = '1.0.1'
       # @private
       NAME        = 'attribute-filters'
       # @private
@@ -20,5 +20,5 @@ module AttributeFilters
       # @private
       URL         = 'https://rubygems.org/gems/attribute-filters/'
       # @private
-      DESCRIPTION = 'Simple extension for Rails that adds some syntactic sugar (filters, attribute sets) to your models.'
+      DESCRIPTION = 'Concise way of filtering model attributes in Rails.'
 end
