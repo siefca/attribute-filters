@@ -20,10 +20,16 @@ model attributes in a concise and clean way.
 When?
 -----
 
-If your Rails application often filters the attributes that has changed
-recently and uses callbacks to achieve that, then you may consider
-refining that process and write methods for handling common operations
-not certain attributes. See what I mean below.
+You may want to try it when your Rails application often modifies
+attributes that changed recently and uses callbacks to fulfill that goal.
+
+When the number of attributes altered that way increases you may observe
+that the same happends with your filtering methods because each one is tied
+to the attribute.
+
+You may consider refining that process and write more generic fitering
+methods, designed to handle common operations and not tied to certain attributes.
+Let me show what I mean below.
 
 ### Before ###
 
