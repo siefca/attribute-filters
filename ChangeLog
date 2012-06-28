@@ -1,3 +1,15 @@
+commit 4605f5c4cf5e0762c33315e96b1c4bb0574dc045
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 14:25:22 2012 +0200
+
+    Extended arguments parging for DSL class method attribute_set
+
+commit 3bb26fc1cc2827e08eec11ea5f57c305184daca1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 14:24:40 2012 +0200
+
+    README format changed to Markdown, added some development deps (Redcarped) required by YARD
+
 commit 2b72084f1eef2a7b8dfa632a2fd918eae203f106
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jun 28 11:53:58 2012 +0200

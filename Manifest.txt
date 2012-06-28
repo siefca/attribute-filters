@@ -13,6 +13,7 @@ docs/HISTORY
 docs/LEGAL
 docs/LGPL-LICENSE
 docs/TODO
+docs/USAGE
 docs/rdoc.css
 init.rb
 lib/attribute-filters.rb
