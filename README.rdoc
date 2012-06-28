@@ -49,7 +49,7 @@ not certain attributes. See what I mean below.
     
   end
   
-(The more attributes theere is the more messy it becomes and the altering code is not reusable.)
+(The more attributes there is the more messy it becomes and the filtering code is not reusable.)
 
 === After
 
@@ -81,7 +81,7 @@ not certain attributes. See what I mean below.
     
   end
 
-(Names of new attributes that have to be altered in the same way can just be added to proper sets
+(Names of new attributes that have to be altered in the same way can just be added to sets
 and you can use the same altering methods across all models if you wish to.)
 
 == Usage
