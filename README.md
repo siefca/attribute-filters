@@ -21,15 +21,17 @@ When?
 -----
 
 You may want to try it when your Rails application often modifies
-attributes that changed recently and uses callbacks to fulfill that goal.
+attribute values that changed recently and uses callbacks to do that.
 
-When the number of attributes altered that way increases you may observe
-that the same happends with your filtering methods because each one is tied
-to the attribute.
+When the number of attributes that are altered in such a way increases
+then you can observe that the same thing happends with your filtering
+methods. That's because each one is tied to some attribute.
 
-You may consider refining that process and write more generic fitering
-methods, designed to handle common operations and not tied to certain attributes.
-Let me show what I mean below.
+To refine that process you may write more generic methods
+for altering attributes. They should be designed to handle
+common operations and not tied to certain attributes.
+
+Enough words, let's see that approach in action.
 
 ### Before ###
 
