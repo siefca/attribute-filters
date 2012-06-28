@@ -1,6 +1,8 @@
 
 
-- test for methods changed_attributes and ... and if not then include ActiveModel...
+* test for methods changed_attributes and ... and if not then include ActiveModel...
+
+* add some predefined, often used filters/sets
 
 * add rspec tests
 
