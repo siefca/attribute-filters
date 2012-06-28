@@ -63,21 +63,34 @@ module ActiveModel
       #   Creates one new set or many new sets of attribute of the given name.
       #   @param set_options [Hash{Symbol,String => Array<Symbol,String>}] hash containing set names and arrays of attributes
       #   @return [nil]
+      # 
+      # @overload attribute_set(set_options, *attribute_names)
+      #   Creates one new set of attributes of the given names.
+      #   @param set_options [Hash{Symbol,String => String,Array<Symbol,String>}] hash containing set names and arrays of attributes
+      #   @param attribute_names [Array<Symbol,String>] names of additional attributes to be stored in set
+      #   @return [nil]
       def attribute_set(*args)
         case args.size
         when 0
           attribute_sets
         when 1
-          a = args.first
-          if a.is_a?(Hash)
-            a.each_pair { |k,v| attribute_set(k,v) }
+          first_arg = args.first
+          if first_arg.is_a?(Hash)
+            first_arg.each_pair { |k,v| attribute_set(k,v) }
             nil
           else
-            attribute_sets[a.to_sym] || ActiveModel::AttributeSet.new.freeze
+            attribute_sets[first_arg.to_sym] || ActiveModel::AttributeSet.new.freeze
           end
         else
-          set_name = args.shift.to_sym
-          attribute_sets[set_name] = ActiveModel::AttributeSet.new(args.flatten.compact.map{|x|x.to_s}).freeze
+          first_arg = args.shift
+          if first_arg.is_a?(Hash)
+            first_arg.each_pair do |k,v|
+              attribute_set(k,v,args)
+            end
+          else
+            set_name = first_arg.to_sym
+            attribute_sets[set_name] = ActiveModel::AttributeSet.new(args.flatten.compact.map{|a|a.to_s}).freeze
+          end
           nil
         end
       end
