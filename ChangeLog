@@ -1,3 +1,15 @@
+commit 4b39fb3796755869d6ea0321b7d9d55d62d91580
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 02:00:46 2012 +0200
+
+    Documentation updated
+
+commit 2c82ceb91cab6ba3cc8dc374a1c68387a975d2d2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 01:49:51 2012 +0200
+
+    Added Hoe.gemspec plug-in, regenerated gemspec, ChangeLog and Gemfile
+
 commit 3717755cb114110229278ab6c03f8471a87535cc
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jun 28 01:37:50 2012 +0200
