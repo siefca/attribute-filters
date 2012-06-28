@@ -1,3 +1,15 @@
+commit 824ee4189fe9fb5c66c6aebd99aba4a661829260
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 11:50:22 2012 +0200
+
+    Doco update
+
+commit 56a9df2c396d406c167d757b157e9d13700d3645
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 11:39:06 2012 +0200
+
+    Release 1.0.1
+
 commit 859b490a8ab34720e4395bec6f2f72cb5fab335f
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jun 28 11:38:02 2012 +0200

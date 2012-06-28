@@ -37,7 +37,10 @@ not certain attributes. See what I mean below.
     end
 
     def strip_and_downcase_email
-      self.email.downcase! if email.present?
+      if email.present?
+        self.email.strip!
+        self.email.downcase!
+      end
     end
     
     def strip_and_capitalize_real_name

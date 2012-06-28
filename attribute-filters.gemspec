@@ -2,16 +2,16 @@
 
 Gem::Specification.new do |s|
   s.name = "attribute-filters"
-  s.version = "1.0.0.20120628014704"
+  s.version = "1.0.1.20120628115122"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pawe\u{142} Wilk"]
   s.cert_chain = ["/Users/siefca/.gem/gem-public_cert.pem"]
-  s.date = "2012-06-27"
-  s.description = "Simple extension for Rails that adds some syntactic sugar (filters, attribute sets) to your models."
+  s.date = "2012-06-28"
+  s.description = "Concise way of filtering model attributes in Rails."
   s.email = ["pw@gnu.org"]
   s.extra_rdoc_files = ["Manifest.txt", "README.rdoc"]
-  s.files = [".rspec", ".yardopts", "ChangeLog", "LGPL-LICENSE", "Manifest.txt", "README.rdoc", "Rakefile", "attribute-filters.gemspec", "docs/COPYING", "docs/HISTORY", "docs/LEGAL", "docs/LGPL-LICENSE", "docs/TODO", "docs/rdoc.css", "init.rb", "lib/attribute-filters.rb", "lib/attribute-filters/attribute_set.rb", "lib/attribute-filters/attribute_set_query.rb", "lib/attribute-filters/common_filters.rb", "lib/attribute-filters/dsl_filters.rb", "lib/attribute-filters/dsl_sets.rb", "lib/attribute-filters/railtie.rb", "lib/attribute-filters/version.rb", "spec/attribute-filters_spec.rb", "spec/spec_helper.rb", ".gemtest"]
+  s.files = [".rspec", ".yardopts", "ChangeLog", "Gemfile", "Gemfile.lock", "LGPL-LICENSE", "Manifest.txt", "README.rdoc", "Rakefile", "attribute-filters.gemspec", "docs/COPYING", "docs/HISTORY", "docs/LEGAL", "docs/LGPL-LICENSE", "docs/TODO", "docs/rdoc.css", "init.rb", "lib/attribute-filters.rb", "lib/attribute-filters/attribute_set.rb", "lib/attribute-filters/attribute_set_query.rb", "lib/attribute-filters/common_filters.rb", "lib/attribute-filters/dsl_filters.rb", "lib/attribute-filters/dsl_sets.rb", "lib/attribute-filters/railtie.rb", "lib/attribute-filters/version.rb", "spec/attribute-filters_spec.rb", "spec/spec_helper.rb", ".gemtest"]
   s.homepage = "https://rubygems.org/gems/attribute-filters/"
   s.rdoc_options = ["--title", "Attribute::Filters Documentation", "--quiet"]
   s.require_paths = ["lib"]
