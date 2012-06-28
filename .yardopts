@@ -1,9 +1,10 @@
 --title 'Attribute Filters for Rails'
 --protected
---readme README.rdoc
+--readme README.md
 --no-private
 --hide-void-return
 -
+docs/USAGE
 docs/HISTORY
 ChangeLog
 docs/COPYING

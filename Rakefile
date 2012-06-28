@@ -39,7 +39,7 @@ Hoe.spec 'attribute-filters' do
 
   self.remote_rdoc_dir = ''
   self.rsync_args      << '--chmod=a+rX'
-  self.readme_file     = 'README.rdoc'
+  self.readme_file     = 'README.md'
   self.history_file    = 'docs/HISTORY'
 
   extra_deps          << ['railties',         '~> 3.0']     <<
@@ -47,6 +47,7 @@ Hoe.spec 'attribute-filters' do
   extra_dev_deps      << ['rspec',            '>= 2.6.0']   <<
                          ['yard',             '>= 0.7.2']   <<
                          ['rdoc',             '>= 3.8.0']   <<
+                         ['redcarpet',        '>= 2.1.0']   <<
                          ['bundler',          '>= 1.0.10']  <<
                          ['hoe-bundler',      '>= 1.1.0']   <<
                          ['hoe-gemspec',      '>= 1.0.0']

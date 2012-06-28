@@ -5,7 +5,7 @@ Gemfile
 Gemfile.lock
 LGPL-LICENSE
 Manifest.txt
-README.rdoc
+README.md
 Rakefile
 attribute-filters.gemspec
 docs/COPYING
