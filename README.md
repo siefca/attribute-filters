@@ -57,7 +57,8 @@ class User < ActiveRecord::Base
 end
 ```
   
-(The more attributes there is the more messy it becomes and the filtering code is not reusable.)
+The more attributes there is the more messy it becomes.
+The filtering code is not reusable since it operates on specific attributes.
 
 ### After ###
 
@@ -92,8 +93,10 @@ class User < ActiveRecord::Base
 end
 ```
 
-(Names of new attributes that have to be altered in the same way can just be added to sets
-and you can use the same altering methods across all models if you wish to.)
+Attributes that have to be altered in a common ways simply may be added to sets
+and then filtered with more generic methods. You can share these methods 
+across all your models if you wish to by putting them into some base class
+or (better) by including your own handy module to your models.
 
 Usage
 -----
@@ -135,9 +138,11 @@ the module, as long as your application relies on any popular ORM.
 If something will go wrong however or your application is somehow unusual, you can always
 include the AttributeFilters module manually in any of your models:
 
-  class ExampleModel
-    include ActiveModel::AttributeFilters
-  end
+```
+class ExampleModel
+  include ActiveModel::AttributeFilters
+end
+```
 
 Requirements
 ------------
