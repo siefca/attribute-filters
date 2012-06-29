@@ -15,7 +15,7 @@ require "attribute-filters"
 require 'attribute-filters/version'
 require 'hoe'
 
-task :default => [:test]
+task :default => [:spec]
 
 desc "install by setup.rb"
 task :install do
@@ -48,6 +48,7 @@ Hoe.spec 'attribute-filters' do
                          ['yard',             '>= 0.7.2']   <<
                          ['rdoc',             '>= 3.8.0']   <<
                          ['redcarpet',        '>= 2.1.0']   <<
+                         ['supermodel',       '>= 0.1.6']   <<
                          ['bundler',          '>= 1.0.10']  <<
                          ['hoe-bundler',      '>= 1.1.0']   <<
                          ['hoe-gemspec',      '>= 1.0.0']

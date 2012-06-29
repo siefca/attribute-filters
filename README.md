@@ -184,8 +184,8 @@ Specs
 
 You can run RSpec examples both with
 
-* `rake spec` or just `rake`
-* run a test file directly, e.g. `ruby -Ilib -Ispec spec/attribute-filters_spec.rb`
+* `bundle exec rake spec` or just `bundle exec rake`
+* run a test file directly, e.g. `ruby -S rspec spec/attribute-filters_spec.rb -Ispec:lib`
 
 Common rake tasks
 -----------------
