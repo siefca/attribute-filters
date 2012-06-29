@@ -1,3 +1,54 @@
+commit c4fe9eb630f342f2b5ffd4d6ff72948e0e77a864
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:10:56 2012 +0200
+
+    Attributes filtering code optimization
+    
+    - Removed unneeded caching that might cause troubles;
+    - Removed calls to accessible_attributes;
+    - Added a flag to iterate over/filter all attributes from set;
+    - Added a flag controlling attributes presence checking;
+    - Moved main logic to the method operate_on_attrs_from_set;
+    - Renamed the method call_attrs_from_set to for_each_attr_from_set;
+    - Module is now more DRY and clean;
+    - Inline documentation updated.
+
+commit 11e85ab7d0f0028c2569b0c1f46e6296559e0bda
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:04:10 2012 +0200
+
+    Module AttributeFilters moved totally to ActiveModel namespace
+
+commit 8ddf4312278fa6538ce746b210be504e817bc265
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:03:00 2012 +0200
+
+    README updated
+
+commit fd5ece4acf16b0beb068f69f0f874019a8383879
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:02:49 2012 +0200
+
+    Added custom.css and custom YARD template
+
+commit d60d50b868f9b4a0eb91960ba4e5fa9a573da7b1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 15:09:32 2012 +0200
+
+    README updated
+
+commit c3353208b5787ce20b80daa129a6cbd6eafcafbc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 15:03:54 2012 +0200
+
+    README updated
+
+commit 1db1ff90bc56e6798d1bd6e80e43345fcded9c26
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jun 28 14:47:13 2012 +0200
+
+    README updated
+
 commit fc3cd20ea98315736374780179bf49637646aa34
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jun 28 14:29:29 2012 +0200

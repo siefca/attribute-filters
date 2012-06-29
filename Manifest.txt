@@ -15,6 +15,7 @@ docs/LGPL-LICENSE
 docs/TODO
 docs/USAGE
 docs/rdoc.css
+docs/yard-tpl/default/fulldoc/html/css/common.css
 init.rb
 lib/attribute-filters.rb
 lib/attribute-filters/attribute_set.rb

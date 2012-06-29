@@ -2,12 +2,12 @@
 
 Gem::Specification.new do |s|
   s.name = "attribute-filters"
-  s.version = "1.0.2.20120628142850"
+  s.version = "1.1.0.20120629021118"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pawe\u{142} Wilk"]
   s.cert_chain = ["/Users/siefca/.gem/gem-public_cert.pem"]
-  s.date = "2012-06-28"
+  s.date = "2012-06-29"
   s.description = "Concise way of filtering model attributes in Rails."
   s.email = ["pw@gnu.org"]
   s.extra_rdoc_files = ["Manifest.txt"]
