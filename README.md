@@ -1,7 +1,7 @@
 Attribute Filters for Rails
 ===========================
 
-**attribute-filters version `1.0`** (**`Sugar, ah honey honey`**)
+**attribute-filters version `1.1`** (**`Sugar, ah honey honey`**)
 
 **THIS IS BETA!**
 
