@@ -143,7 +143,7 @@ quite often; e.g. ActiveRecord and other popular ORM-s use it. (I'm calling it
 That's why you can make use of attribute filters without explicitly including
 the module, as long as your application relies on any popular ORM.
 
-If something will go wrong however or your application is somehow unusual, you can always
+However, if something would go wrong or your application is somehow unusual, you can always
 include the AttributeFilters module manually in any of your models:
 
 ```
