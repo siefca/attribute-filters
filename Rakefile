@@ -29,13 +29,13 @@ Hoe.plugin :yard
 Hoe.plugin :gemspec
 
 Hoe.spec 'attribute-filters' do
-  developer               AttributeFilters::DEVELOPER, AttributeFilters::EMAIL
+  developer               ActiveModel::AttributeFilters::DEVELOPER, ActiveModel::AttributeFilters::EMAIL
 
-  self.version         =  AttributeFilters::VERSION
-  self.rubyforge_name  =  AttributeFilters::NAME
-  self.summary         =  AttributeFilters::SUMMARY
-  self.description     =  AttributeFilters::DESCRIPTION
-  self.url             =  AttributeFilters::URL
+  self.version         =  ActiveModel::AttributeFilters::VERSION
+  self.rubyforge_name  =  ActiveModel::AttributeFilters::NAME
+  self.summary         =  ActiveModel::AttributeFilters::SUMMARY
+  self.description     =  ActiveModel::AttributeFilters::DESCRIPTION
+  self.url             =  ActiveModel::AttributeFilters::URL
 
   self.remote_rdoc_dir = ''
   self.rsync_args      << '--chmod=a+rX'
@@ -76,12 +76,13 @@ end
 
 desc "Create signed tag in Git"
 task :tag do
-  sh %{git tag -s v#{AttributeFilters::VERSION} -m 'version #{AttributeFilters::VERSION}'}
+  sh %{git tag -s v#{ActiveModel::AttributeFilters::VERSION} -m 'version #{ActiveModel::AttributeFilters::VERSION}'}
 end
 
 desc "Create external GnuPG signature for Gem"
 task :gemsign do
-  sh %{gpg -u #{AttributeFilters::EMAIL} -ab pkg/#{AttributeFilters::NAME}-#{AttributeFilters::VERSION}.gem \
-           -o pkg/#{AttributeFilters::NAME}-#{AttributeFilters::VERSION}.gem.sig}
+  sh %{gpg -u #{ActiveModel::AttributeFilters::EMAIL} \
+           -ab pkg/#{ActiveModel::AttributeFilters::NAME}-#{ActiveModel::AttributeFilters::VERSION}.gem \
+            -o pkg/#{ActiveModel::AttributeFilters::NAME}-#{ActiveModel::AttributeFilters::VERSION}.gem.sig}
 end
 

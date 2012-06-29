@@ -8,39 +8,42 @@
 
 require 'attribute-filters'
 
-module AttributeFilters
-  require 'rails'
+module ActiveModel
+  module AttributeFilters
+    require 'rails'
+    
+    # This class is a glue that allows us to integrate with Rails.
+    class Railtie < ::Rails::Railtie
+      # Alters ActiveModel::AttributeMethods.inluded method so
+      # when that module is included the ActiveModel::AttributeFilters
+      # module is also included.
+      def self.insert
+        require 'active_model'
+        if defined?(ActiveModel::AttributeMethods)
   
-  # This class is a glue that allows us to integrate with Rails.
-  class Railtie < ::Rails::Railtie
-    # Alters ActiveModel::AttributeMethods.inluded method so
-    # when that module is included the ActiveModel::AttributeFilters
-    # module is also included.
-    def self.insert
-      require 'active_model'
-      if defined?(ActiveModel::AttributeMethods)
-
-        ActiveModel::AttributeMethods.class_eval do
-
-          def self.included_with_attribute_methods(base)
-            base.class_eval do
-              include ActiveModel::AttributeFilters
-              if method_defined?(:included_without_attribute_methods)
-                included_without_attribute_methods(base)
+          ActiveModel::AttributeMethods.class_eval do
+  
+            def self.included_with_attribute_methods(base)
+              base.class_eval do
+                include ActiveModel::AttributeFilters
+                if method_defined?(:included_without_attribute_methods)
+                  included_without_attribute_methods(base)
+                end
               end
             end
-          end
-          if singleton_class.method_defined?(:included)      
-            singleton_class.send(:alias_method_chain, :included, :attribute_methods)
-          end
+            if singleton_class.method_defined?(:included)      
+              singleton_class.send(:alias_method_chain, :included, :attribute_methods)
+            end
+  
+          end # ActiveModel::AttributeMethods.class_eval
+  
+        end # if defined?(ActiveModel::AttributeMethods)
+      end # def self.insert
+    end # class Railtie
+  
+    class Railtie
+      AttributeFilters::Railtie.insert
+    end # class Railtie
+  end # module AttributeFilters
+end # module ActiveModel
 
-        end # ActiveModel::AttributeMethods.class_eval
-
-      end # if defined?(ActiveModel::AttributeMethods)
-    end # def self.insert
-  end # class Railtie
-
-  class Railtie
-    AttributeFilters::Railtie.insert
-  end # class Railtie
-end # module AttributeFilters

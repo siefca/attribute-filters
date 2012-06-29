@@ -6,19 +6,21 @@
 # 
 # This file contains version information.
 
-module AttributeFilters
-      # @private
-      DEVELOPER   = 'Paweł Wilk'
-      # @private
-      EMAIL       = 'pw@gnu.org'
-      # @private
-      VERSION     = '1.0.2'
-      # @private
-      NAME        = 'attribute-filters'
-      # @private
-      SUMMARY     = 'Concise way of filtering model attributes in Rails'
-      # @private
-      URL         = 'https://rubygems.org/gems/attribute-filters/'
-      # @private
-      DESCRIPTION = 'Concise way of filtering model attributes in Rails.'
+module ActiveModel
+  module AttributeFilters
+    # @private
+    DEVELOPER   = 'Paweł Wilk'
+    # @private
+    EMAIL       = 'pw@gnu.org'
+    # @private
+    VERSION     = '1.1.0'
+    # @private
+    NAME        = 'attribute-filters'
+    # @private
+    SUMMARY     = 'Concise way of filtering model attributes in Rails'
+    # @private
+    URL         = 'https://rubygems.org/gems/attribute-filters/'
+    # @private
+    DESCRIPTION = 'Concise way of filtering model attributes in Rails.'
+  end
 end
