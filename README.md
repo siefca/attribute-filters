@@ -76,20 +76,20 @@ class User < ActiveRecord::Base
   
   attributes_that should_be_stripped:     [ :username, :email, :real_name ]
   attributes_that should_be_downcased:    [ :username, :email ]
-  attributes_that should_be_capitalized:  [ :username, :email ]
+  attributes_that should_be_capitalized:  [ :real_name ]
   
   before_validation :strip_names
   before_validation :downcase_names
   before_validation :capitalize_names
   
   def downcase_names
-    filter_attributes_that(:should_be_downcased) do |atr|
+    filter_attributes_that :should_be_downcased do |atr|
       atr.mb_chars.downcase.to_s
     end
   end
   
   def capitalize_names
-    filter_attributes_that(:should_be_capitalized) do |atr|
+    filter_attributes_that :should_be_capitalized do |atr|
       atr.mb_chars.split(' ').map { |n| n.capitalize }.join(' ')
     end
   end
