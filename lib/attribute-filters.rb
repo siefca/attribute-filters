@@ -8,4 +8,8 @@ require 'attribute-filters/attribute_set_query'
 require 'attribute-filters/dsl_sets'
 require 'attribute-filters/dsl_filters'
 
-require 'attribute-filters/railtie' if defined? ::Rails
+if defined? ::Rails
+  require 'attribute-filters/railtie'
+else
+  require 'attribute-filters/active_model_insert'
+end
