@@ -3,6 +3,8 @@
 --readme README.md
 --no-private
 --hide-void-return
+-p docs/yard-tpl
+-t default
 -
 docs/USAGE
 docs/HISTORY
