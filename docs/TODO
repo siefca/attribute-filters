@@ -1,6 +1,7 @@
 
+* test for method changed_attributes
 
-* test for methods changed_attributes and ... and if not then include ActiveModel...
+* replace flags by some simple hash given as the second, optional argument
 
 * add some predefined, often used filters/sets
 
