@@ -18,11 +18,13 @@ docs/rdoc.css
 docs/yard-tpl/default/fulldoc/html/css/common.css
 init.rb
 lib/attribute-filters.rb
+lib/attribute-filters/active_model_insert.rb
 lib/attribute-filters/attribute_set.rb
 lib/attribute-filters/attribute_set_query.rb
 lib/attribute-filters/common_filters.rb
 lib/attribute-filters/dsl_filters.rb
 lib/attribute-filters/dsl_sets.rb
+lib/attribute-filters/helpers.rb
 lib/attribute-filters/railtie.rb
 lib/attribute-filters/version.rb
 spec/attribute-filters_spec.rb

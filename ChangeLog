@@ -1,3 +1,42 @@
+commit dacfbe8987f3405386279884fd87f702ddc18434
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jun 30 23:44:55 2012 +0200
+
+    Major clean-ups in attributes selecting and accessing methods (used send instead of method)
+    
+    Flags parsing moved to ActiveModel::AttributeFilters::AttributeFiltersHelpers as module function;
+    SuperModel based test model passes specification test.
+
+commit c34ce901a0fe2c00dbba7dfd4f900fbe4a457a18
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 11:22:39 2012 +0200
+
+    Prepared for RSpec, added the supermodel gem
+
+commit 91d46ba829c987a3d93f027a75cb259d7b50dff8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 11:22:06 2012 +0200
+
+    Removed trailing spaces
+
+commit 959e2b53cb96e8501c3707551cf95318128c5b0b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 11:19:26 2012 +0200
+
+    AttributeFilters module is now loaded even if there's no full Rails stack, just the ActiveModel
+
+commit 05098f61691ad0937d4ee97cb38bf64af760be82
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:53:47 2012 +0200
+
+    Typo fixed in README
+
+commit 04328cb9a4bdcce7d70faab8b952ebe673e6e743
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:41:56 2012 +0200
+
+    Release 1.1.0
+
 commit 6b5aaf23fe3cb6926dac83f733544af16d3b726b
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Jun 29 02:13:21 2012 +0200
