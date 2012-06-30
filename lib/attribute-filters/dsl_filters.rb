@@ -25,15 +25,14 @@ module ActiveModel
     # @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
     #   not just attributes that has changed
     # @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
-    #   disabled (matters only when +process_all+ is also set (see also +alter_mode+)
+    #   disabled (matters only when +process_all+ is also set
     # @return [AttributeSet] set of attributes (attribute name => previous_value)
-    def attributes_to_filter(set_name, alter_mode = true, process_all = false, no_presence_check = false)
+    def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
+      atf = attribute_set(set_name)
       if process_all
-        atf = attribute_set(set_name)
-        needs_write = alter_mode ? "=" : ""
-        no_presence_check ? atf : atf.select{ |atr| respond_to?("#{atr}#{needs_write}") }
+        no_presence_check ? atf : atf & attributes.keys
       else
-        attribute_set(set_name) & changed_attributes.keys
+        atf & changed_attributes.keys
       end
     end
 
@@ -50,10 +49,8 @@ module ActiveModel
     #   {http://rubydoc.info/gems/activemodel/ActiveModel/Dirty#changed_attributes-instance_method changed attributes}
     #   are selected, unless the +process_all+ flag is
     #   given. If that flag is given then presence of each attribute is verified,
-    #   unless the +no_presence_check+ flag is also set. The presence is tested
-    #   by checking whether the setter method exists; if it doesn't then the attribute
-    #   is excluded from processing. Attributes with empty or unset values are ignored
-    #   too (but see the flag called +process_blank+).
+    #   unless the +no_presence_check+ flag is also set. Attributes with empty or unset values
+    #   are ignored (but see the flag called +process_blank+).
     #   
     #   The result of the given block is used to set a new values for processed attributes. 
     #   
@@ -114,10 +111,8 @@ module ActiveModel
     #   {http://rubydoc.info/gems/activemodel/ActiveModel/Dirty#changed_attributes-instance_method changed attributes}
     #   are selected, unless the +process_all+ flag is
     #   given. If that flag is given then presence of each attribute is verified,
-    #   unless the +no_presence_check+ flag is also set. The presence is tested
-    #   by checking whether the method of the same name as the attribute exists (the getter);
-    #   if it doesn't then the attribute is excluded from processing. Attributes with
-    #   empty or unset values are ignored too (but see the flag called +process_blank+).
+    #   unless the +no_presence_check+ flag is also set. Attributes with
+    #   empty or unset values are ignored (but see the flag called +process_blank+).
     #   
     #   The result of the given block is not used to set the processed attribute.
     #   The only way to alter attribute values using this method is to use bang
@@ -164,35 +159,35 @@ module ActiveModel
 
     private
 
-    def attr_filter_process_flags(args)
-      flags = ActiveModel::AttributeFilters::PROCESSING_FLAGS.dup
-      while flags.key?(a=args[0]) do
-        flags[a] = !!args.shift
-      end
-      flags
-    end
-
     def operate_on_attrs_from_set(set_name, alter_mode, *args, &block)
-      flags             = attr_filter_process_flags(args)
+      flags             = AttributeFiltersHelpers.process_flags(args)
       process_all       = flags[:process_all]
       process_blank     = flags[:process_blank]
       no_presence_check = flags[:no_presence_check]
-      attrs_to_process  = attributes_to_filter(set_name, alter_mode, process_all, no_presence_check)
+      attrs_to_process  = attributes_to_filter(set_name, process_all, no_presence_check)
       if alter_mode
         if process_blank
-          attrs_to_process.each { |atr| self[atr] = yield(self[atr], set_name, atr, *args) }
-        else
+          # filtering without testing for blank
           attrs_to_process.each do |atr|
-            v = self[atr]
-            self[atr] = yield(v, set_name, atr, *args) if v.present?
+            send("#{atr}=", yield(send(atr), set_name, atr, *args))
+          end
+        else
+          # filtering present only
+          attrs_to_process.each do |atr|
+            v = send(atr)
+            send("#{atr}=", yield(v, set_name, atr, *args)) if v.present?
           end
         end
       else
         if process_blank
-          attrs_to_process.each { |atr| yield(self[atr], set_name, atr, *args) }
-        else
+          # calling without testing for blank
           attrs_to_process.each do |atr|
-            v = self[atr]
+            yield(send(atr), set_name, atr, *args)
+          end
+        else
+          # calling present only
+          attrs_to_process.each do |atr|
+            v = send(atr)
             yield(v, set_name, atr, *args) if v.present?
           end
         end

@@ -5,6 +5,7 @@ require 'attribute-filters/version'
 require 'attribute-filters/attribute_set'
 require 'attribute-filters/attribute_set_query'
 
+require 'attribute-filters/helpers'
 require 'attribute-filters/dsl_sets'
 require 'attribute-filters/dsl_filters'
 

@@ -49,6 +49,7 @@ Hoe.spec 'attribute-filters' do
                          ['rdoc',             '>= 3.8.0']   <<
                          ['redcarpet',        '>= 2.1.0']   <<
                          ['supermodel',       '>= 0.1.6']   <<
+                         ['activerecord',     '>= 3.0']     <<
                          ['bundler',          '>= 1.0.10']  <<
                          ['hoe-bundler',      '>= 1.1.0']   <<
                          ['hoe-gemspec',      '>= 1.0.0']

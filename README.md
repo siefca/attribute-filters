@@ -101,10 +101,13 @@ class User < ActiveRecord::Base
 end
 ```
 
-Attributes that have to be altered in a common ways simply may be added to sets
-and then filtered with more generic methods. You can share these methods 
-across all your models if you wish to by putting them into some base class
-or (better) by including your own handy module to your models.
+Attributes that need to be altered may be simply added to the attribute sets
+that you define and then filtered with generic methods. You can use
+these methods in all your models if you wish.
+
+The last action can be performed by putting the filtering methods into
+some base class that models inherit form or (better) into your own
+handy module that is included in your models.
 
 Usage
 -----
@@ -210,7 +213,7 @@ Copyright (c) 2012 by Paweł Wilk.
 
 attribute-filters is copyrighted software owned by Paweł Wilk (pw@gnu.org).
 You may redistribute and/or modify this software as long as you
-comply with either the terms of the LGPL (see {file:docs/LGPL}),
+comply with either the terms of the LGPL (see {file:docs/LGPL-LICENSE}),
 or Ruby's license (see {file:docs/COPYING}).
 
 THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS
