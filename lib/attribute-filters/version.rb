@@ -6,6 +6,7 @@
 # 
 # This file contains version information.
 
+# @abstract This namespace is shared with ActveModel.
 module ActiveModel
   module AttributeFilters
     # @private

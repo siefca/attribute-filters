@@ -8,6 +8,7 @@
 
 require 'active_model'
 
+# @abstract This namespace is shared with ActveModel.
 module ActiveModel
 
   if defined?(AttributeMethods)

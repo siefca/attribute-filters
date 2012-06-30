@@ -8,6 +8,7 @@
 
 require 'attribute-filters'
 
+# @abstract This namespace is shared with ActveModel.
 module ActiveModel
   module AttributeFilters
     require 'rails'

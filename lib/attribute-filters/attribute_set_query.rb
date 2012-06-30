@@ -7,6 +7,7 @@
 # This file contains ActiveModel::AttributeSet::Query class
 # used to interact with attribute sets.
 
+# @abstract This namespace is shared with ActveModel.
 module ActiveModel
   class AttributeSet
     # This class contains proxy methods used to interact with

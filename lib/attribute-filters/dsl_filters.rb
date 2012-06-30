@@ -6,6 +6,7 @@
 # 
 # This file contains modules with methods that create DSL for managing attribute filters.
 
+# @abstract This namespace is shared with ActveModel.
 module ActiveModel
   module AttributeFilters
     # @private

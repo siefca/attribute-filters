@@ -6,9 +6,10 @@
 # 
 # This file contains modules defining methods that create DSL for managing attribute sets.
 
+# @abstract This namespace is shared with ActveModel.
 module ActiveModel
   # This module contains instance methods for getting and setting
-  # attricute sets established in classes (models).
+  # attribute sets established in classes (models).
   module AttributeFilters
     def self.included(base)
       base.extend ClassMethods
