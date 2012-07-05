@@ -31,7 +31,7 @@ module ActiveModel
         singleton_class.send(:alias_method, :included, :included_with_attribute_methods)
         #singleton_class.send(:alias_method_chain, :included, :attribute_methods)
       end
-  
+
     end # ActiveModel::AttributeMethods.class_eval
 
   end # if defined?(AttributeMethods)

@@ -109,6 +109,20 @@ The last action can be performed by putting the filtering methods into
 some base class that models inherit form or (better) into your own
 handy module that is included in your models.
 
+If you would rather like to group filters by attribute names then
+the alternative syntax may help you:
+
+```ruby
+class User < ActiveRecord::Base
+
+  the_attribute email:        [ :should_be_stripped, :should_be_downcased   ]
+  the_attribute username:     [ :should_be_stripped, :should_be_downcased   ]
+  the_attribute real_name:    [ :should_be_stripped, :should_be_capitalized ]
+
+  [...]
+end
+```
+
 Usage
 -----
 
