@@ -31,7 +31,7 @@ To refine that process you may write more generic methods
 for altering attributes. They should be designed to handle
 common operations and not tied to certain attributes.
 
-Enough words, let's see that approach in action.
+Enough words, let's see that in action.
 
 ### Before ###
 

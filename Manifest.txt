@@ -13,7 +13,7 @@ docs/HISTORY
 docs/LEGAL
 docs/LGPL-LICENSE
 docs/TODO
-docs/USAGE
+docs/USAGE.md
 docs/rdoc.css
 docs/yard-tpl/default/fulldoc/html/css/common.css
 init.rb
