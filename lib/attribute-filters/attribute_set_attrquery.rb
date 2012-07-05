@@ -58,6 +58,17 @@ module ActiveModel
         end
       end
 
+      # @private
+      def respond_to?(name)
+        case name.to_sym
+        when :are, :is, :one, :is_one, :in, :list, :show, :be, :should, :the, :a, :sets, :in_sets,
+             :set, :in_a_set, :in_set, :in?, :in_set?, :in_a_set?, :in_the_set?, :the_set?, :set?,
+             :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to
+          true
+        else
+          @set_object.respond_to?(name) || name.to_s.slice(-1,1) == '?'
+        end
+      end
     end # class AttrQuery
   end # class AttributeSet
 end # module ActiveModel

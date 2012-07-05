@@ -73,6 +73,16 @@ module ActiveModel
         end
       end
 
+      # @private
+      def respond_to?(name)
+        case name.to_sym
+        when :are, :is, :be, :should, :all, :any, :list, :show
+          true
+        else
+          @set_object.respond_to?(name)
+        end
+      end
+
       protected
 
       # Queues any method of the given name to be called when next
