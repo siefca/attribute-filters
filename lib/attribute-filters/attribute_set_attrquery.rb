@@ -22,7 +22,7 @@ module ActiveModel
       # When the called method name ends with question mark then
       # its name is considered to be an attribute set name that
       # should be tested for presence of the attribute. To use
-      # that syntax you must be sure that there is no already
+      # that syntax you have to be sure that there is no already
       # defined method for AttributeSet object which name ends
       # with question mark. Otherwise you may get false positives
       # or a strange errors when trying to test if attribute belongs

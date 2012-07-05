@@ -1,9 +1,7 @@
 
-* test for method changed_attributes
-
 * replace flags by some simple hash given as the second, optional argument
 
 * add some predefined, often used filters/sets
 
-* add rspec tests
+* add rspec examples
 

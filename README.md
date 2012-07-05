@@ -209,6 +209,7 @@ Common rake tasks
 
 * `bundle exec rake bundler:gemfile` – regenerate the `Gemfile`
 * `bundle exec rake docs` – render the documentation (output in the subdirectory directory `doc`)
+* `bundle exec rake gem:spec` – builds static gemspec file (`attribute-filters.gemspec`)
 * `bundle exec rake gem` – builds package (output in the subdirectory `pkg`)
 * `bundle exec rake test` – performs tests
 * `bundle exec rake Manifest.txt` – regenerates the `Manifest.txt` file

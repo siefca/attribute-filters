@@ -1,3 +1,53 @@
+commit 6b75c4de40301060b2b5b19824f00cc5acc0fa8e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 15:21:13 2012 +0200
+
+    Added DSL instance methods attribute_sets and attributes_to_sets
+
+commit e545baad64e6820d93cdc7c89b2ece83f12d6329
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 15:20:02 2012 +0200
+
+    Added missing respond_to? definitions to proxy classes
+
+commit f856d0b6f669cafc3ec5a1d84030e99870b5fcee
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 15:19:18 2012 +0200
+
+    Added DSL keyword for querying which attribute sets are associated with an attribute
+
+commit 5611e8c098c21d38f0fa9bd21f338f51a658ae30
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 15:16:18 2012 +0200
+
+    README updated
+
+commit c68b3219ef0923d1184c0c5efb4240c1d53a89d5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 13:38:06 2012 +0200
+
+    Added the_attribute DSL method for instances and AttributeSet::AttrQuery proxy class
+
+commit 964e46d2a77502192461c6f1e208dab73871caa9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 12:23:27 2012 +0200
+
+    Added filter_attribute DSL keyword for adding attribute names to specified sets (alternative syntax)
+    
+    - Added @__attributes_to_sets_map for storing reverse mappings of attribute names to sets;
+    - Changed the way the internal data structures are accessed by adding private methods:
+      __attributes_to_sets_map and __attribute_sets
+    - Internal data structures are now duplicated when accessed from outside and the default value
+      for a set (when an element doesn't exist) is an empty set
+    - Updated RSpec examples,
+    - Added new DSL example to README.
+
+commit e8c2c98b55152fff9b6515197f5315b0dfe702ea
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 1 00:57:34 2012 +0200
+
+    Documentation fixed and updated
+
 commit 0235e6184da1ca9ef4264a772032c820d76fec19
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sun Jul 1 00:42:03 2012 +0200
