@@ -42,6 +42,17 @@ module ActiveModel
     alias_method :attributes_set,             :attribute_set
     alias_method :properties_that,            :attribute_set
 
+    # Gets all defined attribute sets.
+    # @note Use +key+ method explicitly to check if the given set exists. The hash returned by this method
+    #  will always return {AttributeSet} object. If there is no such set defined then the returned,
+    #  matching set will be empty.
+    # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
+    def attribute_sets
+      self.class.attribute_sets
+    end
+    alias_method :attributes_sets, :attribute_sets
+    alias_method :properties_sets, :attribute_sets
+
     # Returns the set of set names that the attribute of the given
     # name belongs to.
     # @note The returned value is a duplicate. Adding or removing
@@ -59,6 +70,16 @@ module ActiveModel
     alias_method :are_attributes,       :filtered_attribute
     alias_method :are_the_attributes,   :filtered_attribute
     alias_method :filtered_attributes,  :filtered_attribute
+
+    # Gets all defined attribute set names hashed by attribute names.
+    # @note Use +key+ method explicitly to check if the given attribute is assigned to any set. The hash
+    #  returned by this method will always return {AttributeSet} object. If the attribute is not assigned
+    #  to any set then the returned, matching set will be empty.
+    # @return [Hash{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
+    def attributes_to_sets
+      self.class.attributes_to_sets
+    end
+    alias_method :attribute_sets_map, :attributes_to_sets
 
     # This module contains class methods
     # that create DSL for managing attribute sets.
@@ -183,6 +204,7 @@ module ActiveModel
         d.default = ActiveModel::AttributeSet.new
         d
       end
+      alias_method :attribute_sets_map, :attributes_to_sets
 
       private
 
