@@ -47,7 +47,7 @@ class User < ActiveRecord::Base
       self.username = self.username.strip.mb_chars.downcase.to_s
     end
   end
-
+  
   def strip_and_downcase_email
     if email.present?
       self.email.strip!
@@ -163,7 +163,7 @@ the module, as long as your application relies on any popular ORM.
 However, if something would go wrong or your application is somehow unusual, you can always
 include the AttributeFilters module manually in any of your models:
 
-```
+```ruby
 class ExampleModel
   include ActiveModel::AttributeFilters
 end
@@ -192,7 +192,7 @@ Download
 Installation
 ------------
 
-```
+```ruby
 gem install attribute-filters
 ```
 
