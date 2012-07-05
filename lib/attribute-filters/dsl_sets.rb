@@ -41,7 +41,25 @@ module ActiveModel
     alias_method :are_attributes_for,         :attribute_set
     alias_method :attributes_set,             :attribute_set
     alias_method :properties_that,            :attribute_set
-  
+
+    # Returns the set of set names that the attribute of the given
+    # name belongs to.
+    # @note The returned value is a duplicate. Adding or removing
+    #  elements to it will have no effect. Altering attribute sets
+    #  is possible on a class-level only, since attribute sets
+    #  are part of models' interfaces.
+    # 
+    # @param set_name [Symbol] name of attribute set
+    # @return [AttributeSet] attribute set
+    def filtered_attribute(attribute_name)
+      ActiveModel::AttributeSet::AttrQuery.new(self.class.filter_attribute(attribute_name), self)
+    end
+    alias_method :the_attribute,        :filtered_attribute
+    alias_method :is_the_attribute,     :filtered_attribute
+    alias_method :are_attributes,       :filtered_attribute
+    alias_method :are_the_attributes,   :filtered_attribute
+    alias_method :filtered_attributes,  :filtered_attribute
+
     # This module contains class methods
     # that create DSL for managing attribute sets.
     module ClassMethods

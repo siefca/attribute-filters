@@ -17,15 +17,15 @@ module ActiveModel
     class Query < BasicObject
       # Creates new query object.
       # 
-      # @param attribute_set_object [AttributeSet] attribute set for which the query will be made
+      # @param set_object [AttributeSet] attribute set for which the query will be made
       # @param am_object [Object] model object which has access to attributes (may be an instance of ActiveRecord or similar)
-      def initialize(attribute_set_object, am_object)
-        @attribute_set = attribute_set_object
+      def initialize(set_object, am_object)
+        @set_object = set_object
         @am_object = am_object
         @next_method = nil
       end
 
-      # This is proxy method that causes some calls to be
+      # This is a proxy method that causes some calls to be
       # queued to for the next call. Is allows to create semi-natural
       # syntax when querying attribute sets.
       # 
@@ -58,18 +58,18 @@ module ActiveModel
         if @method_to_call.nil?
           case method_sym.to_sym
           when :all, :any
-            ::ActiveModel::AttributeSet::Query.new(@attribute_set, @am_object).   # new obj. == thread-safe
+            ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).   # new obj. == thread-safe
               next_step(method_sym.to_s << "?", args, block)
           when :list, :show
-            ::ActiveModel::AttributeSet::Query.new(@attribute_set, @am_object).
+            ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).
               next_step(:select, args, block)
           else
-            @attribute_set.method(method_sym).call(*args, &block)
+            @set_object.method(method_sym).call(*args, &block)
           end
         else
           method_sym, args, block = @next_method
           @next_method = nil
-          @attribute_set.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
+          @set_object.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
         end
       end
 
