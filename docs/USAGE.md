@@ -297,6 +297,109 @@ If you'll try to get the value of an element that doesn't exist **the empty set 
 Instead of `attributes_to_sets` you may also use one of the aliases:
 
   * `attribute_sets_map`
+  
+### Syntactic sugar for queries ###
+
+Querying attribute sets may be even more sweet when you add some syntactic sugar
+provided by the Attribute Filters. Some methods used for querying make use of internal
+proxy classes that provide additional DSL keywords that can be used to express
+the program logic. These are present when querying **in an instance**, not in a model
+class.
+
+#### `attribute_set(set_name)` ####
+
+The [`attribute_set`](#attribute_set_set_name_0) instance method added to all your models internally
+and transparently uses the
+[`ActiveModel::AttributeSet::Query`]((http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeSet/Query)) objects.
+In the result the `AttributeSet` objects returned by it have some additional features.
+
+##### Neutral methods #####
+
+You can attach **"neutral" methods** to the output of `attribute_set`
+and the same object will be returned (equivalent to `self`).
+These methods are:
+
+* `are`, `is`, `be`, `should`
+
+Example:
+
+```ruby
+  User.first.attributes_that(:should_be_stripped).present?
+  # => true
+
+  User.first.attributes_that(:should_be_stripped).are.present?
+  # => true
+```
+
+##### Presence selectors #####
+
+But the example above was just a test if the returned set is empty or not.
+How about checking if all of the attributes from a set are present?
+Let's do it without any fancy DSL methods:
+
+```ruby
+  u=User.first
+  u.attributes_that(:should_be_stripped).all? |attribute_name| do
+    u.send(attribute_name).present?
+  end
+  # => false
+```
+
+Now the same task but with some sugar:
+
+```ruby
+  u=User.first.attributes_that(:should_be_stripped).all.present?
+  # => false
+```
+
+Nice, huh? So, how it works? Whenever **`all`** or **`any`** is called
+on an output of the `attribute_set` instance method the call is forwarded
+to the `all?` or `any?` method with passed a block in which the next
+method is invoked for a value of each attribute from a set. The additional
+arguments, if any, are also forwarded and passed to the method called
+within a block. Just imagine that:
+
+```ruby
+  attributes_that(:should_be_stripped).all.METHOD(ARGUMENTS)
+```
+
+becomes:
+
+```ruby
+  attributes_that(:should_be_stripped).all? { |attribute| attribute METHOD(ARGUMENTS) }
+```
+
+Another example, but with `any`:
+
+```ruby
+  u=User.first.attributes_that(:should_be_stripped).any.present?
+  # => true
+```
+
+##### Elements selectors #####
+
+There are two more DSL methods: **`list`** and **`show`** which do the same job.
+They forward a call the same way as the presence selectors do but the called
+method is not `any?` or `all?` but `select`. For instance:
+
+```ruby
+  u=User.first
+  u.attributes_that(:should_be_stripped).list { |attribute_name| do
+    u.send(attribute_name).present?
+  end
+  # => false
+```
+
+
+
+
+
+#### `attribute_filter(set_name)` ####
+
+
+* `are`, `is`, `one`, `is_one`, `in`, `list`, `show`, `be`, `should`,
+  `the`, `a`, `sets`, `in_sets`, `set`, `in_a_set`, `in_set`, `belongs_to
+
 
 Attribute filters
 -----------------
@@ -353,6 +456,13 @@ end
 What we see here are filtering clauses that are responsible
 for altering attribute values: `for_attributes_that` and
 `filter_attributes_that`.
+
+### Filtering attributes ###
+
+Filtering attributes basically means calling a proper
+method that will collect the attributes (that meet certain
+criteria and belong to some set) and call some block
+used to alter their contents.
 
 #### `filter_attrs_from_set(set_name,...)` ####
 
@@ -438,10 +548,6 @@ Instead of `filter_attrs_from_set` you may also use one of the aliases:
   * `attribute_call_for_set`, `call_attrs_from_set`,       
     `for_attributes_which`, `for_attributes_that`, `for_attributes_that_are`, `for_attributes_which_are`
 
-
-
-(set_name, process_all = false, no_presence_check = false)
-
 #### `attributes_to_filter(set_name,...)` ####
 
 The [`attributes_to_filter`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attributes_to_filter)
@@ -458,6 +564,8 @@ By default the result will be narrowed to the attributes that have changed and h
 The second optional argument (`no_presence_check`) will tell the method to omit the presence check
 for each attribute. By default only the attributes that are real attributes (are present
 in `attributes` hash) are collected. This mehtod does not check the value of attributes.
+
+Example:
 
 ### Filtering virtual attributes ###
 
@@ -502,10 +610,6 @@ by putting `filter_virtual_attributes_that_have_changed` keyword into it:
 The presence of virtual attributes is tested by checking if both the setter and getter method exist,
 unless the `no_presence_check` flag is passed to a filtering method.
 
-### Syntactic sugar for filters ###
-
-(to be written)
-
 Predefined filters
 ------------------
 
@@ -516,4 +620,11 @@ Custom applications
 -------------------
 
 (to be written)
+
+See also
+--------
+
+* [Whole documentation](http://rubydoc.info/gems/attribute-filters/)
+* [GEM at RubyGems](https://rubygems.org/gems/attribute-filters)
+* [Source code](https://github.com/siefca/attribute-filters/tree)
 

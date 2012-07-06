@@ -9,6 +9,9 @@
 # @abstract This namespace is shared with ActveModel.
 module ActiveModel
   module AttributeFilters
+
+    # This module contains internal helpers
+    # used to process filters and sets.
     module AttributeFiltersHelpers
 
       # @private

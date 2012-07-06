@@ -50,14 +50,15 @@ module ActiveModel
       # @param method_sym [Symbol,String] name of method that will be queued or called on attribute set
       # @param args [Array] optional arguments to be passed to a method call or to a queued method call
       # @yield optional block to be passed to a method call or to a queued method call
+      # @return [Object] the returned value is passed back from called method
       def method_missing(method_sym, *args, &block)
         case method_sym.to_sym
         when :are, :is, :be, :should
           return self
         end
-        if @method_to_call.nil?
+        if @next_method.nil?
           case method_sym.to_sym
-          when :all, :any
+          when :all, :any, :none, :one
             ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).   # new obj. == thread-safe
               next_step(method_sym.to_s << "?", args, block)
           when :list, :show

@@ -142,7 +142,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-* See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE) for more examples and detailed information about the usage.
+* See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE) for examples and detailed information about the usage.
 * See [whole documentation](http://rubydoc.info/gems/attribute-filters/) to browse all documents.
 
 How it works?
