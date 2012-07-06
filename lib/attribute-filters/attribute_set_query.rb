@@ -68,13 +68,13 @@ module ActiveModel
             @set_object.method(method_sym).call(*args, &block)
           end
         else
-          method_sym, args, block = @next_method
+          m, args, block = @next_method
           @next_method = nil
           @set_object.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
         end
       end
 
-      # @private
+      # @private 
       def respond_to?(name)
         case name.to_sym
         when :are, :is, :be, :should, :all, :any, :list, :show
