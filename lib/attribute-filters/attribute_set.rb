@@ -14,7 +14,7 @@ module ActiveModel
   # This class is a data structure used to store
   # set of attributes.
   class AttributeSet < ::Set
-
+    include AttributeSetEnumerable
     # Adds the given object to the set and returns self.
     # If the object is already in the set, returns nil.
     # If the object is an array it adds each element of the array.
@@ -34,6 +34,5 @@ module ActiveModel
       end
     end
     alias_method :<<, :add
-
   end
 end

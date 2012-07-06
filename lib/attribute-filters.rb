@@ -2,6 +2,7 @@
 
 require 'attribute-filters'
 require 'attribute-filters/version'
+require 'attribute-filters/attribute_set_enum'
 require 'attribute-filters/attribute_set'
 require 'attribute-filters/attribute_set_query'
 require 'attribute-filters/attribute_set_attrquery'
