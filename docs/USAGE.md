@@ -117,9 +117,9 @@ of the given name**. It will always return AttributeSet object, even if there is
 
 Example:
 
-```
+```ruby
   User.attributes_that(:should_be_stripped) - User.attributes_that(:should_be_downcased)
-  => #<ActiveModel::AttributeSet: {"real_name"}>
+  # => #<ActiveModel::AttributeSet: {"real_name"}>
 ```
 
 Instead of `attribute_set` you may also use one of the aliases:
@@ -135,12 +135,12 @@ class method returns a hash containing **all the defined attribute sets** indexe
 
 Example:
 
-```
+```ruby
   User.attribute_sets.keys
-  => [:should_be_downcased, :should_be_stripped, :should_be_capitalized]
+  # => [:should_be_downcased, :should_be_stripped, :should_be_capitalized]
 
   User.attribute_sets.first
-  => [:should_be_downcased,  #<ActiveModel::AttributeSet: {"username", "email"}>]
+  # => [:should_be_downcased,  #<ActiveModel::AttributeSet: {"username", "email"}>]
 ```
 
 Note that the returned hash will have a default value set to instance of the `AttributeSet`.
@@ -167,9 +167,9 @@ It will always return AttributeSet object, even if there is no attribute of the 
 
 Example:
 
-```
+```ruby
  User.the_attribute :real_name
- => #<ActiveModel::AttributeSet: {:should_be_stripped, :should_be_capitalized }>
+ # => #<ActiveModel::AttributeSet: {:should_be_stripped, :should_be_capitalized }>
 ```
 
 Instead of `filter_attribute` you may also use one of the aliases:
@@ -186,9 +186,9 @@ that the attributes belong to. The hash is indexed by attribute names.
 
 Example:
 
-```
+```ruby
   User.attributes_to_sets.keys
-  => ["real_name", "username", "email"]
+  # => ["real_name", "username", "email"]
 ```
 
 Note that the returned hash will have a default value set to instance of the `AttributeSet`.
@@ -222,9 +222,9 @@ It will always return AttributeSet object, even if there is not set of the given
 
 Example:
 
-```
+```ruby
   User.first.attributes_that(:should_be_stripped)
-  =>  #<ActiveModel::AttributeSet: {"real_name", "username", "email"}>
+  # =>  #<ActiveModel::AttributeSet: {"real_name", "username", "email"}>
 ```
 
 Instead of `attribute_set` you may also use one of the aliases:
@@ -242,12 +242,12 @@ It won't return the exact internal hash but a duplicate.
 
 Example:
 
-```
+```ruby
   User.first.attribute_sets.keys
-  => [:should_be_downcased, :should_be_stripped, :should_be_capitalized]
+  # => [:should_be_downcased, :should_be_stripped, :should_be_capitalized]
 
   User.first.attribute_sets.first
-  => [:should_be_downcased,  #<ActiveModel::AttributeSet: {"username", "email"}>]
+  # => [:should_be_downcased,  #<ActiveModel::AttributeSet: {"username", "email"}>]
 ```
 
 Note that the returned hash will have a default value set to instance of the `AttributeSet`.
@@ -267,9 +267,9 @@ It will always return AttributeSet object, even if there is no attribute of the 
 
 Example:
 
-```
+```ruby
  User.first.the_attribute :real_name
- => #<ActiveModel::AttributeSet: {:should_be_stripped, :should_be_capitalized }>
+ # => #<ActiveModel::AttributeSet: {:should_be_stripped, :should_be_capitalized }>
 ```
 
 Instead of `filtered_attribute` you may also use one of the aliases:
@@ -285,9 +285,9 @@ that the attributes belong to. The hash is indexed by attribute names.
 
 Example:
 
-```
+```ruby
   User.first.attributes_to_sets.keys
-  => ["real_name", "username", "email"]
+  # => ["real_name", "username", "email"]
 ```
 
 Note that the returned hash will have a default value set to instance of the `AttributeSet`.
@@ -371,7 +371,7 @@ You can change that behavior by adding a flags as the first arguments:
 
 Example:
 
-```
+```ruby
   class User
     attributes_that should_be_lolized: [ :username ]
     before_validation :lolize
@@ -387,7 +387,7 @@ Example:
   u.username = 'john'
   u.valid?
   u.username
-  => "john-should_be_lolized-username-lol"
+  # => "john-should_be_lolized-username-lol"
 ```
 
 Instead of `filter_attrs_from_set` you may also use one of the aliases:
@@ -414,13 +414,13 @@ You can change that behavior by adding a flags as the first arguments:
 
 Example:
 
-```
+```ruby
   class User
     attributes_that should_be_lolized: [ :username ]
     before_validation :lolize
 
     def lolize
-      for_attributes_that(:should_be_lolized, "lol") do |attribute_object, set_name, attribute_name, *args|
+      for_attributes_that(:should_be_lolized, :process_blank, "lol") do |attribute_object, set_name, attribute_name, *args|
         attribute_object << '-' << [set_name.to_s, attribute_name, *args.flatten].join('-')
       end
     end
@@ -430,13 +430,77 @@ Example:
   u.username = 'john'
   u.valid?
   u.username
-  => "john-should_be_lolized-username-lol"
+  # => "john-should_be_lolized-username-lol"
 ```
 
 Instead of `filter_attrs_from_set` you may also use one of the aliases:
 
   * `attribute_call_for_set`, `call_attrs_from_set`,       
     `for_attributes_which`, `for_attributes_that`, `for_attributes_that_are`, `for_attributes_which_are`
+
+
+
+(set_name, process_all = false, no_presence_check = false)
+
+#### `attributes_to_filter(set_name,...)` ####
+
+The [`attributes_to_filter`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attributes_to_filter)
+method is used for **getting the attributes that should be filtered**.
+This is a core method used by other filtering methods to establish a collection of attributes
+to be processed but you can use it on your own. It returns `AttributeSet` object containing
+attribute names that match the given criteria (by default: that are in a set of the given name,
+that are present and that have changed lately).
+
+The method takes one manatory argument (`set_name`) and two optional arguments (`process_all` and `no_presence_check`)
+that can be `true` or `false` (default). The first optional argument (`process_all`),
+when set to `true`, forces method to return also the attributes that haven't changed lately.
+By default the result will be narrowed to the attributes that have changed and haven't been saved yet.
+The second optional argument (`no_presence_check`) will tell the method to omit the presence check
+for each attribute. By default only the attributes that are real attributes (are present
+in `attributes` hash) are collected. This mehtod does not check the value of attributes.
+
+### Filtering virtual attributes ###
+
+There are cases that virtual attributes (the ones that does not really exist in a database)
+are to be filtered. By default it won't happen since all the filtering methods assume
+the presence of any processed attribute as "the real" attribute. There are three ways
+to overcome that problem.
+
+First (the messy one) is to add/update a virtual attribute in `attributes` hash each time
+a setter for your attribute is called. It interacts with the Rails internals so
+use it at your own risk. You should also register attribute as changed if any changes
+are made on it. To do that look at your ORM's documentation and see
+[`ActiveModel::Dirty`](http://api.rubyonrails.org/classes/ActiveModel/Dirty.html).
+
+The second way is to pass the `:no_presence_check` and `process_all` flags to the filtering method.
+Be aware that by doing that you take full responsibility for attribute set defined in your model.
+If you put a name of nonexistent attribute to the set then later you may get ugly error.
+
+The third way is to use `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
+(available from version 1.2.0 of Attribute Filters). That's **the preferred one**.
+
+Just add your virtual attributes to the model like that:
+
+```ruby
+  class User
+    treat_as_real :some, :virtual, :attributes
+  end
+```
+
+Be aware that the virtual attributes will always be filtered regardless of `process_all` flag,
+since there is no way to know whether they have changed or not. If you are somehow updating
+`changed_attributes` then you can change that behavior for a model
+by putting `filter_virtual_attributes_that_have_changed` keyword into it:
+
+```ruby
+  class User
+    filter_virtual_attributes_that_have_changed
+    treat_as_real :some, :virtual, :attributes
+  end
+```
+
+The presence of virtual attributes is tested by checking if both the setter and getter method exist,
+unless the `no_presence_check` flag is passed to a filtering method.
 
 ### Syntactic sugar for filters ###
 

@@ -215,6 +215,7 @@ module ActiveModel
       def __attribute_sets
         @__attribute_sets ||= Hash.new
       end
+
     end # module ClassMethods
   end # module AttributeMethods
 end # module ActiveModel
