@@ -21,8 +21,6 @@ module ActiveModel
     # to the given attribute set.
     # 
     # @param set_name [AttributeSet] set of attributes used to get attributes
-    # @param alter_mode [Boolean] if set then the existence
-    #   of attribute is checked by testing if writer is defined; otherwise the reader is checked
     # @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
     #   not just attributes that has changed
     # @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
@@ -162,6 +160,53 @@ module ActiveModel
     alias_method :for_attributes_that_are,  :for_each_attr_from_set
     alias_method :for_attributes_which_are, :for_each_attr_from_set
 
+    module ClassMethods
+      # @overload treat_as_real(*attributes)
+      #   Informs Attribute Filters that the given attributes
+      #   should be treated as present, even they are not in
+      #   attributes hash provided by ORM or ActiveModel.
+      #   Useful when operating on virtual attributes.
+      #   
+      #   @param attributes [Array] list of attribute names
+      #   @return [void]
+      # 
+      # @overload treat_as_real()
+      #   Gets the memorized attribute names that should be
+      #   treated as existing.
+      #   
+      #   @return [AttributeSet] set of attribute name
+      def treat_as_real(*args)
+        return __treat_as_real.dup if args.blank?
+        __treat_as_real << args.flatten.compact.map { |atr| atr.to_s }
+        nil
+      end
+      alias_method :treat_attribute_as_real,  :treat_as_real
+      alias_method :treat_attributes_as_real, :treat_as_real
+
+      # Sets the internal flag that causes to check virtual attributes
+      # for changes when selecting attributes for filtering.
+      # @return [void]
+      def filter_virtual_attributes_that_have_changed
+        @filter_virtual_attributes_that_changed = true
+      end
+      alias_method :filter_virtual_attributes_that_changed, :filter_virtual_attributes_that_have_changed
+      alias_method :filter_changed_virtual_attributes,      :filter_virtual_attributes_that_have_changed
+
+      # Gets the internal flag that causes to check virtual attributes
+      # for changes when selecting attributes for filtering.
+      # @return [Boolean] +true+ if the virtual attributes should be checked for a change, +false+ otherwise
+      def filter_virtual_attributes_that_changed?
+        !!@filter_virtual_attributes_that_changed
+      end
+
+      private
+
+      def __treat_as_real
+        @__treat_as_real ||= ActiveModel::AttributeSet.new
+      end
+
+    end # module ClassMethods
+
     private
 
     # Applies operations to elements from set.
@@ -210,52 +255,5 @@ module ActiveModel
       tar.select { |a| respond_to?(a) && respond_to?("#{a}=") }
     end
 
-    module ClassMethods
-
-      # @overload treat_as_real(*attributes)
-      #   Informs Attribute Filters that the given attributes
-      #   should be treated as present, even they are not in
-      #   attributes hash provided by ORM or ActiveModel.
-      #   Useful when operating on virtual attributes.
-      #   
-      #   @param attributes [Array] list of attribute names
-      #   @return [void]
-      # 
-      # @overload treat_as_real()
-      #   Gets the memorized attribute names that should be
-      #   treated as existing.
-      #   
-      #   @return [AttributeSet] set of attribute name
-      def treat_as_real(*args)
-        return __treat_as_real.dup if args.blank?
-        __treat_as_real << args.flatten.compact.map { |atr| atr.to_s }
-        nil
-      end
-      alias_method :treat_attribute_as_real,  :treat_as_real
-      alias_method :treat_attributes_as_real, :treat_as_real
-
-      # Sets the internal flag that causes to check virtual attributes
-      # for changes when selecting attributes for filtering.
-      # @return [void]
-      def filter_virtual_attributes_that_have_changed
-        @filter_virtual_attributes_that_changed = true
-      end
-      alias_method :filter_virtual_attributes_that_changed, :filter_virtual_attributes_that_have_changed
-      alias_method :filter_changed_virtual_attributes,      :filter_virtual_attributes_that_have_changed
-
-      # Gets the internal flag that causes to check virtual attributes
-      # for changes when selecting attributes for filtering.
-      # @return [Boolean] +true+ if the virtual attributes should be checked for a change, +false+ otherwise
-      def filter_virtual_attributes_that_changed?
-        !!@filter_virtual_attributes_that_changed
-      end
-
-      private
-
-      def __treat_as_real
-        @__treat_as_real ||= ActiveModel::AttributeSet.new
-      end
-
-    end # module ClassMethods
   end # module AttributeFilters
 end # module ActiveModel
