@@ -1,3 +1,57 @@
+commit 007a5384e65afec1c453080bebb7b813da99b00d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 01:29:56 2012 +0200
+
+    Added 'none' and 'one' presence selectors to AttributeSet::Query class
+
+commit c5c6b5d9d8049dfd0d45b6607e2858de3b83544d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 01:26:38 2012 +0200
+
+    Added AttributeSetEnumerable and AttributeSetEnumerator
+
+commit 069b357b8c75456c9c2fe27b3570fe3cd3077c4d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 01:25:07 2012 +0200
+
+    Virtual attributes support methods moved (documentation parsing purposes)
+
+commit acbc2e8426371019ade72c7b33b330834b3b73d7
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 01:23:00 2012 +0200
+
+    Serious bugfix in AttributeSet::Query proxy class (typo caused incorrect processing)
+
+commit 1c13b364a3f26da726e85b19d1fda16786985c82
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 01:21:38 2012 +0200
+
+    Documentation updated
+
+commit 295da0da4b14f3b1a9399400139a15ecdfcf27d1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jul 6 13:43:12 2012 +0200
+
+    Added virtual attributes support in filters
+
+commit aae677905aa9ae47eca7e708babcbc0c7f34c7c1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jul 6 02:49:49 2012 +0200
+
+    Documentation updated
+
+commit 95619151c116585bb325b6f242c921dad1a33977
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 16:02:27 2012 +0200
+
+    Renamed USAGE to USAGE.md
+
+commit 1c0bb54762b5ccc60fb3c27c0c24fe19ac078020
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jul 5 15:58:59 2012 +0200
+
+    Preparing for new release
+
 commit 6b75c4de40301060b2b5b19824f00cc5acc0fa8e
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jul 5 15:21:13 2012 +0200
