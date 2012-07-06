@@ -77,7 +77,7 @@ module ActiveModel
       # @private 
       def respond_to?(name)
         case name.to_sym
-        when :are, :is, :be, :should, :all, :any, :list, :show
+        when :are, :is, :be, :should, :all, :any, :none, :one, :list, :show
           true
         else
           @set_object.respond_to?(name)
