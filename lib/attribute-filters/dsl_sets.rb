@@ -69,7 +69,6 @@ module ActiveModel
     alias_method :is_the_attribute,     :filtered_attribute
     alias_method :are_attributes,       :filtered_attribute
     alias_method :are_the_attributes,   :filtered_attribute
-    alias_method :filtered_attributes,  :filtered_attribute
 
     # Gets all defined attribute set names hashed by attribute names.
     # @note Use +key+ method explicitly to check if the given attribute is assigned to any set. The hash
@@ -147,6 +146,7 @@ module ActiveModel
       alias_method :attributes_set,       :attribute_set
       alias_method :properties_that,      :attribute_set
 
+      # fixme: add some doco
       def filter_attribute(*args)
         case args.size
         when 0

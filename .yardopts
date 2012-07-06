@@ -6,7 +6,7 @@
 -p docs/yard-tpl
 -t default
 -
-docs/USAGE
+docs/USAGE.md
 docs/HISTORY
 ChangeLog
 docs/COPYING
