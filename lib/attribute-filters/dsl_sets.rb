@@ -31,6 +31,7 @@ module ActiveModel
       ActiveModel::AttributeSet::Query.new(self.class.attribute_set(set_name), self)
     end
     alias_method :attributes_that_are,        :attribute_set
+    alias_method :from_attributes_that,       :attribute_set
     alias_method :are_attributes_that_are,    :attribute_set
     alias_method :from_attributes_that_are,   :attribute_set
     alias_method :within_attributes_that_are, :attribute_set
