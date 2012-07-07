@@ -113,6 +113,7 @@ module ActiveModel
       #   @param attribute_names [Array<Symbol,String>] names of additional attributes to be stored in set
       #   @return [nil]
       def attribute_set(*args)
+        AttributeFiltersHelpers.check_wanted_methods(self)
         case args.size
         when 0
           attribute_sets
@@ -179,6 +180,7 @@ module ActiveModel
       #   @param set_names [Array<Symbol,String>] names of additional sets to assign attributes to
       #   @return [nil]
       def filter_attribute(*args)
+        AttributeFiltersHelpers.check_wanted_methods(self)
         case args.size
         when 0
           attributes_to_sets

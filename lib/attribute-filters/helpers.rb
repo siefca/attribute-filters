@@ -24,6 +24,17 @@ module ActiveModel
       end
       module_function :process_flags
 
+      # @private
+      def check_wanted_methods(o)
+        unless o.method_defined?(:changes)
+          raise NoMethodError, "Model class must implement 'changes' method in order to use AttributeFilters"
+        end
+        unless o.method_defined?(:attributes)
+          raise NoMethodError, "Model class must implement 'attributes' method in order to use AttributeFilters"
+        end
+      end
+      module_function :check_wanted_methods
+
     end # module AttributeFiltersHelpers
   end # module AttributeFilters
 end # module ActiveModel

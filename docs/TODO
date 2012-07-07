@@ -1,6 +1,4 @@
 
-* test for changed_attributes and attributes when adding to sets and raise error if not found
-
 * add some predefined, often used filters/sets
 
 * add rspec examples
