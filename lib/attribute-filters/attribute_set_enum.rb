@@ -11,7 +11,9 @@ module AttributeSetEnumerable
   # @private
   def select
     if block_given?
-      ActiveModel::AttributeSet.new.tap { |r| each { |e| r << e if yield(e) } }
+      ActiveModel::AttributeSet.new.tap do |r|
+        each { |e| r << e if yield(e) }
+      end
     else
       AttributeSetEnumerator.new(self, :select)
     end
@@ -20,7 +22,9 @@ module AttributeSetEnumerable
   # @private
   def reject
     if block_given?
-      ActiveModel::AttributeSet.new.tap { |r| each { |e| r << e unless yield(e) } }
+      ActiveModel::AttributeSet.new.tap do |r|
+        each { |e| r << e unless yield(e) }
+      end
     else
       AttributeSetEnumerator.new(self, :reject)
     end
@@ -29,24 +33,23 @@ module AttributeSetEnumerable
   # @private
   def collect
     if block_given?
-      ActiveModel::AttributeSet.new.tap { |r| each { |e| r << yield(e) } }
+      ActiveModel::AttributeSet.new.tap do |r|
+        each { |e| r << yield(e) }
+      end
     else
       AttributeSetEnumerator.new(self, :map)
     end
   end
   alias_method :map, :collect
 
-  # @private fixme - todo
-  #def sort
-  #  if block_given?
-  #    map { |e| [yield(e), e] }.sort.map { |e| e[1] }
-  #  else
-  #  end
-  #end
+  # @private
+  def sort
+    ActiveModel::AttributeSet.new(super)
+  end
 
   # @private
   def sort_by
-    map { |e| [yield(e), e] }.sort.map { |e| e[1] }
+    ActiveModel::AttributeSet.new(super)
   end
 end
 
