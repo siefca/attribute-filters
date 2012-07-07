@@ -352,12 +352,13 @@ Now the same task but with some sugar:
   # => false
 ```
 
-Nice, huh? So, how it works? Whenever **`all`** or **`any`** is called
-on an output of the `attribute_set` instance method the call is forwarded
-to the `all?` or `any?` method with passed a block in which the next
-method is invoked for a value of each attribute from a set. The additional
-arguments, if any, are also forwarded and passed to the method called
-within a block. Just imagine that:
+Nice, huh? So, how it works? Whenever **`all`**, **`any`**, **`one`**
+or **`none`** is called on an output of the `attribute_set` instance method
+the call is forwarded to the `all?`, `any?`, `one?` or `none?` method
+with passed a block in which the next method given in chain is invoked
+for a value of each attribute from a set. The additional arguments,
+if any, are also forwarded and passed to the method called within a block.
+Just imagine that:
 
 ```ruby
   attributes_that(:should_be_stripped).all.METHOD(ARGUMENTS)
