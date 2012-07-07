@@ -1,5 +1,5 @@
 
-* replace flags by some simple hash given as the second, optional argument
+* test for changed_attributes and attributes when adding to sets and raise error if not found
 
 * add some predefined, often used filters/sets
 

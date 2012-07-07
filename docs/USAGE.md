@@ -41,7 +41,7 @@ is defining the sets of attributes in models.
 #### `attribute_set(set_name => attr_names)` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_set)
-(a.k.a `attributes_that`) method allows to **create or update a set**.
+(a.k.a `attributes_that`) class method allows to **create or update a set**.
 
 Example:
 
@@ -67,7 +67,8 @@ You may prefer the alternative syntax, that **uses attribute names**
 as primary arguments, but has exactly the same effect as the `attribute_set`.
 
 The [`filter_attribute`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:filter_attribute)
-(a.k.a `the_attribute`) method also lets you create or update a set, just the arguments order is reversed (attribute name goes first).
+(a.k.a `the_attribute`) class method also lets you create or update a set, just the arguments order is reversed
+(attribute name goes first).
 
 Example:
 
@@ -229,7 +230,7 @@ Example:
 
 Instead of `attribute_set` you may also use one of the aliases:
 
-  * `attributes_that_are`, `are_attributes_that_are`, `from_attributes_that_are`,   
+  * `attributes_that_are`, `from_attributes_that`, `are_attributes_that_are`, `from_attributes_that_are`,   
     `within_attributes_that_are`, `attributes_that`, `attributes_are`,      
     `attributes_for`, `are_attributes`, `are_attributes_for`, `attributes_set`,            
     `properties_that`
