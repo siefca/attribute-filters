@@ -65,19 +65,23 @@ module ActiveModel
             ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).
               next_step(:select, args, block)
           else
-            @set_object.method(method_sym).call(*args, &block)
+            r = @set_object.method(method_sym).call(*args, &block)
+            return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
+            ::ActiveModel::AttributeSet::Query.new(r, @am_object)
           end
         else
           m, args, block = @next_method
           @next_method = nil
-          @set_object.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
+          r = @set_object.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
+          return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
+          ::ActiveModel::AttributeSet::Query.new(r, @am_object)
         end
       end
 
       # @private 
       def respond_to?(name)
         case name.to_sym
-        when :are, :is, :be, :should, :all, :any, :none, :one, :list, :show
+        when :are, :is, :be, :should, :all, :any, :none, :one, :list, :show, :__in_as_proxy
           true
         else
           @set_object.respond_to?(name)
