@@ -599,8 +599,8 @@ Just add your virtual attributes to the model like that:
 
 Be aware that the virtual attributes will always be filtered regardless of `process_all` flag,
 since there is no way to know whether they have changed or not. If you are somehow updating
-`changed_attributes` then you can change that behavior for a model
-by putting `filter_virtual_attributes_that_have_changed` keyword into it:
+`changes` (or `changed_attributes` hash) on your own then you can modify that behavior
+for specific model by putting `filter_virtual_attributes_that_have_changed` keyword into it:
 
 ```ruby
   class User

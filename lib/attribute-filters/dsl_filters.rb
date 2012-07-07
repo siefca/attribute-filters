@@ -32,9 +32,9 @@ module ActiveModel
         no_presence_check ? atf : atf & (__vatrf(no_presence_check) + attributes.keys)
       else
         if self.class.filter_virtual_attributes_that_changed?
-          atf & changed_attributes.keys
+          atf & changes.keys
         else
-          atf & (__vatrf(no_presence_check)  + changed_attributes.keys)
+          atf & (__vatrf(no_presence_check)  + changes.keys)
         end
       end
     end
@@ -49,7 +49,7 @@ module ActiveModel
     #   It's major purpose is to create filtering methods.
     #   
     #   Only the
-    #   {http://rubydoc.info/gems/activemodel/ActiveModel/Dirty#changed_attributes-instance_method changed attributes}
+    #   {http://rubydoc.info/gems/activemodel/ActiveModel/Dirty#changes-instance_method changed attributes/properties}
     #   are selected, unless the +process_all+ flag is
     #   given. If that flag is given then presence of each attribute is verified,
     #   unless the +no_presence_check+ flag is also set. Attributes with empty or unset values
@@ -111,7 +111,7 @@ module ActiveModel
     #   It's major purpose is to iterate through attributes and/or work directly with their values.
     #   
     #   Only the
-    #   {http://rubydoc.info/gems/activemodel/ActiveModel/Dirty#changed_attributes-instance_method changed attributes}
+    #   {http://rubydoc.info/gems/activemodel/ActiveModel/Dirty#changes-instance_method changed attributes/properties}
     #   are selected, unless the +process_all+ flag is
     #   given. If that flag is given then presence of each attribute is verified,
     #   unless the +no_presence_check+ flag is also set. Attributes with
