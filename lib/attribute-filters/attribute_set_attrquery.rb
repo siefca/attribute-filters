@@ -26,7 +26,7 @@ module ActiveModel
       # defined method for AttributeSet object which name ends
       # with question mark. Otherwise you may get false positives
       # or a strange errors when trying to test if attribute belongs
-      # to set. The real method call will override your check.
+      # to a set. The real method call will override your check.
       # 
       # @example
       #   the_attribute(:some_attribute).is.in?(:some_set)
@@ -39,7 +39,7 @@ module ActiveModel
       # @yield optional block to be passed to a method call
       def method_missing(method_sym, *args, &block)
         case method_sym.to_sym
-        when :are, :is, :one, :is_one, :in, :list, :show, :be, :should,
+        when :are, :is, :one, :is_one, :in, :list, :be, :should,
              :the, :a, :sets, :in_sets, :set, :in_a_set, :in_set, :belongs_to
           self
         when :belongs_to?, :in?, :in_set?, :in_a_set?, :in_the_set?,
@@ -61,7 +61,7 @@ module ActiveModel
       # @private
       def respond_to?(name)
         case name.to_sym
-        when :are, :is, :one, :is_one, :in, :list, :show, :be, :should, :the, :a, :sets, :in_sets,
+        when :are, :is, :one, :is_one, :in, :list, :be, :should, :the, :a, :sets, :in_sets,
              :set, :in_a_set, :in_set, :in?, :in_set?, :in_a_set?, :in_the_set?, :the_set?, :set?,
              :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to
           true
