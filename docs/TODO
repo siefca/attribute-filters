@@ -1,4 +1,6 @@
 
+* add valid? and invalid? to AttributeSet and to proxies
+
 * add some predefined, often used filters/sets
 
 * add rspec examples

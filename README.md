@@ -1,9 +1,7 @@
 Attribute Filters for Rails
 ===========================
 
-**attribute-filters version `1.1`** (**`Sugar, ah honey honey`**)
-
-**THIS IS BETA!**
+**attribute-filters version `1.2`** (**`Lavender Bunch`**)
 
 * https://rubygems.org/gems/attribute-filters
 * https://github.com/siefca/attribute-filters/tree
@@ -37,31 +35,30 @@ Enough words, let's see that in action.
 
 ```ruby
 class User < ActiveRecord::Base
-  
+
   before_validation :strip_and_downcase_username
   before_validation :strip_and_downcase_email
   before_validation :strip_and_capitalize_real_name
-  
+
   def strip_and_downcase_username
     if username.present?
       self.username = self.username.strip.mb_chars.downcase.to_s
     end
   end
-  
+
   def strip_and_downcase_email
     if email.present?
       self.email.strip!
       self.email.downcase!
     end
   end
-  
+
   def strip_and_capitalize_real_name
     if real_name.present?
       self.real_name = self.real_name.strip.mb_chars.split(' ').
                         map { |n| n.capitalize }.join(' ')
     end
-  end
-  
+  end  
 end
 ```
   
@@ -73,53 +70,65 @@ The filtering code is not reusable since it operates on specific attributes.
 
 ```ruby
 class User < ActiveRecord::Base
-  
   attributes_that should_be_stripped:     [ :username, :email, :real_name ]
   attributes_that should_be_downcased:    [ :username, :email ]
   attributes_that should_be_capitalized:  [ :real_name ]
-  
+
   before_validation :strip_names
   before_validation :downcase_names
   before_validation :capitalize_names
-  
+
   def downcase_names
     filter_attributes_that :should_be_downcased do |atr|
       atr.mb_chars.downcase.to_s
     end
   end
-  
+
   def capitalize_names
     filter_attributes_that :should_be_capitalized do |atr|
       atr.mb_chars.split(' ').map { |n| n.capitalize }.join(' ')
     end
   end
-  
+
   def strip_names
     for_attributes_that(:should_be_stripped) { |atr| atr.strip! }
   end
-  
 end
 ```
 
-Attributes that need to be altered may be simply added to the attribute sets
+or even shorter:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  attributes_that should_be_stripped:           [ :username, :email, :real_name ]
+  attributes_that should_be_downcased:          [ :username, :email ]
+  attributes_that should_be_fully_capitalized:  [ :real_name ]
+
+  before_validation :strip_attributes
+  before_validation :downcase_attributes
+  before_validation :fully_capitalize_attributes
+end
+```
+
+Attributes that have to be altered may be simply added to the attribute sets
 that you define and then filtered with generic methods. You can use
 these methods in all your models if you wish.
 
 The last action can be performed by putting the filtering methods into
 some base class that models inherit form or (better) into your own
-handy module that is included in your models.
+handy module that is included in your models. Alternatively you can
+use predefined filters from `ActiveModel::AttributeFilters::Common` module.
 
 If you would rather like to group filters by attribute names then
-the alternative syntax may help you:
+the alternative syntax may be helpful:
 
 ```ruby
 class User < ActiveRecord::Base
-
   the_attribute email:        [ :should_be_stripped, :should_be_downcased   ]
   the_attribute username:     [ :should_be_stripped, :should_be_downcased   ]
   the_attribute real_name:    [ :should_be_stripped, :should_be_capitalized ]
-
-  [...]
 end
 ```
 
