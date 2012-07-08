@@ -1,3 +1,28 @@
+=== 1.2.0 / 2012-07-08
+
+* major bugfixes
+
+  * In AttributeSet::Query proxy class: removed typo that caused incorrect processing
+
+* minor bugfixes
+
+  * Added missing respond_to? definitions to proxy classes
+
+* major enhancements
+
+  * Added enumerators (AttributeSetEnumerable and AttributeSetEnumerator)
+  * Added predefined filtering methods
+  * Added virtual attributes support in filters
+  * Written the usage instructions
+
+* minor enhancements
+
+  * Removed the show DSL method from AttrQuery proxy class
+  * Added checking of model methods that are needed for a proper operation
+  * Proxy class Query is now viral and tries to wrap the results in its own instances
+  * Added 'none' and 'one' presence selectors to AttributeSet::Query class
+  * Added from_attributes_that as the alias for attribute_set instance method
+
 === 1.1.2 / 2012-06-30
 
 * major bugfixes
