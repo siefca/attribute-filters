@@ -149,17 +149,17 @@ How it works?
 
 It creates a new Active Model submodule called `AttributeFilters`. That module
 contains the needed DSL that goes into your models. It also creates `ActiveModel::AttributeSet`
-class which is just a new kind of set, a structure for storing sets of attribute names.
+class which is just a new kind of set, a structure for storing attribute names.
 
-Then it forces Rails to include the AttributeFilters in any model that
-at any time will include ActiveModel::AttributeMethods. The last one is included
-quite often; e.g. Active Record and other popular ORM-s use it. (I'm calling it
+Then it forces Rails to include the `ActiveModel::AttributeFilters` in any model that
+at any time includes `ActiveModel::AttributeMethods`. The last one is included
+quite often; e.g. Active Record and other popular ORM-s use it. (I'm calling that thechnique
 "the accompanying module".)
 
 That's why you can make use of attribute filters without explicitly including
-the module, as long as your application relies on any popular ORM.
+the module, as long as your application uses some popular ORM.
 
-However, if something would go wrong or your application is somehow unusual, you can always
+However, if something goes wrong or your application is somehow unusual, you can always
 include the `AttributeFilters` module manually in any of your models:
 
 ```ruby
