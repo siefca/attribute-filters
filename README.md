@@ -11,9 +11,10 @@ Attribute Filters for Rails
 Summary
 -------
 
-Attribute Filters adds couple of DSL keywords and some syntactic sugar
-to Rails thereby allowing you to express filtering and groupping
-model attributes in a concise and clean way.
+Attribute Filters extension adds couple of DSL keywords
+and some syntactic sugar to Rails, thereby allowing you
+to express filtering and grouping model attributes
+in a concise and clean way.
 
 When?
 -----
@@ -21,15 +22,15 @@ When?
 You may want to try it when your Rails application often modifies
 attribute values that changed recently and uses callbacks to do that.
 
-When the number of attributes that are altered in such a way increases
-then you can observe that the same thing happends with your filtering
+When the number of attributes that are altered in such a way increases,
+you can observe the same thing happening with your filtering
 methods. That's because each one is tied to some attribute.
 
 To refine that process you may write more generic methods
 for altering attributes. They should be designed to handle
-common operations and not tied to certain attributes.
+common operations and not be tied to certain attributes.
 
-Enough words, let's see that in action.
+Let's see that in action.
 
 ### Before ###
 
@@ -112,15 +113,6 @@ class User < ActiveRecord::Base
 end
 ```
 
-Attributes that have to be altered may be simply added to the attribute sets
-that you define and then filtered with generic methods. You can use
-these methods in all your models if you wish.
-
-The last action can be performed by putting the filtering methods into
-some base class that models inherit form or (better) into your own
-handy module that is included in your models. Alternatively you can
-use predefined filters from `ActiveModel::AttributeFilters::Common` module.
-
 If you would rather like to group filters by attribute names then
 the alternative syntax may be helpful:
 
@@ -131,6 +123,16 @@ class User < ActiveRecord::Base
   the_attribute real_name:    [ :should_be_stripped, :should_be_capitalized ]
 end
 ```
+
+Attributes that should be altered may be simply added
+to the attribute sets that you define and then filtered
+with generic methods. You can use these methods in all
+your models if you wish.
+
+The last action can be performed by putting the filtering methods into
+some base class that all your models inherit form or (better) into your own
+handy module that is included in all your models. Alternatively you can
+use predefined filters from `ActiveModel::AttributeFilters::Common` module.
 
 Usage
 -----

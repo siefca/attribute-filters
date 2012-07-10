@@ -314,7 +314,7 @@ practice there are two groups of methods with two sets of DSL features.
 First group (querying attribute sets):
 
 * [`attribute_set`](#attribute_set_set_name_0) and aliases
-* [`attributes_to_filter`](attributes_to_filter_set_name_____)
+* [`attributes_to_filter`](#attributes_to_filter_set_name_____)
 
 Second group (querying attributes for sets they belong to):
 
