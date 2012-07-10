@@ -137,9 +137,9 @@ Usage
 
 You can use it to filter attributes (as presented above) but you can also
 use it to express some logic
-[on your own](http://http://rubydoc.info/gems/attribute-filters/file/docs/USAGE#Custom_applications).
+[on your own](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md#Custom_applications).
 
-* See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE) for examples and detailed information about the usage.
+* See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md) for examples and detailed information about the usage.
 * See [whole documentation](http://rubydoc.info/gems/attribute-filters/) to browse all documents.
 
 How it works?

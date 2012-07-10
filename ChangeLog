@@ -1,3 +1,15 @@
+commit 9077a528d1460ef9e8d92f0b1c5767ab1899216b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:51:52 2012 +0200
+
+    Static gemspec updated
+
+commit 0d29776e3d150f906f66c5973eb03c6c900e5967
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:51:04 2012 +0200
+
+    Release 1.2.0
+
 commit 1087942cbf4e003e72524e4b877f98960e3c004e
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sun Jul 8 10:50:35 2012 +0200
