@@ -5,7 +5,7 @@ Attribute Filters for Rails
 
 * https://rubygems.org/gems/attribute-filters
 * https://github.com/siefca/attribute-filters/tree
-* mailto:pw@gnu.org
+* pw@gnu.org
 
 
 Summary

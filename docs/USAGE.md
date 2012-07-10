@@ -28,7 +28,7 @@ a method that returns a set of attributes or even
 a set of set names, the returned value will probably
 be an instance of the class `AttributeSet`.
 
-Note that when sets are returned the convntion is that:
+Note that when sets are returned the convention is that:
 
   * **attribute names are strings**
   * **set names are symbols**
