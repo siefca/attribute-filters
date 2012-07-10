@@ -8,8 +8,8 @@ Attribute set is a set of attribute names. It's like an array
 or, to be exact, like a set (a hash that can only have true values
 assigned to elements in order to just know whether the key exists or not).
 
-Attribute sets have simple function; **they group attribute names**. What you
-can do with that? For example you can use it to perform some tasks
+Attribute sets have simple function; **they group attribute names**. What can
+you do with that? For example you can use it to perform some tasks
 on all attributes that are listed in a set.
 
 ### Data structures ###
