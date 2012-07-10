@@ -66,7 +66,7 @@ module ActiveModel
             @attribute_set.method(method_sym).call(*args, &block)
           end
         else
-          method_sym, args, block = @next_method
+          m, args, block = @next_method
           @next_method = nil
           @attribute_set.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
         end
