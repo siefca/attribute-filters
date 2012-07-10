@@ -495,7 +495,7 @@ Example:
 * **`set?`**
 * **`is_one_that?`**
 * **`one_that?`**
-* **`that?
+* **`that?`**
 
 These methods allow to test if the attribute belongs to the given
 attribute set or sets. You may consider the methods above aliases
