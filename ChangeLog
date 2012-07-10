@@ -1,3 +1,87 @@
+commit 275690a75a7218aab8766a50d61b8be5eec20509
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 11:32:08 2012 +0200
+
+    Bugfix release 1.1.3
+
+commit 1087942cbf4e003e72524e4b877f98960e3c004e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:50:35 2012 +0200
+
+    Preparing for release 1.2.0
+
+commit 7963c74a4ee7e59baecbccf83acdfc101a29257a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:40:13 2012 +0200
+
+    README links updated
+
+commit 65ddb3ef269de01ca122c5949d2401990bc34e53
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:13:01 2012 +0200
+
+    Removed the show DSL method from AttrQuery proxy class
+
+commit 2216013e69c30bd3ab3e6c5ff9ecd4379f768239
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:12:24 2012 +0200
+
+    Documentation updated, finished editing the USAGE
+
+commit 40db8f483d43bd894bff7437e9582c82f6f6db6a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jul 8 10:11:34 2012 +0200
+
+    Added the Common module with common filtering methods
+
+commit 067712ddfd5c7435e7066c1dca94b2b39c5edb09
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 16:16:34 2012 +0200
+
+    Added checking of model methods that are needed for a proper operation
+
+commit 813b22d395d3376db0e31a1e6de6ec8f43f04c04
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 16:15:19 2012 +0200
+
+    Replaced changed_attributes calls by more generic calls to changes method in DSL's filtering methods
+
+commit 246937196e11b7abbaeb2c7b35134c9a239716bb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 14:44:54 2012 +0200
+
+    Re-added from_attributes_that alias for instance method attribute_set
+
+commit 355d637d1fa0e37b693b69da705d6844904613c5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 14:44:19 2012 +0200
+
+    Proxy class Query is now viral and tries to wrap the results in its own instances
+
+commit d484f5bbac557cb46f5a686ba26620334ee89d05
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 14:41:00 2012 +0200
+
+    Added from_attributes_that as the alias for attribute_set instance method, documentation updated
+
+commit acae50c77864ebbec1946979d3d5f2753a16d4cd
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 13:40:35 2012 +0200
+
+    USAGE updated
+
+commit cb4374b295cca47ef8a3fdf1c796296ab423367c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 13:40:23 2012 +0200
+
+    Used original sort and sort_by implementation and intermediate array in enumerator (performance)
+
+commit 2b6b316298da88970c655234aec22959eabc2e02
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 7 01:30:20 2012 +0200
+
+    ChangeLog updated
+
 commit 007a5384e65afec1c453080bebb7b813da99b00d
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sat Jul 7 01:29:56 2012 +0200
