@@ -1,3 +1,15 @@
+commit 19e31e31f6f9039eec91cdb97133112cd597d429
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 11:27:31 2012 +0200
+
+    Bugfix release 1.0.3
+
+commit 6b5aaf23fe3cb6926dac83f733544af16d3b726b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jun 29 02:13:21 2012 +0200
+
+    Updated release-related files
+
 commit c4fe9eb630f342f2b5ffd4d6ff72948e0e77a864
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Jun 29 02:10:56 2012 +0200
