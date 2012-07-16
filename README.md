@@ -144,7 +144,7 @@ use it to express some logic
 * See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md) for examples and detailed information about the usage.
 * See [whole documentation](http://rubydoc.info/gems/attribute-filters/) to browse all documents.
 
-### Sneak peaks ###
+### Sneak peeks ###
 
 ```ruby
   @user.attributes_that(:should_be_stripped).all.present?
