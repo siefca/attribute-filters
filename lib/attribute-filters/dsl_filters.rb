@@ -27,7 +27,7 @@ module ActiveModel
     #   disabled (matters only when +process_all+ is also set
     # @return [AttributeSet] set of attributes (attribute name => previous_value)
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
-      atf = attribute_set(set_name)
+      atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set(set_name)
       if process_all
         no_presence_check ? atf : atf & (__vatrf(no_presence_check) + attributes.keys)
       else
