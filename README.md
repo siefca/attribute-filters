@@ -235,6 +235,7 @@ Credits
 
 * [iConsulting](http://www.iconsulting.pl/) supports Free Software and has contributed to this library by paying for me to eat when I've been coding.
 * [MrZYX (Jonne Haß)](https://github.com/MrZYX) contributed by giving me some hints and answering basic questions on IRC – THX!
+* [Robert Pankowecki](https://github.com/paneq/) contributed by suggesting selective inclusion of filtering helpers
 
 License
 -------
