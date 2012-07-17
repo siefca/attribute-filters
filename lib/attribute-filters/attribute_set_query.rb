@@ -88,6 +88,12 @@ module ActiveModel
         end
       end
 
+      # @private
+      def is_a?(klass)
+        super || @set_object.is_a?(klass)
+      end
+      alias_method :kind_of?, :is_a?
+
       protected
 
       # Queues any method of the given name to be called when next
