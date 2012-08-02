@@ -678,7 +678,7 @@ Instead of `filter_attrs_from_set` you may also use one of the aliases:
   * `attribute_call_for_set`, `call_attrs_from_set`,       
     `for_attributes_which`, `for_attributes_that`, `for_attributes_that_are`, `for_attributes_which_are`
 
-#### `attributes_to_filter(set_name,...)` ####
+#### `attributes_to_filter(set,...)` ####
 
 The [`attributes_to_filter`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attributes_to_filter)
 method is used for **getting the attributes that should be filtered**.
@@ -687,9 +687,9 @@ to be processed but you can use it on your own. It returns an `AttributeSet` ins
 attribute names that match the given criteria (by default: that are in a set of the given name,
 that are present and that have changed lately).
 
-The method takes one manatory argument (`set_name`) and two optional arguments (`process_all` and `no_presence_check`)
-that can be `true` or `false` (default). The first optional argument (`process_all`),
-when set to `true`, forces method to return also the attributes that haven't changed lately.
+The method takes one manatory argument (`set`) and two optional arguments (`process_all` and `no_presence_check`)
+that can be `true` or `false` (default). The `set` may be an object which is kind of String, Symbol (in that case it should contain the name of a set) or it can be an object which is a kind of `AttributeSet` (in that case it should contain a proper object). The first optional argument (`process_all`), when set to `true`, forces method to return also the attributes that haven't changed lately.
+
 By default the result will be narrowed to the attributes that have changed and haven't been saved yet.
 The second optional argument (`no_presence_check`) will tell the method to omit the presence check
 for each attribute. By default only the attributes that are real attributes (are present
@@ -762,29 +762,49 @@ or pass their names to callback hooks.
 
 To use predefined filters you have to manually
 include the [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
-module.
+module. If you don't want to include portions of code that you'll never use, you can also include some filters selectively. To do that just include just a submodule containing certain filtering method.
 
 Here is a list of the predefined filtering methods:
 
-* **`capitalize_attributes`**
-* **`fully_capitalize_attributes`**
-* **`downcase_attributes`**
-* **`upcase_attributes`**
-* **`strip_attributes`**
+* `capitalize_attributes` (submodule: `Capitalize`)
+* `fully_capitalize_attributes` (submodule: `Capitalize`)
+* `titleize_attributes` (submodule: `Titleize`)
+* `downcase_attributes` (submodule: `Downcase` or `Case`)
+* `upcase_attributes` (submodule: `Upcase` or `Case`)
+* `strip_attributes` (submodule: `Strip`)
+* `squeeze_attributes` (submodule: `Squeeze`)
 
 Example:
 
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
-
+  
   the_attribute user:   [:should_be_stripped, :should_be_downcased  ]
   the_attribute email:  [:should_be_stripped, :should_be_downcased  ]
-  the_attribute name:   [:should_be_stripped, :should_be_downcased, :should_be_fully_capitalized ]
+  the_attribute name:   [:should_be_stripped, :should_be_downcased, :should_be_titleized ]
   
   before_validation :strip_attributes
   before_validation :downcase_attributes
-  before_validation :fully_capitalize_attributes
+  before_validation :titleize_attributes
+end
+```
+
+or (better):
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Stip
+  include ActiveModel::AttributeFilters::Common::Downcase
+  include ActiveModel::AttributeFilters::Common::Titleize
+  
+  the_attribute user:   [:should_be_stripped, :should_be_downcased  ]
+  the_attribute email:  [:should_be_stripped, :should_be_downcased  ]
+  the_attribute name:   [:should_be_stripped, :should_be_downcased, :should_be_titleized ]
+  
+  before_validation :strip_attributes
+  before_validation :downcase_attributes
+  before_validation :titleize_attributes
 end
 ```
 

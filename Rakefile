@@ -45,7 +45,7 @@ Hoe.spec 'attribute-filters' do
   extra_deps          << ['railties',         '~> 3.0']     <<
                          ['activemodel',      '~> 3.0']
   extra_dev_deps      << ['rspec',            '>= 2.6.0']   <<
-                         ['yard',             '>= 0.7.2']   <<
+                         ['yard',             '>= 0.8.2']   <<
                          ['rdoc',             '>= 3.8.0']   <<
                          ['redcarpet',        '>= 2.1.0']   <<
                          ['supermodel',       '>= 0.1.6']   <<

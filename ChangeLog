@@ -1,3 +1,63 @@
+commit 163cc3bc64a36b60ef3a1169b9921fe2224bb2b3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jul 18 01:15:40 2012 +0200
+
+    Added contributor - thanx Robert!
+
+commit 4e2b2dd088267cbb7ef7a29737807b4144e668ae
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jul 18 01:05:51 2012 +0200
+
+    Common filters splitted into submodules.
+
+commit a363955e72d5c81509f8a4cf17b83869533220ff
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jul 18 01:05:36 2012 +0200
+
+    Filtering methods now accept AttributeSet objects as arguments.
+
+commit 0759dbb26b766a327406103dbb57c9a363f316a5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jul 18 01:04:52 2012 +0200
+
+    Added is_a? overrides in proxy classes.
+
+commit fcb6276a9b06a981ae0c3a7e03c333dce843d66f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jul 16 10:18:29 2012 +0200
+
+    Typo fixed in README
+
+commit 6dd35c429ffbeb21348df996a854e467483678d1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 12:38:22 2012 +0200
+
+    Documentation updated
+
+commit ad796840fc35470fd2794b38f297dd23eb592d12
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 10:17:56 2012 +0200
+
+    Fixed sentence order in USAGE
+
+commit b453533b1a2a0dd68a9ea2cad76d66f341b05c37
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 09:50:44 2012 +0200
+
+    Documentation updated
+
+commit 8122f404f2a037b699ccd0e303f22b371e8256f6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 09:45:40 2012 +0200
+
+    More fixes in README
+
+commit ed2a5f89072e0c9c3bef85c73af90774090d155c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jul 10 09:41:09 2012 +0200
+
+    Fixed some typos in documentation
+
 commit 653b456c00b6a9825c87549f013c2d10e36c76ba
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Tue Jul 10 09:30:09 2012 +0200

@@ -20,12 +20,21 @@ module ActiveModel
     # selecting attributes that are meeting certain criteria and belong
     # to the given attribute set.
     # 
-    # @param set_name [AttributeSet] set of attributes used to get attributes
-    # @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
-    #   not just attributes that has changed
-    # @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
-    #   disabled (matters only when +process_all+ is also set
-    # @return [AttributeSet] set of attributes (attribute name => previous_value)
+    # @overload attributes_to_filter(set_name, process_all, no_presence_check)
+    #   @param set_name [String,Symbol] name of a set of attributes used to get attributes
+    #   @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
+    #     not just attributes that has changed (defaults to +false+)
+    #   @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
+    #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
+    #   @return [AttributeSet] set of attributes (attribute name => previous_value)
+    # 
+    # @overload attributes_to_filter(attribute_set, process_all, no_presence_check)
+    #   @param attribute_set [AttributeSet] set of attributes used to get attributes
+    #   @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
+    #     not just attributes that has changed (defaults to +false+)
+    #   @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
+    #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
+    #   @return [AttributeSet] set of attributes (attribute name => previous_value)
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
       atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set(set_name)
       if process_all

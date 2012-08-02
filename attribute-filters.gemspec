@@ -2,12 +2,12 @@
 
 Gem::Specification.new do |s|
   s.name = "attribute-filters"
-  s.version = "1.2.1.20120710092708"
+  s.version = "1.2.2.20120803004107"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pawe\u{142} Wilk"]
   s.cert_chain = ["/Users/siefca/.gem/gem-public_cert.pem"]
-  s.date = "2012-07-10"
+  s.date = "2012-08-02"
   s.description = "Concise way of filtering model attributes in Rails."
   s.email = ["pw@gnu.org"]
   s.extra_rdoc_files = ["Manifest.txt"]
@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<activemodel>, ["~> 3.0"])
       s.add_development_dependency(%q<hoe-yard>, [">= 0.1.2"])
       s.add_development_dependency(%q<rspec>, [">= 2.6.0"])
-      s.add_development_dependency(%q<yard>, [">= 0.7.2"])
+      s.add_development_dependency(%q<yard>, [">= 0.8.2"])
       s.add_development_dependency(%q<rdoc>, [">= 3.8.0"])
       s.add_development_dependency(%q<redcarpet>, [">= 2.1.0"])
       s.add_development_dependency(%q<supermodel>, [">= 0.1.6"])
@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<activemodel>, ["~> 3.0"])
       s.add_dependency(%q<hoe-yard>, [">= 0.1.2"])
       s.add_dependency(%q<rspec>, [">= 2.6.0"])
-      s.add_dependency(%q<yard>, [">= 0.7.2"])
+      s.add_dependency(%q<yard>, [">= 0.8.2"])
       s.add_dependency(%q<rdoc>, [">= 3.8.0"])
       s.add_dependency(%q<redcarpet>, [">= 2.1.0"])
       s.add_dependency(%q<supermodel>, [">= 0.1.6"])
@@ -57,7 +57,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activemodel>, ["~> 3.0"])
     s.add_dependency(%q<hoe-yard>, [">= 0.1.2"])
     s.add_dependency(%q<rspec>, [">= 2.6.0"])
-    s.add_dependency(%q<yard>, [">= 0.7.2"])
+    s.add_dependency(%q<yard>, [">= 0.8.2"])
     s.add_dependency(%q<rdoc>, [">= 3.8.0"])
     s.add_dependency(%q<redcarpet>, [">= 2.1.0"])
     s.add_dependency(%q<supermodel>, [">= 0.1.6"])

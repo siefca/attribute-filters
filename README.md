@@ -101,15 +101,17 @@ or even shorter:
 
 ```ruby
 class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common
+  include ActiveModel::AttributeFilters::Common::Strip
+  include ActiveModel::AttributeFilters::Common::Downcase
+  include ActiveModel::AttributeFilters::Common::Titleize  
 
-  attributes_that should_be_stripped:           [ :username, :email, :real_name ]
-  attributes_that should_be_downcased:          [ :username, :email ]
-  attributes_that should_be_fully_capitalized:  [ :real_name ]
+  attributes_that should_be_stripped:   [ :username, :email, :real_name ]
+  attributes_that should_be_downcased:  [ :username, :email ]
+  attributes_that should_be_titleized:  [ :real_name ]
 
   before_validation :strip_attributes
   before_validation :downcase_attributes
-  before_validation :fully_capitalize_attributes
+  before_validation :titleize_attributes
 end
 ```
 
