@@ -527,7 +527,7 @@ Example:
 
 ##### Set membership testing #####
 
-* **:belongs_to?**
+* **`belongs_to?`**
 * **`in?`**
 * **`in_set?`**
 * **`in_a_set?`**
@@ -619,7 +619,6 @@ class User < ActiveRecord::Base
   def strip_names
     for_attributes_that(:should_be_stripped) { |atr| atr.strip! }
   end
-
 end
 ```
 
@@ -871,7 +870,6 @@ class User < ActiveRecord::Base
   def attributes_missing_to_trade
     attributes_that_are(:required_to_trade).list.blank?
   end
-
 end
 ```
 
