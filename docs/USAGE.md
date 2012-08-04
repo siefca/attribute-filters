@@ -298,7 +298,28 @@ If you'll try to get the value of an element that doesn't exist **the empty set 
 Instead of `attributes_to_sets` you may also use one of the aliases:
 
   * `attribute_sets_map`
-  
+
+#### `valid?` and `invalid?` ####
+
+Validation helpers are used to test if the attributes present in a set
+are valid. When `valid?` is called then **all** attributes from a set
+must be valid for the method to return `true`. When `invalid?` is called
+then **any** invalid attribute will cause the expression to return `true`.
+
+Be aware that calling one of these methods will run validation process
+on an instance of a model. Besides, your ORM should have the `errors`
+hash available in order to use it (Active Record has it).
+
+Example:
+
+```ruby
+  u = User.first
+  u.attributes_that(:should_be_stripped).valid?
+  # => true
+  u.attributes_that(:should_be_stripped).invalid?
+  # => false
+```
+
 ### Syntactic sugar for queries ###
 
 Querying attribute sets may be even more sweet when you add some syntactic sugar
@@ -441,6 +462,26 @@ is equivalent to:
   end
   
   # => #<ActiveModel::AttributeSet: {"username", "email"}> 
+```
+
+##### Validation helpers #####
+
+* **`valid?`**
+* **`invalid?`**
+
+Syntactic sugar for validation helpers is used when calls to these methods
+are combined with selectors described above (presence selectors and elements selectors).
+
+Examples:
+
+```ruby
+  u = User.first
+  
+  u.attributes_that(:should_be_stripped).all.valid?
+  # => true
+  
+  u.attributes_that(:should_be_stripped).list.valid?
+  # => #<ActiveModel::AttributeSet: {"username", "email"}>
 ```
 
 #### Querying attributes for set names ####

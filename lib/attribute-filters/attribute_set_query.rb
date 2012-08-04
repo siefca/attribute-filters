@@ -56,6 +56,7 @@ module ActiveModel
         when :are, :is, :be, :should
           return self
         end
+        # Special selectors
         if @next_method.nil?
           case method_sym.to_sym
           when :all, :any, :none, :one
@@ -64,6 +65,10 @@ module ActiveModel
           when :list, :show
             ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).
               next_step(:select, args, block)
+          when :valid?, :is_valid?, :are_valid?, :all_valid?, :are_all_valid?
+            self.all.valid?
+          when :invalid?, :is_not_valid?, :any_invalid?, :are_not_valid?, :not_valid?, :is_any_invalid?
+            self.any.invalid?
           else
             r = @set_object.method(method_sym).call(*args, &block)
             return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
@@ -72,7 +77,18 @@ module ActiveModel
         else
           m, args, block = @next_method
           @next_method = nil
-          r = @set_object.method(m).call { |a| @am_object[a].method(method_sym).call(*args, &block) }
+          # m contains a method that we should call on a set of names (e.g. all? or any?)
+          # method_sym contains a method to be called on each attribute from a set (e.g. present?)
+          r = case method_sym
+          when :valid?
+            @am_object.valid?
+            @set_object.method(m).call(*args) { |atr| not @am_object.errors.has_key?(atr.to_s) }
+          when :invalid?
+            @am_object.valid?
+            @set_object.method(m).call(*args) { |atr| @am_object.errors.has_key?(atr.to_s) }
+          else
+            @set_object.method(m).call { |atr| @am_object.send(atr).method(method_sym).call(*args, &block) }
+          end
           return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
           ::ActiveModel::AttributeSet::Query.new(r, @am_object)
         end
@@ -82,6 +98,10 @@ module ActiveModel
       def respond_to?(name)
         case name.to_sym
         when :are, :is, :be, :should, :all, :any, :none, :one, :list, :show, :__in_as_proxy
+          true
+        when :invalid?, :is_not_valid?, :any_invalid?, :are_not_valid?, :not_valid?, :is_any_invalid?
+          true
+        when :valid?, :is_valid?, :are_valid?, :all_valid?, :are_all_valid?
           true
         else
           @set_object.respond_to?(name)
