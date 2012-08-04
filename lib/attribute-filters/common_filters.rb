@@ -112,6 +112,22 @@ module ActiveModel
         end
       end
 
+      # Squeezes white characters in attributes, removes leading and trailing spaces and newlines.
+      module Squish
+        # Squeezes white characters in attributes, removes leading and trailing spaces and newlines.
+        # 
+        # The attrubutes to be squished are taken from the attribute set
+        # called +should_be_squished+. This method is safe to be
+        # used with multibyte strings (containing diacritics).
+        # 
+        # @return [void]
+        def squish_attributes
+          filter_attrs_from_set(:should_be_squished) do |atr|
+            atr.mb_chars.squish.to_s
+          end
+        end
+      end
+
       # Titleizes attributes.
       module Titleize
         # Titleizes attributes.
