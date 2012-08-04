@@ -1,7 +1,7 @@
 Attribute Filters for Rails
 ===========================
 
-**attribute-filters version `1.2`** (**`Lavender Bunch`**)
+**attribute-filters version `1.3`** (**`Reliable Sausage`**)
 
 * https://rubygems.org/gems/attribute-filters
 * https://github.com/siefca/attribute-filters/tree
