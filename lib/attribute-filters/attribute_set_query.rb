@@ -82,10 +82,10 @@ module ActiveModel
           r = case method_sym
           when :valid?
             @am_object.valid?
-            @set_object.method(m).call(*args) { |atr| not @am_object.errors.has_key?(atr.to_s) }
+            @set_object.method(m).call(*args) { |atr| not @am_object.errors.has_key?(atr.to_sym) }
           when :invalid?
             @am_object.valid?
-            @set_object.method(m).call(*args) { |atr| @am_object.errors.has_key?(atr.to_s) }
+            @set_object.method(m).call(*args) { |atr| @am_object.errors.has_key?(atr.to_sym) }
           else
             @set_object.method(m).call { |atr| @am_object.send(atr).method(method_sym).call(*args, &block) }
           end
