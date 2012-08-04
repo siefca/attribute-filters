@@ -258,6 +258,18 @@ Instead of `attribute_sets` you may also use one of the aliases:
 
   * `attributes_sets`, `properties_sets`
 
+#### `all_attributes` ####
+
+The [`all_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_attributes)
+method **returns the attribute set containing all known attributes**.
+
+Example:
+
+```ruby
+  User.first.all_attributes
+  # =>  #<ActiveModel::AttributeSet: {"id", "username", "email", "password", "language", "created_at", "updated_at"}> 
+```
+
 #### `filtered_attribute(attribute_name)` ####
 
 The [`filtered_attribute`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:filtered_attribute)

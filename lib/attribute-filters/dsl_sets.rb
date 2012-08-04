@@ -43,6 +43,12 @@ module ActiveModel
     alias_method :attributes_set,             :attribute_set
     alias_method :properties_that,            :attribute_set
 
+    # Returns a set containing all attributes.
+    # @return [AttributeSet] attribute set
+    def all_attributes
+      ActiveModel::AttributeSet::Query.new(AttributeSet.new(attributes.keys), self)
+    end
+
     # Gets all the defined attribute sets.
     # @note Use +key+ method explicitly to check if the given set exists. The hash returned by this method
     #  will always return {AttributeSet} object. If there is no such set defined then the returned,
