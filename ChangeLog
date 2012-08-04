@@ -1,3 +1,27 @@
+commit 8eb6ee2dd7f7006e2ac19891ce1e2274e099550d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Aug 4 22:51:25 2012 +0200
+
+    Added all_attributes instance method
+
+commit d9ef8604c1cec45360af0e8684ac158948dd499c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Aug 4 22:51:00 2012 +0200
+
+    Minor fixes in USAGE
+
+commit 7504cc3c5578dfa9cc4f2d9b9044f1e17cfd7a71
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Aug 4 22:50:35 2012 +0200
+
+    Added valid? and invalid? DSL instance methods
+
+commit c1220554066705edceb097b7c26c665d26785271
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Aug 3 00:51:17 2012 +0200
+
+    Release 1.2.2
+
 commit 163cc3bc64a36b60ef3a1169b9921fe2224bb2b3
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Jul 18 01:15:40 2012 +0200
