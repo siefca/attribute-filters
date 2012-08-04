@@ -19,7 +19,9 @@ module ActiveModel
       base.extend ClassMethods
     end
 
-    # Returns the attribute set of the given name.
+    # Returns the attribute set of the given name or the set containing
+    # all attributes (if the argument is not given).
+    # 
     # @note The returned value is a duplicate. Adding or removing
     #  elements to it will have no effect. Altering attribute sets
     #  is possible on a class-level only, since attribute sets
@@ -27,8 +29,12 @@ module ActiveModel
     # 
     # @param set_name [Symbol] name of attribute set
     # @return [AttributeSet] attribute set
-    def attribute_set(set_name)
-      ActiveModel::AttributeSet::Query.new(self.class.attribute_set(set_name), self)
+    def attribute_set(set_name=nil)
+      if set_name.nil?
+        all_attributes
+      else
+        ActiveModel::AttributeSet::Query.new(self.class.attribute_set(set_name), self)
+      end
     end
     alias_method :attributes_that_are,        :attribute_set
     alias_method :from_attributes_that,       :attribute_set
@@ -48,6 +54,29 @@ module ActiveModel
     def all_attributes
       ActiveModel::AttributeSet::Query.new(AttributeSet.new(attributes.keys), self)
     end
+    alias_method :all_attributes_set, :all_attributes
+
+    # Returns a set containing all accessible attributes.
+    # @return [AttributeSet] attribute set
+    def all_accessible_attributes
+      all_attributes & self.class.accessible_attributes
+    end
+    alias_method :accessible_attributes_set, :all_accessible_attributes
+
+    # Returns a set containing all protected attributes.
+    # @return [AttributeSet] attribute set
+    def all_protected_attributes
+      all_attributes & self.class.protected_attributes
+    end
+    alias_method :protected_attributes_set, :all_protected_attributes
+
+    # Returns a set containing all attributes that are not accessible attributes.
+    # @return [AttributeSet] attribute set
+    def all_inaccessible_attributes
+      all_attributes - self.class.accessible_attributes
+    end
+    alias_method :all_non_accessible_attributes,  :all_inaccessible_attributes
+    alias_method :inaccessible_attributes_set,    :all_inaccessible_attributes
 
     # Gets all the defined attribute sets.
     # @note Use +key+ method explicitly to check if the given set exists. The hash returned by this method
