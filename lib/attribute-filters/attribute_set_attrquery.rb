@@ -15,6 +15,18 @@ module ActiveModel
     # that allows sweet constructs like:
     #   the_attribute(:x).is.in_set?
     class AttrQuery < Query
+      # Creates new query object.
+      # 
+      # @param set_object [AttributeSet] attribute set containing set names for which the query will be made
+      # @param am_object [Object] model object which has access to attributes (may be an instance of ActiveRecord or similar)
+      # @param attribute_name [Sting,Symbol] name of attribute the query is made for
+      def initialize(set_object, am_object, attribute_name)
+        @set_object = set_object
+        @am_object = am_object
+        @attribute_name = attribute_name.to_s
+        @next_method = nil
+      end
+
       # This is a proxy method that causes some calls to be
       # intercepted. Is allows to create semi-natural
       # syntax when querying attribute sets containing set names.
@@ -42,12 +54,23 @@ module ActiveModel
         when :are, :is, :one, :is_one, :in, :list, :be, :should,
              :the, :a, :sets, :in_sets, :set, :in_a_set, :in_set, :belongs_to
           self
+
         when :belongs_to?, :in?, :in_set?, :in_a_set?, :in_the_set?,
              :the_set?, :set?, :is_one_that?, :one_that?, :that?
           if args.present? && args.is_a?(::Array)
             args = args.map{ |a| a.to_sym if a.respond_to?(:to_sym) }
           end
           @set_object.include?(*args, &block)
+
+        when :accessible?, :is_accessible?
+          @am_object.all_accessible_attributes.include?(@attribute_name)
+
+        when :inaccessible?, :is_inaccessible?
+          @am_object.all_inaccessible_attributes.include?(@attribute_name)
+
+        when :protected?, :is_protected?
+          @am_object.all_protected_attributes.include?(@attribute_name)
+
         else
           set_name_str = method_sym.to_s.dup
           if !@set_object.respond_to?(method_sym) && set_name_str.slice!(/\?\z/) == '?'
@@ -63,7 +86,9 @@ module ActiveModel
         case name.to_sym
         when :are, :is, :one, :is_one, :in, :list, :be, :should, :the, :a, :sets, :in_sets,
              :set, :in_a_set, :in_set, :in?, :in_set?, :in_a_set?, :in_the_set?, :the_set?, :set?,
-             :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to
+             :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to,
+             :protected?, :is_protected?, :inaccessible?, :is_inaccessible?,
+             :accessible?, :is_accessible?
           true
         else
           @set_object.respond_to?(name) || name.to_s.slice(-1,1) == '?'

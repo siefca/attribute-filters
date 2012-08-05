@@ -1,7 +1,5 @@
 * add more rspec examples
 
-* add @user.the_attribute(:username).is.accessible? and so on..
-
 * document changed behaviour of attribute_set instance method
 
 

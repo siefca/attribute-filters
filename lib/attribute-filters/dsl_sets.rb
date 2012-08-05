@@ -100,7 +100,7 @@ module ActiveModel
     # @param attribute_name [Symbol] name of attribute set
     # @return [AttributeSet] attribute set
     def filtered_attribute(attribute_name)
-      ActiveModel::AttributeSet::AttrQuery.new(self.class.filter_attribute(attribute_name), self)
+      ActiveModel::AttributeSet::AttrQuery.new(self.class.filter_attribute(attribute_name), self, attribute_name)
     end
     alias_method :the_attribute,        :filtered_attribute
     alias_method :is_the_attribute,     :filtered_attribute

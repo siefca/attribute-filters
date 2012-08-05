@@ -207,11 +207,24 @@ is a wrapper that calls `attributes_to_sets` which returns
 a hash containing **all filtered attributes and arrays of sets**
 that the attributes belong to.
 
-
 ### Querying sets in objects ###
 
 It is possible to access attribute sets from within the ActiveModel (or ORM, like ActiveRecord) objects.
 To do that you may use instance methods that are designed for that purpose.
+
+#### `attribute_set` ####
+
+The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_set)
+method called withount an argument **returns the attribute set containing all attributes for a current object**.
+
+Example:
+
+```ruby
+  User.first.attribute_set
+  # =>  #<ActiveModel::AttributeSet: {"id", "username", "email", "password", "language", "created_at", "updated_at"}>
+```
+
+It works the same as the `all_attributes` method.
 
 #### `attribute_set(set_name)` ####
 
@@ -270,6 +283,8 @@ Example:
   # =>  #<ActiveModel::AttributeSet: {"id", "username", "email", "password", "language", "created_at", "updated_at"}>
 ```
 
+Be aware that this method requires that the used ORM has `attributes` data structure available for any model object.
+
 Instead of `all_attributes` you may also use the alias:
 
   * `all_attributes_set`
@@ -288,6 +303,8 @@ Example:
   # =>  #<ActiveModel::AttributeSet: {"username", "email", "language"}> 
 ```
 
+Be aware that this method requires that the used ORM has `accessible_attributes` data structure available for any model class.
+
 Instead of `all_accessible_attributes` you may also use the alias:
 
   * `accessible_attributes_set`
@@ -303,6 +320,8 @@ Example:
   User.first.all_protected_attributes
   # =>  #<ActiveModel::AttributeSet: {"id"}> 
 ```
+
+Be aware that this method requires that the used ORM has `protected_attributes` data structure available for any model class.
 
 Instead of `all_protected_attributes` you may also use the alias:
 
@@ -321,6 +340,8 @@ Example:
   User.first.all_inaccessible_attributes
   # =>  #<ActiveModel::AttributeSet: {"id", "password", "created_at", "updated_at"}> 
 ```
+
+Be aware that this method requires that the used ORM has `accessible_attributes` data structure available for any model class.
 
 Instead of `all_inaccessible_attributes` you may also use the alias:
 
@@ -552,6 +573,9 @@ Examples:
   # => #<ActiveModel::AttributeSet: {"username", "email"}>
 ```
 
+Be aware that calling these methods causes model object to be validated. The required condition
+to use these methods is the ORM that has `errors` hash (Active Record has it).
+
 #### Querying attributes for set names ####
 
 Querying attributes to know sets they belong to uses one
@@ -638,6 +662,29 @@ defined method for AttributeSet object which name ends
 with question mark. Otherwise you may get false positives
 or a strange errors when trying to test if attribute belongs
 to a set. The real method call will override your check.
+
+##### Set accessibility querying #####
+
+* **`accessible?`**
+* **`inaccessible?`**
+* **`protected?`**
+* **`is_accessible?`**
+* **`is_inaccessible?`**
+* **`is_protected?`**
+
+The methods above allow to you to test if certain attribute is accessible, inaccessible or protected.
+
+Examples:
+
+```ruby
+  u = User.first
+  u.the_attribute(:id).is.accessible?
+  # => false
+  u.the_attribute(:id).is.protected?
+  # => true
+  u.the_attribute(:id).is.inaccessible?
+  # => true
+```
 
 Attribute filters
 -----------------
