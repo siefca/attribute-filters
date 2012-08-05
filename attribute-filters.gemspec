@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "attribute-filters"
-  s.version = "1.3.1.20120805142734"
+  s.version = "1.3.2.20120805175249"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pawe\u{142} Wilk"]

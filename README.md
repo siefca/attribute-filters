@@ -161,7 +161,7 @@ use it to express some logic
   @user.the_attribute(:username).list.sets
   # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
   
-  @user.the_attribute(:username).is.accessible?
+  @user.the_attribute(:username).accessible?
   # => true
   
   @user.is_the_attribute(:username).protected?

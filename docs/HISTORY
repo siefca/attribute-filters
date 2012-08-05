@@ -1,46 +1,52 @@
+=== 1.3.2 / 2012-08-05
+
+* minor bugfixes
+
+  * fixed indentation in HISTORY file
+
 === 1.3.1 / 2012-08-05
 
-  * major enhancements
+* major enhancements
 
-    * Added accessible?, inaccessible?, protected? attribute checks
-    * Added all_accessible_attributes, all_protected_attributes, all_inaccessible_attributes
+  * Added accessible?, inaccessible?, protected? attribute checks
+  * Added all_accessible_attributes, all_protected_attributes, all_inaccessible_attributes
 
-  * minor enhancements
+* minor enhancements
 
-    * Added squish common filter
+  * Added squish common filter
 
 === 1.3.0 / 2012-08-04
 
-  * major bugfixes
+* major bugfixes
 
-    * In AttributeSet::Query proxy class: proxy now uses send() to get attribute values
+  * In AttributeSet::Query proxy class: proxy now uses send() to get attribute values
 
-  * major enhancements
+* major enhancements
 
-    * Added valid? and invalid? DSL instance methods
-    * Added all_attributes instance method
+  * Added valid? and invalid? DSL instance methods
+  * Added all_attributes instance method
 
-  * minor enhancements
+* minor enhancements
 
-    * Added is_a?() overrides in proxy classes
-    * Method attributes_to_filter now also takes attribute set as an argument
+  * Added is_a?() overrides in proxy classes
+  * Method attributes_to_filter now also takes attribute set as an argument
 
 === 1.2.2 / 2012-08-03
 
-  * major enhancements
+* major enhancements
 
-    * Common filtering methods modularized
+  * Common filtering methods modularized
 
-  * minor enhancements
+* minor enhancements
 
-    * Added is_a?() overrides in proxy classes
-    * Method attributes_to_filter now also takes attribute set as an argument
+  * Added is_a?() overrides in proxy classes
+  * Method attributes_to_filter now also takes attribute set as an argument
 
 === 1.2.1 / 2012-07-09
 
-  * minor bugfixes
+* minor bugfixes
 
-    * Fixed documentation links
+  * Fixed documentation links
 
 === 1.2.0 / 2012-07-08
 
