@@ -136,14 +136,14 @@ some base class that all your models inherit form or (better) into your own
 handy module that is included in all your models. Alternatively you can
 use predefined filters from `ActiveModel::AttributeFilters::Common` module.
 
-More examples and usage
+Usage and more examples
 -----------------------
 
 You can use it to filter attributes (as presented above) but you can also
 use it to express some logic
 [on your own](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md#Custom_applications).
 
-* See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md) for examples and detailed information about the usage.
+* **See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md) for examples and detailed information about the usage.**
 * See [whole documentation](http://rubydoc.info/gems/attribute-filters/) to browse all documents.
 
 ### Sneak peeks ###
@@ -160,6 +160,9 @@ use it to express some logic
   
   @user.the_attribute(:username).list.sets
   # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
+  
+  @user.all_attributes.list.valid?
+  # => #<ActiveModel::AttributeSet: {"username", "email"}>
 ```
 
 How it works?

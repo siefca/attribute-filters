@@ -267,8 +267,64 @@ Example:
 
 ```ruby
   User.first.all_attributes
-  # =>  #<ActiveModel::AttributeSet: {"id", "username", "email", "password", "language", "created_at", "updated_at"}> 
+  # =>  #<ActiveModel::AttributeSet: {"id", "username", "email", "password", "language", "created_at", "updated_at"}>
 ```
+
+Instead of `all_attributes` you may also use the alias:
+
+  * `all_attributes_set`
+  
+or call the instance method `attribute_set` without arguments.
+
+#### `all_accessible_attributes` ####
+
+The [`all_accessible_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_accessible_attributes)
+method **returns the attribute set containing all accessible attributes**.
+
+Example:
+
+```ruby
+  User.first.all_accessible_attributes
+  # =>  #<ActiveModel::AttributeSet: {"username", "email", "language"}> 
+```
+
+Instead of `all_accessible_attributes` you may also use the alias:
+
+  * `accessible_attributes_set`
+
+#### `all_protected_attributes` ####
+
+The [`all_protected_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_protected_attributes)
+method **returns the attribute set containing all protected attributes**.
+
+Example:
+
+```ruby
+  User.first.all_protected_attributes
+  # =>  #<ActiveModel::AttributeSet: {"id"}> 
+```
+
+Instead of `all_protected_attributes` you may also use the alias:
+
+  * `protected_attributes_set`
+
+#### `all_inaccessible_attributes` ####
+
+The [`all_inaccessible_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_inaccessible_attributes)
+method **returns the attribute set containing all inaccessible attributes**. Inaccessible attributes are attributes
+that aren't listed as accessible, which includes protected attributes and attributes for which the `attr_accessible` clause
+wasn't used.
+
+Example:
+
+```ruby
+  User.first.all_inaccessible_attributes
+  # =>  #<ActiveModel::AttributeSet: {"id", "password", "created_at", "updated_at"}> 
+```
+
+Instead of `all_inaccessible_attributes` you may also use the alias:
+
+  * `inaccessible_attributes_set`
 
 #### `filtered_attribute(attribute_name)` ####
 
@@ -825,6 +881,7 @@ Here is a list of the predefined filtering methods:
 * `upcase_attributes` (submodule: `Upcase` or `Case`)
 * `strip_attributes` (submodule: `Strip`)
 * `squeeze_attributes` (submodule: `Squeeze`)
+* `squish_attributes` (submodule: `Squish`)
 
 Example:
 
@@ -832,11 +889,11 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
   
-  the_attribute user:   [:should_be_stripped, :should_be_downcased  ]
-  the_attribute email:  [:should_be_stripped, :should_be_downcased  ]
-  the_attribute name:   [:should_be_stripped, :should_be_downcased, :should_be_titleized ]
+  the_attribute user:   [:should_be_squished, :should_be_downcased  ]
+  the_attribute email:  [:should_be_squished, :should_be_downcased  ]
+  the_attribute name:   [:should_be_squished, :should_be_downcased, :should_be_titleized ]
   
-  before_validation :strip_attributes
+  before_validation :squish_attributes
   before_validation :downcase_attributes
   before_validation :titleize_attributes
 end
@@ -846,19 +903,23 @@ or (better):
 
 ```ruby
 class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common::Stip
+  include ActiveModel::AttributeFilters::Common::Squish
   include ActiveModel::AttributeFilters::Common::Downcase
   include ActiveModel::AttributeFilters::Common::Titleize
   
-  the_attribute user:   [:should_be_stripped, :should_be_downcased  ]
-  the_attribute email:  [:should_be_stripped, :should_be_downcased  ]
-  the_attribute name:   [:should_be_stripped, :should_be_downcased, :should_be_titleized ]
+  the_attribute user:   [:should_be_squished, :should_be_downcased  ]
+  the_attribute email:  [:should_be_squished, :should_be_downcased  ]
+  the_attribute name:   [:should_be_squished, :should_be_downcased, :should_be_titleized ]
   
-  before_validation :strip_attributes
+  before_validation :squished_attributes
   before_validation :downcase_attributes
   before_validation :titleize_attributes
 end
 ```
+
+See the
+[`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
+for detailed descriptions.
 
 Custom applications
 -------------------
