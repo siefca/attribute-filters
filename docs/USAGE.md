@@ -984,11 +984,13 @@ class User < ActiveRecord::Base
   attributes_that_are required_to_trade: [ :username, :email, :real_name, :address, :account ]
 
   def is_able_to_trade?
-    are_attributes_that_are(:required_to_trade).all.present?
+    are_attributes_that_are(:required_to_trade).all.present? and
+    are_attributes_that_are(:required_to_trade).all.valid?
   end
 
   def attributes_missing_to_trade
-    attributes_that_are(:required_to_trade).list.blank?
+    attributes_that_are(:required_to_trade).list.blank? +
+    attributes_that_are(:required_to_trade).list.invalid?
   end
 end
 ```
