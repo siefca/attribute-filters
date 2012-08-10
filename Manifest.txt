@@ -20,6 +20,7 @@ init.rb
 lib/attribute-filters.rb
 lib/attribute-filters/active_model_insert.rb
 lib/attribute-filters/attribute_set.rb
+lib/attribute-filters/attribute_set_annotations.rb
 lib/attribute-filters/attribute_set_attrquery.rb
 lib/attribute-filters/attribute_set_enum.rb
 lib/attribute-filters/attribute_set_query.rb

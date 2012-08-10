@@ -14,7 +14,9 @@ module ActiveModel
   # This class is a data structure used to store
   # set of attributes.
   class AttributeSet < ::Set
-    include AttributeSetEnumerable
+    include ActiveModel::AttributeSet::Enumerable
+    include ActiveModel::AttributeSet::Annotations
+
     # Adds the given object to the set and returns self.
     # If the object is already in the set, returns nil.
     # If the object is an array it adds each element of the array.
@@ -34,5 +36,94 @@ module ActiveModel
       end
     end
     alias_method :<<, :add
+
+    # Merges the elements of the given enumerable
+    # object to the attribute set and returns self.
+    # 
+    # @param o [Enumerable] object to be merged
+    # @return [AttributeSet] current object
+    def merge(o)
+      r = super
+      copy_annotations(o)
+      r
+    end
+
+    # Copies internal structures.
+    # 
+    # @param o [AttributeSet] other set to copy from
+    # @return [AttributeSet] current attribute set
+    def initialize_copy(o)
+      r = super
+      remove_annotations
+      copy_annotations(o)
+      r
+    end
+
+    # Returns a new attribute set containing elements
+    # common to the attribute set and the given enumerable object.
+    # 
+    # @param o [Enumerable] object to intersect with
+    # @return [AttributeSet] intersection of objects
+    def &(o)
+      r = super
+      if r.is_a?(self.class)
+        r.send(:copy_annotations, self)
+        r.send(:copy_annotations, o)
+      end
+      r
+    end
+    alias_method :intersection, :&
+
+    # Deletes the given attribute name from the attribute set
+    # and returns self.
+    # 
+    # @note Use subtract to delete many items at once.
+    # @param o [Symbol,String] attribute name to delete from set
+    # @return [AttributeSet] current attribute set
+    def delete(o)
+      o = o.to_s
+      r = super
+      r.nil? or delete_annotation(o)
+      r
+    end
+
+    # Deletes every attribute of the attribute set
+    # for which the given block evaluates to +true+,
+    # and returns self.
+    # 
+    # @yield [o] block that controlls if an element should be deleted
+    # @yieldparam o [String] current attribute
+    # @return [AttributeSet] current attribute set
+    def delete_if
+      block_given? or return enum_for(__method__)
+      super { |o| r = yield(o) and delete_annotation(o) ; r }
+    end
+
+    # Deletes every attribute of the attribute set
+    # for which the given block evaluates to +false+,
+    # and returns self.
+    # 
+    # @yield [o] block that controlls if an element should be kept
+    # @yieldparam o [String] current attribute
+    # @return [AttributeSet] current attribute set
+    def keep_if
+      block_given? or return enum_for(__method__)
+      super { |o| r = yield(o) or delete_annotation(o) ; r }
+    end
+
+    # Returns a new attribute set containing elements
+    # exclusive between the set and the given enumerable object
+    # (exlusive disjuction).
+    # 
+    # @param o [Enumerable] object to exclusively disjunct with
+    # @return [AttributeSet] resulting set
+    def ^(o)
+      n = self.class.new(o)
+      n.remove_annotations
+      each { |ob| if n.include?(ob) then n.delete(ob) else n.add(ob) end }
+      n.send(:copy_annotations, self)
+      n.send(:copy_annotations, o)
+      n
+    end
   end
 end

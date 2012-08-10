@@ -6,6 +6,8 @@ describe ActiveModel::AttributeFilters do
 
   describe TestModel do
     before do
+      TestModel.attributes_that(:should_be_stripped, :email, :real_name)
+      TestModel.attributes_that(:should_be_capitalized, :real_name)
       @tm = TestModel.new
     end
 
@@ -45,19 +47,71 @@ describe ActiveModel::AttributeFilters do
       @tm.test_attribute.should == 'unchanged'
     end
 
+    it "should operate on annotations" do
+      s = @tm.attributes_that(:should_be_stripped)
+      c = @tm.attributes_that(:should_be_capitalized)
+      s.annotate(:real_name, :operation, :first_value)
+      s.annotate(:email,     :operation, :e_value)
+      c.annotate(:real_name, :operation, :some_value)
+      c.annotate(:real_name, :operation, :other_value)
+      s.annotations.should ==  { 'real_name' => { :operation => :first_value }, 'email' => { :operation => :e_value } }
+      c.annotations.should ==  { 'real_name' => { :operation => :other_value } }
+    end
+
+    describe "AttributeSet set operations" do
+      before do
+        @s = @tm.attributes_that(:should_be_stripped)
+        @c = @tm.attributes_that(:should_be_capitalized)
+        @s.annotate(:real_name, :operation, :first_value)
+        @s.annotate(:email,     :operation, :e_value)
+        @c.annotate(:real_name, :operation, :some_value)
+        @c.annotate(:real_name, :operation, :other_value)
+      end
+
+      it "should be able to relatively complement sets" do
+        r = @s - @c
+        r.to_a.sort.should == [ "email", "username" ]
+        r.annotations.should == { 'email' => { :operation => :e_value } }
+      end
+
+      it "should be able to join sets (union)" do
+        r = @s + @c
+        r.to_a.sort.should == [ "email", "real_name", "username" ]
+        r.annotations.should == { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value } }
+      end
+
+      it "should be able to intersect sets" do
+        r = @s & @c
+        r.to_a.sort.should == [ "real_name" ]
+        r.annotations.should == { 'real_name' => { :operation => :first_value } }
+      end
+
+      it "should be able to exclusively disjunct sets" do
+        r = @s ^ @c
+        r.to_a.sort.should == [ "email", "username" ]
+        r.annotations.should == { 'email' => { :operation => :e_value } }
+        sp = @s.dup
+        sp.annotate(:username, 'k', 'v')
+        r = sp ^ @c
+        r.to_a.sort.should == [ "email", "username" ]
+        r.annotations.should == { 'email' => { :operation => :e_value }, 'username' => { :k => "v" } }
+      end
+
+      it "should be able to delete elements from a set" do
+        @s.annotate(:username, :some_key, 'string_val')
+        @s.annotations.should == { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value },
+                                   'username' => { :some_key => 'string_val' } }
+        @s.delete_if { |o| o == 'username' }
+        @s.include?('username').should == false
+        @s.annotations.should == { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value } }
+      end
+
+      it "should be able to keep elements in a set using keep_if" do
+        @s.keep_if { |o| o == 'email' }
+        @s.include?('email').should == true
+        @s.annotations.should == { 'email' => { :operation => :e_value } }
+      end
+    end
   end
 
-  # do the above with ActiveRecord -- look in heisepath for testing examples
-      #it "is able to filter model attributes with Active Record as ORM" do
-      #  @tm = TestModelAR.new
-      #  @tm.username  = " UPCASEĄĘŚĆ      "
-      #  @tm.email     = " Some@EXAMPLE.com   "
-      #  @tm.real_name = "       sir    rails "
-      #  -> { @tm.save }.should_not raise_error
-      #  @tm.username.should   == "upcaseąęść"
-      #  @tm.email.should      == "Some@EXAMPLE.com"
-      #  @tm.real_name.should  == "Sir Rails"
-      #end
-      
-    
 end
