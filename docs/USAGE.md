@@ -423,8 +423,9 @@ practice there are two groups of methods with two sets of DSL features.
 
 First group (querying attribute sets):
 
-* [`attribute_set`](#attribute_set_set_name_0) and aliases
-* [`attributes_to_filter`](#attributes_to_filter_set_name_____)
+* [`attribute_set`](#attribute_set0) and aliases
+* [`attribute_set(set_name)`](#attribute_set_set_name_1) and aliases
+* [`attributes_to_filter`](#attributes_to_filter_set_____)
 
 Second group (querying attributes for sets they belong to):
 
@@ -435,8 +436,9 @@ Second group (querying attributes for sets they belong to):
 Querying attribute sets uses two instance methods available
 in your models:
 
-* [`attribute_set`](#attribute_set_set_name_0) and aliases
-* [`attributes_to_filter`](#attributes_to_filter_set_name_____)
+* [`attribute_set`](#attribute_set0) and aliases
+* [`attribute_set(set_name)`](#attribute_set_set_name_1) and aliases
+* [`attributes_to_filter`](#attributes_to_filter_set_____)
 
 The output of calling these methods is an `AttributeSet` instance
 wrapped within a transparent proxy class instance
