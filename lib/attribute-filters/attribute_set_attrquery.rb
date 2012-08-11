@@ -76,7 +76,7 @@ module ActiveModel
           if !@set_object.respond_to?(method_sym) && set_name_str.slice!(/\?\z/) == '?'
             @set_object.include?(set_name_str.to_sym, &block)
           else
-            @set_object.method(method_sym).call(*args, &block)
+            @set_object.public_method(method_sym).call(*args, &block)
           end
         end
       end

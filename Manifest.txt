@@ -24,6 +24,7 @@ lib/attribute-filters/attribute_set_annotations.rb
 lib/attribute-filters/attribute_set_attrquery.rb
 lib/attribute-filters/attribute_set_enum.rb
 lib/attribute-filters/attribute_set_query.rb
+lib/attribute-filters/backports.rb
 lib/attribute-filters/common_filters.rb
 lib/attribute-filters/dsl_filters.rb
 lib/attribute-filters/dsl_sets.rb

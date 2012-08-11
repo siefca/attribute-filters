@@ -491,7 +491,7 @@ Let's do it without any fancy DSL methods:
 ```ruby
   u = User.first
   u.attributes_that(:should_be_stripped).all? do |attribute_name|
-    u.send(attribute_name).present?
+    u.public_send(attribute_name).present?
   end
   # => false
 ```

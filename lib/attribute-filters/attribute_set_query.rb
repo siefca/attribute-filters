@@ -70,7 +70,7 @@ module ActiveModel
           when :invalid?, :is_not_valid?, :any_invalid?, :are_not_valid?, :not_valid?, :is_any_invalid?
             self.any.invalid?
           else
-            r = @set_object.method(method_sym).call(*args, &block)
+            r = @set_object.public_method(method_sym).call(*args, &block)
             return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
             ::ActiveModel::AttributeSet::Query.new(r, @am_object)
           end
@@ -82,12 +82,12 @@ module ActiveModel
           r = case method_sym
           when :valid?
             @am_object.valid?
-            @set_object.method(m).call(*args) { |atr| not @am_object.errors.has_key?(atr.to_sym) }
+            @set_object.public_method(m).call(*args) { |atr| not @am_object.errors.has_key?(atr.to_sym) }
           when :invalid?
             @am_object.valid?
-            @set_object.method(m).call(*args) { |atr| @am_object.errors.has_key?(atr.to_sym) }
+            @set_object.public_method(m).call(*args) { |atr| @am_object.errors.has_key?(atr.to_sym) }
           else
-            @set_object.method(m).call { |atr| @am_object.send(atr).method(method_sym).call(*args, &block) }
+            @set_object.public_method(m).call { |atr| @am_object.public_send(atr).public_method(method_sym).call(*args, &block) }
           end
           return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
           ::ActiveModel::AttributeSet::Query.new(r, @am_object)
@@ -113,6 +113,16 @@ module ActiveModel
         super || @set_object.is_a?(klass)
       end
       alias_method :kind_of?, :is_a?
+
+      # @private
+      def instance_eval(*args, &block)
+        @set_object.instance_eval(*args, &block)
+      end
+
+      # @private
+      def instance_exec(*args, &block)
+        @set_object.instance_exec(*args, &block)
+      end
 
       protected
 
