@@ -229,7 +229,13 @@ module ActiveModel
           else
             first_arg = first_arg.to_s
             args.flatten.compact.each do |set_name|
-              attribute_set(set_name, first_arg)
+              if set_name.is_a?(Hash) # annotation
+                set_name.each_pair do |set_name_b, a_defs|
+                  attribute_set(set_name_b, first_arg => a_defs)
+                end
+              else
+                attribute_set(set_name, first_arg)
+              end
             end
           end
           nil

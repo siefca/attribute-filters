@@ -164,6 +164,8 @@ describe ActiveModel::AttributeFilters do
     end
 
     context "with the_attribute" do
+      include_examples "splitting", "the_attribute :real_name => { :should_be_splitted => { :split_into => [:first_name, :last_name] } }"
+      include_examples "splitting", "the_attribute :real_name => [ :should_be_splitted => { :split_into => [:first_name, :last_name] } ]"
       include_examples "splitting", "the_attribute :real_name, [ :should_be_splitted => { :split_into => [:first_name, :last_name] } ]"
     end
 
