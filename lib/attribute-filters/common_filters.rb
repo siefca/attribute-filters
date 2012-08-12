@@ -13,6 +13,14 @@ module ActiveModel
     # This module contains common, ready-to-use filtering methods.
     module Common
 
+      # @private
+      def self.included(base)
+        base.extend ClassMethods
+      end
+
+      module ClassMethods
+      end
+
       # Strips attributes from leading and trailing spaces.
       module Strip
         # Strips attributes from leading and trailing spaces.
@@ -128,6 +136,75 @@ module ActiveModel
         end
       end
 
+      # Splits attributes.
+      module Split
+        # Splits attributes and writes the results into other attributes.
+        # 
+        # The attrubutes to be splitted are taken from the attribute set
+        # called +should_be_splitted+. This method is safe to be
+        # used with multibyte strings (containing diacritics).
+        # 
+        # The pattern used to split a string and the optional limit argument
+        # should be set using the model's class method +split_attribute+.
+        # 
+        # @example
+        #   class User < ActiveRecord::Base
+        #     include AttributeFilters::Common::Split
+        # 
+        #     attributes_that should_be_splitted: [ :name ] 
+        #     split_attributes_with ' '
+        #     split_attributes_
+        # 
+        #     before_validation :split_attributes
+        #   end
+        def split_attributes
+          for_each_attr_from_set(:should_be_splitted) do |atr_val, atr_name, set_obj|
+            pattern, limit, into = set_obj.annotation(atr_name, :split_pattern, :split_limit, :split_into)
+            unless into.blank?
+              r = limit.nil? ? atr_val.mb_chars.split(pattern) : atr_val.mb_chars.split(pattern, limit)
+              into.each_with_index { |dst_atr, i| public_send("#{dst_atr}=", r[i]) }
+            end
+          end
+        end
+
+        # @private
+        def self.included(base)
+          if base == ActiveModel::AttributeFilters::Common
+            base::ClassMethods.send(:include, ClassMethods)
+          else
+            base.extend ClassMethods
+          end
+        end
+
+        # This submodule contains class methods needed to describe
+        # attribute splitting.
+        module ClassMethods
+          # This method parametrizes splitting operation for an attribute of the given name.
+          # It uses attribute set annotations to register parameters used when splitting.
+          # 
+          # @param atr_name [String,Symbol] attribute name
+          # @param parameters [Hash] parameters hash # fixme: add YARD parameters explained
+          # @return [void]
+          def split_attribute(atr_name, parameters = nil)
+            atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| split_attribute(k, v) }
+            parameters = { :into => parameters } unless parameters.is_a?(Hash)
+            the_attribute(atr_name, :should_be_splitted)
+            a = attributes_that(:should_be_splitted)
+            pattern = parameters[:with] || parameters[:pattern]
+            into    = parameters[:into] || parameters[:to]
+            limit   = parameters[:limit]
+            limit   = limit.to_i unless limit.blank?
+            into    = atr_name  if into.blank?
+            into.is_a?(Array) or into = into.respond_to?(:to_a) ? into.to_a : [ into ]
+            a.annotate(atr_name, :split_pattern, pattern)
+            a.annotate(atr_name, :split_limit, limit)
+            a.annotate(atr_name, :split_into, into)
+          end
+          alias_method :split_attributes, :split_attribute
+        end # module ClassMethods
+
+      end
+
       # Titleizes attributes.
       module Titleize
         # Titleizes attributes.
@@ -149,6 +226,8 @@ module ActiveModel
       include Capitalize;
       include Titleize;
       include Squeeze;
+      include Squish;
+      include Split;
 
     end # module Common
   end # module AttributeFilters
