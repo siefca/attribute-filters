@@ -8,15 +8,22 @@
 # Annotations are additional values assigned to attribute names in a set.
 # They are halpful when there is a need to memorize some additional properties or operations.
 
+# This module contains annotations support for AttributeSet.
+# It is included in AttirbuteSet class automatically
+# and allows adding, deleting and removing annotations
+# to certain elements of attribute sets. One element (attribute name)
+# 
 module ActiveModel::AttributeSet::Annotations
 
   # Adds an annotation to the given attribute.
+  # 
   # @param atr_name [String,Symbol] attribute name
-  # @param name [String,Symbol] annotation name
+  # @param name [String,Symbol] annotation key
   # @param value [Object] annotation value
+  # @raise [ArgumentError] when the given attribute name does not exist in a set
   # @return [void]
   def annotate(atr_name, name, value)
-    atr_name = atr_name.to_s
+    atr_name = atr_name.to_s unless atr_name.blank?
     unless include?(atr_name)
       raise ArgumentError, "attribute '#{atr_name}' must exist in order to annotate it"
     end
@@ -38,20 +45,28 @@ module ActiveModel::AttributeSet::Annotations
   # all annotations for the specified attribute.
   # 
   # @param atr_name [String,Symbol] attribute name
-  # @param annotation [String,Symbol] annotation name
-  # @return [Object,Hash,nil] annotations, value of a single annotation or +nil+ if not found
-  def annotation(atr_name, annotation = nil)
-    return nil if @annotation.nil?
-    r = @annotations[atr_name]
-    return nil if r.nil?
-    if annotation.nil?
-      r.dup
-    else
-      r = r[annotation.to_sym]
+  # @param annotation_names [Array<String,Symbol>] optional annotation key(s)
+  # @return [Object,Hash,nil] duplicate of annotations hash, value of a single annotation or +nil+ if not found,
+  #  or array of values (filled with +nil+ objects if not found)
+  def annotation(atr_name, *annotation_names)
+    return nil if @annotations.nil? || atr_name.blank?
+    an_group = @annotations[atr_name.to_s]
+    return nil if an_group.nil?
+    case annotation_names.size
+    when 0
+      an_group.dup
+    when 1
+      r = an_group[annotation_names.first.to_sym]
       r.is_a?(Enumerable) ? r.dup : r
+    else
+      annotation_names.map do |a|
+        r = an_group[a.to_sym]
+        r.is_a?(Enumerable) ? r.dup : r
+      end
     end
   end
-  alias_method :get_annotation, :annotation
+  alias_method :get_annotation,   :annotation
+  alias_method :get_annotations,  :annotation
 
   # Deletes annotations or single annotation key for the given attribute.
   # If the +annotation+ argument is not given or is +nil+
@@ -62,7 +77,7 @@ module ActiveModel::AttributeSet::Annotations
   # @return [Hash,Object,nil] deleted annotations (hash),
   #  deleted annotation value or +nil+ if there wasn't anything to delete
   def delete_annotation(atr_name, annotation = nil)
-    return nil if @annotations.nil?
+    return nil if @annotations.nil? || atr_name.blank?
     atr_name = atr_name.to_s
     if annotation.nil?
       @annotations.delete(atr_name)
@@ -72,6 +87,7 @@ module ActiveModel::AttributeSet::Annotations
       nil
     end
   end
+  alias_method :delete_annotations, :delete_annotation
 
   # Removes all annotations.
   # @return [void]
