@@ -154,7 +154,7 @@ module ActiveModel
           attribute_sets
         when 1
           first_arg = args.first
-          if first_arg.is_a?(Hash)
+          if first_arg.is_a?(Hash) # multiple sets defined
             first_arg.each_pair { |k, v| attribute_set(k, v) }
             nil
           else
@@ -162,19 +162,12 @@ module ActiveModel
           end
         else
           first_arg = args.shift
-          if first_arg.is_a?(Hash)
+          if first_arg.is_a?(Hash) # multiple sets defined
             first_arg.each_pair do |k, v|
               attribute_set(k, v, args)
             end
           else
-            set_name = first_arg.to_sym
-            atrs = args.flatten.compact.map{|a|a.to_s}.freeze
-            atrs.each do |atr_name|
-              __attributes_to_sets_map[atr_name] ||= ActiveModel::AttributeSet.new
-              __attributes_to_sets_map[atr_name] << set_name
-            end
-            __attribute_sets[set_name] ||= ActiveModel::AttributeSet.new
-            __attribute_sets[set_name] << atrs
+            add_atrs_to_set(first_arg.to_sym, *args)
           end
           nil
         end
@@ -282,6 +275,24 @@ module ActiveModel
 
       def __attribute_sets
         @__attribute_sets ||= Hash.new
+      end
+
+      def add_atrs_to_set(set_name, *atrs)
+        atrs = atrs.flatten.compact
+        atrs.each do |atr_name|
+          if atr_name.is_a?(Hash) # annotation
+            atr_name.each_pair do |atr_name_b, a_defs|
+              add_atrs_to_set(set_name, atr_name_b)
+              s = attribute_sets[set_name] and a_defs.nil? or a_defs.each_pair { |n, v| s.annotate(atr_name_b, n, v) }
+            end
+            return
+          else
+            __attributes_to_sets_map[atr_name] ||= ActiveModel::AttributeSet.new
+            __attributes_to_sets_map[atr_name] << set_name
+          end
+        end
+        __attribute_sets[set_name] ||= ActiveModel::AttributeSet.new
+        __attribute_sets[set_name] << atrs.map{ |a| a.to_s }.freeze
       end
 
     end # module ClassMethods
