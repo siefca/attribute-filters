@@ -14,10 +14,21 @@ module ActiveModel
     module Common
 
       # @private
-      def self.included(base)
-        base.extend ClassMethods
+      module CommonFilter
+        # @private
+        def included(base)
+          if base == ActiveModel::AttributeFilters::Common
+            base::ClassMethods.send(:include, self::ClassMethods)
+          else
+            base.extend ClassMethods
+          end
+        end
       end
 
+      extend CommonFilter
+
+      # This module contains class methods used by the DSL
+      # to create keywords for common operations.
       module ClassMethods
       end
 
@@ -138,6 +149,9 @@ module ActiveModel
 
       # Splits attributes.
       module Split
+        extend CommonFilter
+
+        #extend FilterModule
         # Splits attributes and writes the results into other attributes.
         # 
         # The attrubutes to be splitted are taken from the attribute set
@@ -147,13 +161,11 @@ module ActiveModel
         # The pattern used to split a string and the optional limit argument
         # should be set using the model's class method +split_attribute+.
         # 
-        # @example
+        # @example TODO
         #   class User < ActiveRecord::Base
         #     include AttributeFilters::Common::Split
         # 
         #     attributes_that should_be_splitted: [ :name ] 
-        #     split_attributes_with ' '
-        #     split_attributes_
         # 
         #     before_validation :split_attributes
         #   end
@@ -164,15 +176,6 @@ module ActiveModel
               r = limit.nil? ? atr_val.mb_chars.split(pattern) : atr_val.mb_chars.split(pattern, limit)
               into.each_with_index { |dst_atr, i| public_send("#{dst_atr}=", r[i]) }
             end
-          end
-        end
-
-        # @private
-        def self.included(base)
-          if base == ActiveModel::AttributeFilters::Common
-            base::ClassMethods.send(:include, ClassMethods)
-          else
-            base.extend ClassMethods
           end
         end
 
