@@ -124,6 +124,32 @@ module ActiveModel
         @set_object.instance_exec(*args, &block)
       end
 
+      # Gets values of attributes from current set.
+      # If an attribute does not exist it puts +nil+ in its place.
+      # 
+      # @return [Array] attribute values
+      def values
+        r = []
+        @am_object.for_each_attr_from_set(@set_object,  :process_all,
+                                                        :process_blank,
+                                                        :no_presence_check,
+                                                        :include_missing) { |a| r << a }
+        r
+      end
+
+      # Gets attribute names and their values for attributes from current set.
+      # If an attribute does not exist it puts +nil+ as its value.
+      # 
+      # @return [Hash<String,Object>] attribute names and their values
+      def values_hash
+        r = {}
+        @am_object.for_each_attr_from_set(@set_object,  :process_all,
+                                                        :process_blank,
+                                                        :no_presence_check,
+                                                        :include_missing) { |a, n| r[n] = a }
+        r
+      end
+
       protected
 
       # Queues any method of the given name to be called when next
