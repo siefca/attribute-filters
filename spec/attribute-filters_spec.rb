@@ -196,24 +196,24 @@ describe ActiveModel::AttributeFilters do
 
     context "with join_attributes" do
       include_examples "joining", "join_attributes :real_name => [ :first_name, :last_name ]"
-#      #include_examples "joining", "join_attributes :real_name, [ :first_name, :last_name ]"
-#      #include_examples "joining", "join_attributes :real_name => { :from => [ :first_name, :last_name ] }"
-#      #include_examples "joining", "join_attributes :real_name, :from => [ :first_name, :last_name ]"
-#      #include_examples "joining", "join_attributes [ :first_name, :last_name ] => :real_name"
-#      #include_examples "joining", "join_attributes [ :first_name, :last_name ], :real_name"
-#      #include_examples "joining", "join_attributes { [ :first_name, :last_name ] => { :into => :real_name } "
+      include_examples "joining", "join_attributes :real_name, [ :first_name, :last_name ]"
+      include_examples "joining", "join_attributes :real_name => { :from => [ :first_name, :last_name ] }"
+      include_examples "joining", "join_attributes :real_name, :from => [ :first_name, :last_name ]"
+      include_examples "joining", "join_attributes [ :first_name, :last_name ] => :real_name"
+      include_examples "joining", "join_attributes [ :first_name, :last_name ], :real_name"
+      include_examples "joining", "join_attributes [ :first_name, :last_name ] => { :into => :real_name }"
     end
-#
-#   context "with attributes_that" do
-#     include_examples "joining", "attributes_that :should_be_joined => { :real_name => { :join_from => [:first_name, :last_name] } }"
-#     include_examples "joining", "attributes_that :should_be_joined => [ :real_name => { :join_from => [:first_name, :last_name] } ]"
-#   end
-#   
-#   context "with the_attribute" do
-#     include_examples "joining", "the_attribute :real_name => { :should_be_joined => { :join_from => [:first_name, :last_name] } }"
-#     include_examples "joining", "the_attribute :real_name => [ :should_be_joined => { :join_from => [:first_name, :last_name] } ]"
-#     include_examples "joining", "the_attribute :real_name, [ :should_be_joined => { :join_from => [:first_name, :last_name] } ]"
-#   end
+
+   context "with attributes_that" do
+     include_examples "joining", "attributes_that :should_be_joined => { :real_name => { :join_from => [:first_name, :last_name] } }"
+     include_examples "joining", "attributes_that :should_be_joined => [ :real_name => { :join_from => [:first_name, :last_name] } ]"
+   end
+
+   context "with the_attribute" do
+     include_examples "joining", "the_attribute :real_name => { :should_be_joined => { :join_from => [:first_name, :last_name] } }"
+     include_examples "joining", "the_attribute :real_name => [ :should_be_joined => { :join_from => [:first_name, :last_name] } ]"
+     include_examples "joining", "the_attribute :real_name, [ :should_be_joined => { :join_from => [:first_name, :last_name] } ]"
+   end
 
   end
 

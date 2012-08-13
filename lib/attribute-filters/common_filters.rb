@@ -222,9 +222,11 @@ module ActiveModel
         # @example TODO
         def join_attributes
           filter_attrs_from_set(:should_be_joined, :process_all, :process_blank) do |atr_val, atr_name, set_obj|
-            separator, from, compact = set_obj.annotation(atr_name, :join_separator, :join_from, :join_compact)
+            from, compact = set_obj.annotation(atr_name, :join_from, :join_compact)
             if from.present?
               vals = AttributeSet::Query.new(AttributeSet.new(from), self).values
+              separator = set_obj.has_annotation?(atr_name, :join_separator) ?
+                          set_obj.annotation(atr_name, :join_separator) : " "
               compact ? vals.compact.join(separator) : vals.join(separator)
             end
           end
@@ -241,12 +243,24 @@ module ActiveModel
           # @return [void]
           def join_attribute(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| join_attribute(k, v) }
+            if atr_name.is_a?(Array)
+              if parameters.is_a?(Symbol) || parameters.is_a?(String)
+                return join_attribute(parameters, atr_name)
+              elsif parameters.is_a?(Hash)
+                dst = parameters.delete(:into) || parameters.delete(:in) || parameters.delete(:destination)
+                if dst.nil?
+                  raise ArgumentError, "you have to specify destination attribute using :into => 'attribute_name'"
+                end
+                parameters[:from] = atr_name
+                return join_attribute(dst, parameters)
+              end
+            end
             parameters = { :from => parameters } unless parameters.is_a?(Hash)
             the_attribute(atr_name, :should_be_joined)
             a = attributes_that(:should_be_joined)
             separator   = " " unless parameters.key?(:with) || parameters.key?(:pattern)
             separator ||= parameters[:with] || parameters[:pattern]
-            from        = parameters[:from] || parameters[:source] || parameters[:attributes]
+            from        = parameters[:from] || parameters[:source] || parameters[:sources]
             compact     = !!parameters[:compact]
             from        = atr_name if from.blank?
             from.is_a?(Array) or from = from.respond_to?(:to_a) ? from.to_a : [ from ]
