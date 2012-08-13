@@ -34,11 +34,33 @@ module ActiveModel::AttributeSet::Annotations
   alias_method :add_op,   :annotate
   alias_method :bind_op,  :annotate
 
-  # Tests if a set has annotations.
-  # @return [Boolean] +true+ if there are any annotations, +false+ otherwise
-  def has_annotations?
-    not (annotations.nil? || annotations.empty?)
+  # Tests if an annotation of the given name exists in a set or if set has annotations.
+  # 
+  # @overload has_annotation?
+  #   Tests if set has any annotations.
+  #   @return [Boolean] +true+ if the current set has any annotations, +false+ otherwise
+  # 
+  # @overload has_annotation?(attribute_name)
+  #   Tests if any annotation key for the attribute of the given name exists in a set.
+  #   @param attribute_name [Symbol,String] name of an attribute
+  #   @return [Boolean] +true+ if the current set has any annotations for +attribute_name+, +false+ otherwise
+  # 
+  # @overload has_annotation?(attribute_name, *annotation_keys)
+  #   Tests if any of the annotation keys for the attribute of the given name exists in a set.
+  #   @param attribute_name [Symbol,String] name of an attribute
+  #   @param annotation_keys [Array<String,Symbol>] annotation key names to check
+  #   @return [Boolean] +true+ if the current set has at least one of the given +annotation_keys+ for +attribute_name+,
+  #    +false+ otherwise
+  def has_annotation?(*args)
+    return false if annotations.nil? || annotations.empty?
+    return true if args.size == 0
+    atr_name = args.shift.to_s
+    a_group = annotations[atr_name]
+    a_group.blank? and return false
+    args.empty? and return true
+    args.any? { |a_name| a_group.key?(a_name.to_sym) }
   end
+  alias_method :has_annotations?, :has_annotation?
 
   # Gets an annotation for the specified attribute.
   # If the second argument is ommited, it returns
@@ -49,8 +71,9 @@ module ActiveModel::AttributeSet::Annotations
   # @return [Object,Hash,nil] duplicate of annotations hash, value of a single annotation or +nil+ if not found,
   #  or array of values (filled with +nil+ objects if not found)
   def annotation(atr_name, *annotation_names)
-    return nil if @annotations.nil? || atr_name.blank?
-    an_group = @annotations[atr_name.to_s]
+    atr_name.present? or return nil
+    has_annotations? or return nil
+    an_group = annotations[atr_name.to_s]
     return nil if an_group.nil?
     case annotation_names.size
     when 0
