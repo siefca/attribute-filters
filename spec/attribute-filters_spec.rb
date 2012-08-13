@@ -123,12 +123,20 @@ describe ActiveModel::AttributeFilters do
       TestModel.class_eval do
         include ActiveModel::AttributeFilters::Common
         @__attribute_sets = nil
-        before_save :split_attributes
       end
       @tm = TestModel.new
     end
 
+    after do
+      TestModel.class_eval{@__attribute_sets = nil}
+      @tm.attributes_that(:should_be_splitted).should be_empty
+      @tm.attributes_that(:should_be_joined).should be_empty
+      @tm.attributes_that(:should_be_splitted).annotation(:real_name).should == nil
+      @tm.attributes_that(:should_be_joined).annotation(:real_name).should == nil 
+    end
+
     shared_examples "splitting" do |ev|
+      before { TestModel.class_eval{before_save :split_attributes} }
       it "should split attributes using syntax: #{ev}" do
         TestModel.class_eval(ev)
         @tm.real_name = "Paweł Wilk Trzy"
@@ -143,11 +151,6 @@ describe ActiveModel::AttributeFilters do
         -> { @tm.save }.should_not raise_error
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == nil
-        TestModel.class_eval do
-          attribute_set(:should_be_splitted).delete_annotations(:real_name)
-          @__attribute_sets = nil
-        end
-        @tm.attributes_that(:should_be_splitted).annotation(:real_name).should == nil
       end
     end
 
@@ -168,6 +171,49 @@ describe ActiveModel::AttributeFilters do
       include_examples "splitting", "the_attribute :real_name => [ :should_be_splitted => { :split_into => [:first_name, :last_name] } ]"
       include_examples "splitting", "the_attribute :real_name, [ :should_be_splitted => { :split_into => [:first_name, :last_name] } ]"
     end
+
+    shared_examples "joining" do |ev|
+      before { TestModel.class_eval{before_save :join_attributes} }
+      it "should join attributes using syntax: #{ev}" do
+        TestModel.class_eval(ev)
+        @tm.real_name = nil
+        @tm.first_name = "Paweł"
+        @tm.last_name = "Wilk"
+        -> { @tm.save }.should_not raise_error
+        @tm.first_name.should == 'Paweł'
+        @tm.last_name.should == 'Wilk'
+        @tm.real_name.should == 'Paweł Wilk'
+        @tm.first_name = "Paweł"
+        @tm.last_name = nil
+        @tm.real_name = nil
+        @tm.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
+        -> { @tm.save }.should_not raise_error
+        @tm.first_name.should == 'Paweł'
+        @tm.last_name.should == nil
+        @tm.real_name.should == 'Paweł'
+      end
+    end
+
+    context "with join_attributes" do
+      include_examples "joining", "join_attributes :real_name => [ :first_name, :last_name ]"
+#      #include_examples "joining", "join_attributes :real_name, [ :first_name, :last_name ]"
+#      #include_examples "joining", "join_attributes :real_name => { :from => [ :first_name, :last_name ] }"
+#      #include_examples "joining", "join_attributes :real_name, :from => [ :first_name, :last_name ]"
+#      #include_examples "joining", "join_attributes [ :first_name, :last_name ] => :real_name"
+#      #include_examples "joining", "join_attributes [ :first_name, :last_name ], :real_name"
+#      #include_examples "joining", "join_attributes { [ :first_name, :last_name ] => { :into => :real_name } "
+    end
+#
+#   context "with attributes_that" do
+#     include_examples "joining", "attributes_that :should_be_joined => { :real_name => { :join_from => [:first_name, :last_name] } }"
+#     include_examples "joining", "attributes_that :should_be_joined => [ :real_name => { :join_from => [:first_name, :last_name] } ]"
+#   end
+#   
+#   context "with the_attribute" do
+#     include_examples "joining", "the_attribute :real_name => { :should_be_joined => { :join_from => [:first_name, :last_name] } }"
+#     include_examples "joining", "the_attribute :real_name => [ :should_be_joined => { :join_from => [:first_name, :last_name] } ]"
+#     include_examples "joining", "the_attribute :real_name, [ :should_be_joined => { :join_from => [:first_name, :last_name] } ]"
+#   end
 
   end
 
