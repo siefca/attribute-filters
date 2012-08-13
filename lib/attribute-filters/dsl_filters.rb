@@ -13,7 +13,8 @@ module ActiveModel
     PROCESSING_FLAGS = {
       :process_blank      => false,
       :process_all        => false,
-      :no_presence_check  => false
+      :no_presence_check  => false,
+      :include_missing    => false
     }.freeze
 
     # Gets names of attributes for which filters should be applied by
@@ -23,7 +24,7 @@ module ActiveModel
     # @overload attributes_to_filter(set_name, process_all, no_presence_check)
     #   @param set_name [String,Symbol] name of a set of attributes used to get attributes
     #   @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
-    #     not just attributes that has changed (defaults to +false+)
+    #     not just attributes that have changed (defaults to +false+)
     #   @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
     #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
     #   @return [AttributeSet] set of attributes (attribute name => previous_value)
@@ -72,7 +73,7 @@ module ActiveModel
     #     * +:process_blank+ – tells to also process attributes that are blank (empty or +nil+)
     #     * +:process_all+ - tells to process all attributes, not just the ones that has changed
     #     * +:no_presence_check+ – tells not to check for existence of each processed attribute when processing
-    #       all attributes; increases performance but you must care about putting into set only the existing attributes
+    #       all attributes; increases performance but you must care about putting only the existing attributes into sets
     #   @yield [attribute_value, set_name, attribute_name, *args] block that will be called for each attribute
     #   @yieldparam attribute_value [Object] current attribute value that should be altered
     #   @yieldparam attribute_name [String] a name of currently processed attribute
@@ -96,7 +97,7 @@ module ActiveModel
     #     
     #     end
     def filter_attrs_from_set(set_name, *args, &block)
-       operate_on_attrs_from_set(set_name, true, *args, &block)
+      operate_on_attrs_from_set(set_name, true, *args, &block)
     end
     alias_method :attribute_filter_for_set,     :filter_attrs_from_set
     alias_method :filter_attributes_which,      :filter_attrs_from_set
@@ -139,6 +140,8 @@ module ActiveModel
     #     * +:process_all+ - tells to process all attributes, not just the ones that has changed
     #     * +:no_presence_check+ – tells not to check for existence of each processed attribute when processing
     #       all attributes; increases performance but you must care about putting into set only the existing attributes
+    #     * +:include_missing+ – includes attributes that does not exist in a resulting iteration (their values are
+    #       always +nil+); has effect only when +process_blank+ and +no_presence_check+ are set to +true+
     #   @yield [attribute_value, set_name, attribute_name, *args] block that will be called for each attribute
     #   @yieldparam attribute_value [Object] current attribute value that should be altered
     #   @yieldparam attribute_name [String] a name of currently processed attribute
@@ -226,7 +229,13 @@ module ActiveModel
       process_all       = flags[:process_all]
       process_blank     = flags[:process_blank]
       no_presence_check = flags[:no_presence_check]
-      set_obj           = attribute_set(set_name)
+      include_missing   = flags[:include_missing]
+      if set_name.is_a?(::ActiveModel::AttributeSet)
+        set_obj = set_name
+        set_name = nil
+      else
+        set_obj = attribute_set(set_name)
+      end
       attrs_to_process  = attributes_to_filter(set_obj, process_all, no_presence_check)
       if alter_mode
         if process_blank
@@ -244,8 +253,16 @@ module ActiveModel
       else
         if process_blank
           # calling without testing for blank
-          attrs_to_process.each do |atr|
-            yield(public_send(atr), atr, set_obj, set_name, *args)
+          if include_missing
+            # including missing attributes (changing them into nils)
+            attrs_to_process.each do |atr|
+              v = respond_to?(atr) ? public_send(atr) : nil
+              yield(v, atr, set_obj, set_name, *args)
+            end
+          else
+            attrs_to_process.each do |atr|
+              yield(public_send(atr), atr, set_obj, set_name, *args)
+            end
           end
         else
           # calling present only
