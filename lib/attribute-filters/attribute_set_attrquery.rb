@@ -81,6 +81,14 @@ module ActiveModel
         end
       end
 
+      # Gets value of current attribute.
+      # If the attribute does not exist it returns +nil+.
+      # 
+      # @return [Object] the value of an attribute
+      def value
+        @am_object.respond_to?(@attribute_name) ? @am_object.public_send(@attribute_name) : nil
+      end
+
       # @private
       def respond_to?(name)
         case name.to_sym
