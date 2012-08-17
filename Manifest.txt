@@ -26,6 +26,12 @@ lib/attribute-filters/attribute_set_enum.rb
 lib/attribute-filters/attribute_set_query.rb
 lib/attribute-filters/backports.rb
 lib/attribute-filters/common_filters.rb
+lib/attribute-filters/common_filters/capitalize.rb
+lib/attribute-filters/common_filters/case.rb
+lib/attribute-filters/common_filters/join.rb
+lib/attribute-filters/common_filters/split.rb
+lib/attribute-filters/common_filters/squeeze.rb
+lib/attribute-filters/common_filters/strip.rb
 lib/attribute-filters/dsl_filters.rb
 lib/attribute-filters/dsl_sets.rb
 lib/attribute-filters/helpers.rb
