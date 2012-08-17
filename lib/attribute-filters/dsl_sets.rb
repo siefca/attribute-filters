@@ -33,7 +33,7 @@ module ActiveModel
       if set_name.nil?
         all_attributes
       else
-        ActiveModel::AttributeSet::Query.new(self.class.attribute_set(set_name), self)
+        ActiveModel::AttributeSet::Query.new(set_name, self)
       end
     end
     alias_method :attributes_that_are,        :attribute_set

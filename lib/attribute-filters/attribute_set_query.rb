@@ -17,9 +17,26 @@ module ActiveModel
     class Query < BasicObject
       # Creates new query object.
       # 
-      # @param set_object [AttributeSet] attribute set for which the query will be made
-      # @param am_object [Object] model object which has access to attributes (may be an instance of ActiveRecord or similar)
-      def initialize(set_object, am_object)
+      # @overload initialize(am_object)
+      #   Creates new query object and uses empty set as an underlying object.
+      #   @param am_object [Object] model object which has access to attributes (may be an instance of ActiveRecord or similar)
+      #   @return [AttributeSet::Query] query object
+      # 
+      # @overload initialize(set_object, am_object)
+      #   @param set_object [AttributeSet,String,Symbol,Array] attribute set for which the query will be made or
+      #    known attribute set name (symbol or string) existing within the given model or an array uset to create a new set
+      #   @param am_object [Object] model object which has access to attributes (may be an instance of ActiveRecord or similar)
+      #   @return [AttributeSet::Query] query object      
+      def initialize(set_object, am_object = nil)
+        if am_object.nil?
+          am_object = set_object
+          set_object = ::ActiveModel::AttributeSet.new
+        end
+        if set_object.is_a?(::Symbol) || set_object.is_a?(::String)
+          set_object = am_object.class.attribute_set(set_object)
+        elsif !set_object.is_a?(::ActiveModel::AttributeSet)
+          set_object = ::ActiveModel::AttributeSet.new(set_object)
+        end
         @set_object = set_object
         @am_object = am_object
         @next_method = nil
