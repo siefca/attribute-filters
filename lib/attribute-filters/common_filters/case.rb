@@ -20,10 +20,15 @@ module ActiveModel
         # called +should_be_downcased+. This method is safe to be
         # used with multibyte strings (containing diacritics).
         # 
+        # @note If a value of currently processed attribute is an array
+        # then any element of the array is changed.
+        # 
         # @return [void]
         def downcase_attributes
           filter_attrs_from_set(:should_be_downcased) do |atr|
-            atr.mb_chars.downcase.to_s
+            AttributeFiltersHelpers.each_element(atr) do |v|
+              v.mb_chars.downcase.to_s
+            end
           end
         end
       end
@@ -36,10 +41,15 @@ module ActiveModel
         # called +should_be_upcased+. This method is safe to be
         # used with multibyte strings (containing diacritics).
         # 
+        # @note If a value of currently processed attribute is an array
+        # then any element of the array is changed.
+        # 
         # @return [void]
         def upcase_attributes
           filter_attrs_from_set(:should_be_upcased) do |atr|
-            atr.mb_chars.upcase.to_s
+            AttributeFiltersHelpers.each_element(atr) do |v|
+              v.mb_chars.upcase.to_s
+            end
           end
         end
       end

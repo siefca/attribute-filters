@@ -19,9 +19,14 @@ module ActiveModel
         # The attrubutes to be stripped are taken from the attribute set called
         # +should_be_stripped+. It operates directly on attribute's contents.
         # 
+        # @note If a value of currently processed attribute is an array
+        # then any element of the array is changed.
+        # 
         # @return [void]
         def strip_attributes
-          filter_attrs_from_set(:should_be_stripped) { |atr| atr.strip }
+          filter_attrs_from_set(:should_be_stripped) do |atr|
+            AttributeFiltersHelpers.each_element(atr) { |v| v.strip }
+          end
         end
       end
 

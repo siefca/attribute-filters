@@ -35,6 +35,16 @@ module ActiveModel
       end
       module_function :check_wanted_methods
 
+      # @private
+      def each_element(value)
+        if value.is_a?(Array)
+          value.map{ |v| yield(v) }
+        else
+          yield(value)
+        end
+      end
+      module_function :each_element
+
     end # module AttributeFiltersHelpers
   end # module AttributeFilters
 end # module ActiveModel
