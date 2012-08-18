@@ -26,7 +26,7 @@ module ActiveModel
         # @return [void]
         def squeeze_attributes
           filter_attrs_from_set(:should_be_squeezed) do |atr|
-            AttributeFiltersHelpers.each_element(atr) do |v|
+            AttributeFiltersHelpers.each_element(atr, String) do |v|
               v.mb_chars.squeeze.to_s
             end
           end
@@ -47,7 +47,7 @@ module ActiveModel
         # @return [void]
         def squish_attributes
           filter_attrs_from_set(:should_be_squished) do |atr|
-            AttributeFiltersHelpers.each_element(atr) do |v|
+            AttributeFiltersHelpers.each_element(atr, String) do |v|
               v.mb_chars.squish.to_s
             end
           end

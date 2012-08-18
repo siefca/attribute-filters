@@ -36,11 +36,11 @@ module ActiveModel
       module_function :check_wanted_methods
 
       # @private
-      def each_element(value)
+      def each_element(value, must_be = nil)
         if value.is_a?(Array)
-          value.map{ |v| yield(v) }
+          must_be.nil? ? value.map{ |v| yield(v) } : value.map{ |v| yield(v) if v.is_a?(must_be) }
         else
-          yield(value)
+          must_be.nil? ? yield(value) : (yield(value) if value.is_a?(must_be))
         end
       end
       module_function :each_element

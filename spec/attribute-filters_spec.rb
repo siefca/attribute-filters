@@ -7,7 +7,7 @@ describe ActiveModel::AttributeFilters do
   describe TestModel do
     before do
       TestModel.attributes_that(:should_be_stripped, :email, :real_name)
-      TestModel.attributes_that(:should_be_capitalized, :real_name)
+      TestModel.attributes_that(:should_be_titleized, :real_name)
       @tm = TestModel.new
     end
 
@@ -19,6 +19,16 @@ describe ActiveModel::AttributeFilters do
       @tm.username.should   == "upcaseąęść"
       @tm.email.should      == "Some@EXAMPLE.com"
       @tm.real_name.should  == "Sir Rails"
+    end
+
+    it "should filter model attributes that are arrays" do
+      @tm.username          = [" UPCASEĄĘŚĆ      "]
+      @tm.email             = [" Some@EXAMPLE.com   ", "  x "]
+      @tm.real_name         = ["       sir    rails ", nil]
+      @tm.save
+      @tm.username.should   == ["upcaseąęść"]
+      @tm.email.should      == ["Some@EXAMPLE.com", "x"]
+      @tm.real_name.should  == ["Sir Rails", nil]
     end
 
     it "should not filter model attributes that are blank" do
@@ -49,7 +59,7 @@ describe ActiveModel::AttributeFilters do
 
     it "should operate on annotations" do
       s = @tm.attributes_that(:should_be_stripped)
-      c = @tm.attributes_that(:should_be_capitalized)
+      c = @tm.attributes_that(:should_be_titleized)
       s.annotate(:real_name, :operation, :first_value)
       s.annotate(:email,     :operation, :e_value)
       c.annotate(:real_name, :operation, :some_value)
@@ -62,10 +72,10 @@ describe ActiveModel::AttributeFilters do
   describe "AttributeSet set operations" do
     before do
       TestModel.attributes_that(:should_be_stripped, :email, :real_name)
-      TestModel.attributes_that(:should_be_capitalized, :real_name)
+      TestModel.attributes_that(:should_be_titleized, :real_name)
       @tm = TestModel.new
       @s = @tm.attributes_that(:should_be_stripped)
-      @c = @tm.attributes_that(:should_be_capitalized)
+      @c = @tm.attributes_that(:should_be_titleized)
       @s.annotate(:real_name, :operation, :first_value)
       @s.annotate(:email,     :operation, :e_value)
       @c.annotate(:real_name, :operation, :some_value)

@@ -59,7 +59,7 @@ module ActiveModel
       # @private
       def each
         if block_given?
-            super
+          super
         else
           AttributeSet::Enumerator.new(self, :each)
         end

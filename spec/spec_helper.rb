@@ -13,17 +13,23 @@ require 'supermodel'
 require 'active_record'
 
 class TestModel < SuperModel::Base
+  include ActiveModel::AttributeFilters::Common::Strip
+  include ActiveModel::AttributeFilters::Common::Downcase
+  include ActiveModel::AttributeFilters::Common::Titleize
+  include ActiveModel::AttributeFilters::Common::Squeeze
 
   attributes_that should_be_stripped:       [ :email, :real_name ]
-  attributes_that should_be_capitalized:    [ :real_name ]
+  attributes_that should_be_titleized:      [ :real_name ]
+  attributes_that should_be_squeezed:       [ :real_name ]
   attributes_that should_be_tested:         [ :test_attribute ]
   attributes_that do_not_exist:             [ :nonexistent_attribute ]
 
   the_attribute   username:                 [ :should_be_stripped, :should_be_downcased ]
 
-  before_save :strip_names
-  before_save :downcase_names
-  before_save :capitalize_names
+  before_save :strip_attributes
+  before_save :downcase_attributes
+  before_save :titleize_attributes
+  before_save :squeeze_attributes
 
   def touch_nonexistent
     filter_attributes_that :do_not_exist do |atr|
@@ -35,22 +41,6 @@ class TestModel < SuperModel::Base
     filter_attributes_that :should_be_tested do |atr|
       atr + "_some_string"
     end
-  end
-
-  def downcase_names
-    filter_attributes_that :should_be_downcased do |atr|
-      atr.mb_chars.downcase.to_s
-    end
-  end
-
-  def capitalize_names
-    filter_attributes_that :should_be_capitalized do |atr|
-      atr.mb_chars.split(' ').map { |n| n.capitalize }.join(' ')
-    end
-  end
-
-  def strip_names
-    for_attributes_that(:should_be_stripped) { |atr| atr.strip! }
   end
 
 end

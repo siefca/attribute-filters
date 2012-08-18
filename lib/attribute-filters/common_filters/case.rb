@@ -26,7 +26,7 @@ module ActiveModel
         # @return [void]
         def downcase_attributes
           filter_attrs_from_set(:should_be_downcased) do |atr|
-            AttributeFiltersHelpers.each_element(atr) do |v|
+            AttributeFiltersHelpers.each_element(atr, String) do |v|
               v.mb_chars.downcase.to_s
             end
           end
@@ -47,7 +47,7 @@ module ActiveModel
         # @return [void]
         def upcase_attributes
           filter_attrs_from_set(:should_be_upcased) do |atr|
-            AttributeFiltersHelpers.each_element(atr) do |v|
+            AttributeFiltersHelpers.each_element(atr, String) do |v|
               v.mb_chars.upcase.to_s
             end
           end
