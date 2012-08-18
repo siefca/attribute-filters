@@ -115,6 +115,21 @@ class User < ActiveRecord::Base
 end
 ```
 
+or even more shorter:
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  strip_attributes    :username, :email, :real_name
+  downcase_attributes :username, :email
+  titleize_attribute  :real_name
+
+  before_validation :filter_attributes
+end
+```
+
 If you would rather like to group filters by attribute names then
 the alternative syntax may be helpful:
 
