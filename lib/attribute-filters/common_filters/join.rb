@@ -28,12 +28,16 @@ module ActiveModel
         def join_attributes
           filter_attrs_from_set(:should_be_joined, :process_all, :process_blank) do |atr_val, atr_name, set_obj|
             from, compact = set_obj.annotation(atr_name, :join_from, :join_compact)
-            if from.present?
-              vals = AttributeSet::Query.new(AttributeSet.new(from), self).values
-              separator = set_obj.has_annotation?(atr_name, :join_separator) ?
-                          set_obj.annotation(atr_name, :join_separator) : " "
-              compact ? vals.compact.join(separator) : vals.join(separator)
+            if from.blank?
+              next atr_val if !atr_val.is_a?(Array)
+              from = [ atr_name ]
+            elsif !from.is_a?(Array)
+              from = [ from ]
             end
+            vals = AttributeSet::Query.new(from, self).values
+            separator = set_obj.has_annotation?(atr_name, :join_separator) ?
+                        set_obj.annotation(atr_name, :join_separator) : " "
+            compact ? vals.compact.join(separator) : vals.join(separator)
           end
         end
 
@@ -62,16 +66,15 @@ module ActiveModel
             end
             parameters = { :from => parameters } unless parameters.is_a?(Hash)
             the_attribute(atr_name, :should_be_joined)
-            a = attributes_that(:should_be_joined)
-            separator   = " " unless parameters.key?(:with) || parameters.key?(:pattern)
-            separator ||= parameters[:with] || parameters[:pattern]
-            from        = parameters[:from] || parameters[:source] || parameters[:sources]
-            compact     = !!parameters[:compact]
-            from        = atr_name if from.blank?
-            from.is_a?(Array) or from = from.respond_to?(:to_a) ? from.to_a : [ from ]
-            a.annotate(atr_name, :join_separator, separator)
-            a.annotate(atr_name, :join_compact, compact)
-            a.annotate(atr_name, :join_from, from)
+            separator = " " unless parameters.key?(:with) || parameters.key?(:separator) || parameters.key?(:join_separator)
+            separator ||= parameters[:with] || parameters[:separator] || parameters[:join_separator]
+            from        = parameters[:from] || parameters[:source] || parameters[:sources] || parameters[:join_from]
+            compact = parameters.key?(:compact) ? !!parameters[:compact] : !!parameters[:join_compact]
+            attributes_that(:should_be_joined).tap do |a|
+              a.annotate(atr_name, :join_separator, separator)
+              a.annotate(atr_name, :join_compact, compact)
+              a.annotate(atr_name, :join_from, from)
+            end
           end
           alias_method :join_attributes, :join_attribute
         end # module ClassMethods

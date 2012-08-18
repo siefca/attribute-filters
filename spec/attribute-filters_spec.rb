@@ -256,29 +256,41 @@ describe ActiveModel::AttributeFilters do
       @tm.real_name.should == ["Paweł", "Wilk", "Trzy", "Cztery"]
     end
 
-    shared_examples "joining" do |ev|
+    shared_examples "joining" do |ev,rn,rns,rnt|
       before { TestModel.class_eval{before_save :join_attributes} }
       it "should join attributes using syntax: #{ev}" do
         TestModel.class_eval(ev)
-        @tm.real_name = nil
+        # source attributes are strings:
+        @tm.real_name = rn
         @tm.first_name = "Paweł"
         @tm.last_name = "Wilk"
         -> { @tm.save }.should_not raise_error
+        # source attributes are strings and nils:
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == 'Wilk'
         @tm.real_name.should == 'Paweł Wilk'
         @tm.first_name = "Paweł"
         @tm.last_name = nil
-        @tm.real_name = nil
+        @tm.real_name = rns
         @tm.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
+        # source attributes are arrays and strings:
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == nil
         @tm.real_name.should == 'Paweł'
+        @tm.first_name = ["Paweł", "Wilk"]
+        @tm.last_name = "Trzeci"
+        @tm.real_name = rnt
+        @tm.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
+        -> { @tm.save }.should_not raise_error
+        @tm.real_name.should == 'Paweł Wilk Trzeci'
       end
     end
 
     context "with join_attributes" do
+      include_examples "joining", "join_attributes :real_name", ["Paweł", "Wilk"], ["Paweł"], ["Paweł", "Wilk", "Trzeci"] 
+      include_examples "joining", "join_attributes :real_name", ["Paweł Wilk"], ["Paweł"], ["Paweł Wilk", "Trzeci"]
+      include_examples "joining", "join_attributes :real_name", "Paweł Wilk", "Paweł", "Paweł Wilk Trzeci"
       include_examples "joining", "join_attributes :real_name => [ :first_name, :last_name ]"
       include_examples "joining", "join_attributes :real_name, [ :first_name, :last_name ]"
       include_examples "joining", "join_attributes :real_name => { :from => [ :first_name, :last_name ] }"
