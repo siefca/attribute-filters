@@ -38,9 +38,13 @@ module ActiveModel
       # @private
       def each_element(value, must_be = nil)
         if value.is_a?(Array)
-          must_be.nil? ? value.map{ |v| yield(v) } : value.map{ |v| yield(v) if v.is_a?(must_be) }
+          op = must_be.nil? ? lambda{ |v| yield(v) } : lambda{ |v| v.is_a?(must_be) ? yield(v) : v }
+          value.map(&op)
+        elsif value.is_a?(Hash)
+          op = must_be.nil? ? lambda{ |k,ov| yield(ov) } : lambda{ |k,ov| ov.is_a?(must_be) ? yield(ov) : ov }
+          value.merge(value, &op)
         else
-          must_be.nil? ? yield(value) : (yield(value) if value.is_a?(must_be))
+          must_be.nil? ? yield(value) : (value.is_a?(must_be) ? yield(value) : value)
         end
       end
       module_function :each_element
