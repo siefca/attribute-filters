@@ -14,6 +14,7 @@ module ActiveModel
     module Common   
       # Downcases attributes.
       module Downcase
+        extend CommonFilter
         # Downcases attributes.
         # 
         # The attrubutes to be downcased are taken from the attribute set
@@ -21,7 +22,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        # then any element of the array is changed.
+        #  then any element of the array is changed.
         # 
         # @return [void]
         def downcase_attributes
@@ -31,10 +32,20 @@ module ActiveModel
             end
           end
         end
+
+        # This submodule contains class methods used to easily define filter.
+        module ClassMethods
+          # Registers attributes that should be downcased.
+          def downcase_attributes(*args)
+            attributes_that(:should_be_downcased, args)
+          end
+          alias_method :downcase_attribute, :downcase_attributes
+        end # module ClassMethods
       end
 
       # Upcases attributes.
       module Upcase
+        extend CommonFilter
         # Upcases attributes.
         # 
         # The attrubutes to be upcased are taken from the attribute set
@@ -42,7 +53,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        # then any element of the array is changed.
+        #  then any element of the array is changed.
         # 
         # @return [void]
         def upcase_attributes
@@ -52,6 +63,15 @@ module ActiveModel
             end
           end
         end
+
+        # This submodule contains class methods used to easily define filter.
+        module ClassMethods
+          # Registers attributes that should be upcased.
+          def upcase_attributes(*args)
+            attributes_that(:should_be_upcased, args)
+          end
+          alias_method :upcase_attribute, :upcase_attributes
+        end # module ClassMethods
       end
 
       # Operates on attributes' case.

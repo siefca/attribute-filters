@@ -14,6 +14,7 @@ module ActiveModel
     module Common
       # Capitalizes attributes.
       module Capitalize
+        extend CommonFilter
         # Capitalizes attributes.
         # 
         # The attrubutes to be capitalized are taken from the attribute set
@@ -21,7 +22,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        # then any element of the array is changed.
+        #  then any element of the array is changed.
         # 
         # @return [void]
         def capitalize_attributes
@@ -39,7 +40,7 @@ module ActiveModel
         # This method is safe to be used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        # then any element of the array is changed.
+        #  then any element of the array is changed.
         # 
         # @return [void]
         def titleize_with_squeezed_spaces
@@ -51,10 +52,27 @@ module ActiveModel
           end          
         end
         alias_method :fully_capitalize_attributes, :titleize_with_squeezed_spaces
+
+        # This submodule contains class methods used to easily define filter.
+        module ClassMethods
+          # Registers attributes that should be capitalized.
+          def capitalize_attributes(*args)
+            attributes_that(:should_be_capitalized, args)
+          end
+          alias_method :capitalize_attribute, :capitalize_attributes
+
+          # Registers attributes that should be fully capitalized.
+          def fully_capitalize_attributes(*args)
+            attributes_that(:should_be_fully_capitalized, args)
+          end
+          alias_method :fully_capitalize_attribute, :fully_capitalize_attributes
+          alias_method :titleize_with_squeezed_spaces, :fully_capitalize_attributes
+        end # module ClassMethods
       end # module Capitalize
 
       # Titleizes attributes.
       module Titleize
+        extend CommonFilter
         # Titleizes attributes.
         # 
         # The attrubutes to be titleized are taken from the attribute set
@@ -62,7 +80,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        # then any element of the array is changed.
+        #  then any element of the array is changed.
         # 
         # @return [void]
         def titleize_attributes
@@ -72,6 +90,15 @@ module ActiveModel
             end
           end
         end
+
+        # This submodule contains class methods used to easily define filter.
+        module ClassMethods
+          # Registers attributes that should be titleized.
+          def titleize_attributes(*args)
+            attributes_that(:should_be_titleized, args)
+          end
+          alias_method :titleize_attribute, :titleize_attributes
+        end # module ClassMethods
       end # module Titleize
 
       include Capitalize

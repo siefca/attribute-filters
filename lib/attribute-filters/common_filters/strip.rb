@@ -14,13 +14,14 @@ module ActiveModel
     module Common
       # Strips attributes from leading and trailing spaces.
       module Strip
+        extend CommonFilter
         # Strips attributes from leading and trailing spaces.
         # 
         # The attrubutes to be stripped are taken from the attribute set called
         # +should_be_stripped+. It operates directly on attribute's contents.
         # 
         # @note If a value of currently processed attribute is an array
-        # then any element of the array is changed.
+        #  then any element of the array is changed.
         # 
         # @return [void]
         def strip_attributes
@@ -28,11 +29,18 @@ module ActiveModel
             AttributeFiltersHelpers.each_element(atr, String) { |v| v.strip }
           end
         end
-      end
+        # This submodule contains class methods used to easily define filter.
+        module ClassMethods
+          # Registers attributes that should be stripped.
+          def strip_attributes(*args)
+            attributes_that(:should_be_stripped, args)
+          end
+          alias_method :strip_attribute, :strip_attributes
+        end # module ClassMethods
+      end # module Strip
 
       include Strip
 
-    end
-  end
-end
-
+    end # module Common
+  end # module AttributeFilters
+end # module ActiveModel
