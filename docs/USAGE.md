@@ -919,10 +919,7 @@ Annotations
 
 Annotations are portions of data that you can bind to attribute names residing within attribute sets.
 Why? To store something that is related to the specific attribute and that should be memorized within
-a set and/or its copies (if any).
-
-You can annotate each attribute name using key -> value pairs where the key is always a symbol and value
-is any kind of object you want. Only existing attributes can be annotated and deleting attribute
+a set and/or its copies (if any). You can annotate each attribute name using key -> value pairs where the key is always a symbol and value is any kind of object you want. Only existing attributes can be annotated and deleting attribute
 will remove annotations that are assigned to it.
 
 When you copy a set, create difference or intersection of attribute sets then annotations are also copied. If the
@@ -933,15 +930,179 @@ to be taken (e.g. specifying separator string for attribute joining filter and s
 
 ### Creating annotations ###
 
-You can create annotations while defining a set or you can add them later with `annotate` method called on
+You can create annotations during defining a set or you can add them later with `annotate` method called on
 the instance of `AttributeSet`.
+
+#### When defining sets ####
+
+When using the first method just replace attrbute name with a hash, where attribute name is a key
+and annotations is another hash containing keys and values.
 
 Example:
 
 ```ruby
   class User
-    attributes_that :should_be_something,       [:name => { :some_key => "some value" }, :
-    attributes_that_are :required_to_something, :account  => { :some_key => "some value" }
+    # Set name:         cool
+    # Attribute name:   email
+    # Annotation key:   some_key
+    # Annotation value: some value
+
+    attributes_that_are cool: { :email => { :some_key => "some value" } }
+  end
+```
+
+The above will annotate `email` attribute within a set `should_be_something` with `some_key` => "some value" pair.
+You can mix annotated attributes with unannotated; just put the last ones in front of an array:
+
+```ruby
+  class User
+    attributes_that_are cool: [ :some_unannotated, { :email => { :some_key => "some value" } ]
+  end
+```
+
+or
+
+```ruby
+  class User
+    attributes_that_are :cool => [ :some_unannotated, { :email => { :some_key => "some value" } ]
+  end
+```
+
+#### After defining sets ####
+
+To create annotations separately use the [`annotate_attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods.html#annotate_attribute_set-instance_method) method (an its aliases):
+
+* **`annotate_attributes_that_are`**
+* **`annotate_attributes_that`**
+* **`annotate_attributes_are`** 
+* **`annotate_attributes_for`**  
+* **`annotate_attributes_set`** 
+* **`annotate_properties_that`**   
+* **`annotate_attributes`**   
+
+Example:
+
+```ruby
+  class User
+    attributes_that_are cool: [ :some_unannotated, :email ]
+    annotate_attributes_that_are cool: [ :email, :some_key, "some value" ]
+  end
+```
+
+or use `annotate` method that operates on attribute set:
+
+```ruby
+  class User
+    attributes_that_are cool: [ :some_unannotated, :email ]
+    attributes_that_are(:cool).annotate :email, :some_key, "some value"
+  end
+```
+
+Caution: Annotating attributes that aren't present in a set
+with `annotate_attribute_set` or by using `annotate` method will raise an error.
+
+### Removing annotations ###
+
+It is possible to remove annotations **localy**.
+You can use:
+
+* **`delete_annotation(attribute_name, annotation_key)`** - to delete specified annotation key for the given attribute
+* **`delete_annotations(attribute_name)`** - to delete all annotations for an attribute of the given name
+* **`remove_annotations()`** - to remove all annotations from a set
+
+Be aware that those methods won't work on a global sets queried from an instance methods.
+That's because you'll always get a copy when querying these sets. They will work in a model,
+at a class-level however.
+
+Example:
+
+```ruby
+  class User
+    attributes_that_are cool: [ :some_unannotated, :email ]
+
+    # That will work
+    attributes_that_are(:cool).delete_annotation(:email)
+
+    # That won't affect the global set called 'cool'
+    # since we have its copy here not the original.
+    def some_method
+      attributes_that_are(:cool).delete_annotation(:email)
+    end
+  end
+```
+
+### Updating annotations ###
+
+Calling `annotate` method again on a set or redefining set at a class-level allows to add annotations
+or modify their keys.
+
+Example:
+
+```ruby
+  class User
+    attributes_that_are :cool => { :email => { :some_key => "some value"  } }
+    attributes_that_are cool: { :email => { :other_key => "other_value"   } }
+    attributes_that_are cool: { :email => { :some_key  => "another_value" } }
+    annotate_attributes_that_are :cool, :email, :some_key => "x"
+    attributes_that_are(:cool).delete_annotation(:email, :other_key)
+  end
+  
+  # In the result there will be only one annotation key left;
+  # :some_key with the value of "x"
+```
+
+Caution: Annotating attributes that aren't present in a set
+with `annotate_attribute_set` or by using `annotate` method will raise an error.
+
+Be aware that updating annotations from within instnce methods won't work on a global sets.
+That's because you'll always get a copy when querying these sets. They will work in a model,
+at a class-level however.
+
+```ruby
+  class User
+    attributes_that_are :cool => { :email => { :some_key => "some value"  } }
+    
+    def some_method
+      attributes_that_are(:cool).delete_annotation(:email, :other_key)
+    end
+  end
+  
+  # Calling some method won't work in 'cool' global set since instance method
+  # attributes_that_are returns a copy. The global set 'cool' will still have
+  # the annotation.
+```
+
+## Querying annotations ###
+
+To check if a set has any annotations you can use one of the methods:
+
+* **`has_annotation?`** - checks if a set has any annotations
+* **`has_annotations?`** - checks if a set has any annotations
+* **`has_annotation?(attribute_name)`** - checks if a set has any annotations for the given attribute 
+* **`has_annotation?(attribute_name, *annotation_keys)`** - checks if a set has any annotation key for the given attribute
+
+To read annotations you can use :
+
+* **`annotation(attribute_name)`** - gets a hash of annotations or returns nil
+* **`annotation(attribute_name, *keys)`** - gets an array annotation values for the given keys (puts nils if key is missing) or returns nil
+
+Example:
+
+```ruby
+  class User
+    attributes_that_are cool: [ :some_unannotated, :email => { :x => :y } ]
+
+    def q
+      attributes_that_are(:cool).annotation(:email, :x, :z)
+    end
+
+    def qq
+      attributes_that_are(:cool).annotation(:nope, :x, :z)
+    end
+
+    # Calling q will return an array: [:y, nil]
+    # Calling qq will return nil since attribute is not present (or not annotated)
+
   end
 ```
 
@@ -950,7 +1111,7 @@ Predefined filters
 
 Predefined filters are ready-to-use methods
 for filtering attributes. You just have to call them
-or pass their names to callback hooks.
+or register them as [callbacks](http://api.rubyonrails.org/classes/ActiveRecord/Callbacks.html).
 
 To use all predefined filters you have to manually
 include the [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
@@ -1070,14 +1231,14 @@ operations should handle diacritics properly.
 
 ### List of filters ###
 
-* `capitalize_attributes` (submodule: `Capitalize`)
-* `fully_capitalize_attributes` (submodule: `Capitalize`)
-* `titleize_attributes` (submodule: `Titleize`)
-* `downcase_attributes` (submodule: `Downcase` or `Case`)
-* `upcase_attributes` (submodule: `Upcase` or `Case`)
-* `strip_attributes` (submodule: `Strip`)
-* `squeeze_attributes` (submodule: `Squeeze`)
-* `squish_attributes` (submodule: `Squish`)
+* **`capitalize_attributes`**
+* **`fully_capitalize_attributes`**
+* **`titleize_attributes`**
+* **`downcase_attributes`**
+* **`upcase_attributes`**
+* **`strip_attributes`**
+* **`squeeze_attributes`**
+* **`squish_attributes`**
 
 #### Capitalization ####
 
