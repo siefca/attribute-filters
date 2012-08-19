@@ -72,16 +72,29 @@ describe ActiveModel::AttributeFilters do
         attributes_that should_be_sth: {:atr_three => {:fak => "fav"}, :atr_two => {:flala => "flala2"}, :fyy => nil}
         annotate_attribute_set should_be_sth: {:atr_three => {:ak => "av"}, :atr_two => {:lala => "lala2"}, :yy => nil}
         annotate_attribute_set should_be_sth: [:atr_three, :oo => "oe"]
+        annotate_attribute_set should_be_sth: [:atr_three, :aa, "bb"]
+        attributes_that(:should_be_sth).annotate(:atr_three, :cc, "dd")
+        attributes_that(:should_be_sth).annotate(:atr_three, :ccc, "ddd")
+        attributes_that(:should_be_sth).delete_annotation(:atr_three, :ccc)
       end}.should_not raise_error
       @tm.attributes_that(:should_be_sth).annotation(:atr_one).should == {:ak => "av"}
       @tm.attributes_that(:should_be_sth).annotation(:atr_two, :lala).should == "lala2"
       @tm.attributes_that(:should_be_sth).annotation(:atr_x, :lalax).should == nil
       @tm.attributes_that(:should_be_sth).annotation(:atr_three, :oo).should == "oe"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :aa).should == "bb"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :cc).should == "dd"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :ccc).should == nil
       @tm.attributes_that(:should_be_sth).has_annotations?.should == true
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three).should == true
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three, :ak).should == true
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_nope).should == false
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three, :nope).should == false
+      @tm.attributes_that(:should_be_sth).delete_annotation(:atr_three, :cc)
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :cc).should == "dd"
+      dupx = TestModel.attributes_that(:should_be_sth)
+      dupy = @tm.attributes_that(:should_be_sth)
+      dupx.send(:annotations).should == dupy.send(:annotations) 
+      dupx.object_id.should_not == dupy.object_id
     end
   end
 
@@ -298,7 +311,7 @@ describe ActiveModel::AttributeFilters do
         @tm.first_name = "Paweł"
         @tm.last_name = nil
         @tm.real_name = rns
-        @tm.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
+        @tm.class.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
         # source attributes are arrays and strings:
         @tm.first_name.should == 'Paweł'
@@ -307,7 +320,7 @@ describe ActiveModel::AttributeFilters do
         @tm.first_name = ["Paweł", "Wilk"]
         @tm.last_name = "Trzeci"
         @tm.real_name = rnt
-        @tm.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
+        @tm.class.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
         @tm.real_name.should == 'Paweł Wilk Trzeci'
       end
