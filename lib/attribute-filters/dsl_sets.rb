@@ -22,12 +22,23 @@ module ActiveModel
     # Returns the attribute set of the given name or the set containing
     # all attributes (if the argument is not given).
     # 
+    # If the given +set_name+ is a kind of String or Symbol then the method
+    # returns a copy of a set that is stored within a model class. The copy
+    # is wrapped in a `AttributeSet::AttrQuery` instance.
+    # 
+    # If the argument is a kind of +AttributeSet+ then the local set
+    # is taken and wrapped in a `AttributeSet::AttrQuery` instance.
+    # 
+    # If the argument is other kind than the specified above then
+    # the method tries to initialize new, local set object and wraps
+    # it in a `AttributeSet::AttrQuery` instance.
+    # 
     # @note The returned value is a duplicate. Adding or removing
-    #  elements to it will have no effect. Altering attribute sets
-    #  is possible on a class-level only, since attribute sets
+    #  elements to it will have no effect on class-level set.
+    #  Altering attribute sets is possible on a class-level only, since attribute sets
     #  are part of models' interfaces.
     # 
-    # @param set_name [Symbol] name of attribute set
+    # @param set_name [Symbol] name of attribute set, attribute object or any object that can initialize a set
     # @return [AttributeSet] attribute set
     def attribute_set(set_name=nil)
       if set_name.nil?

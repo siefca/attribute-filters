@@ -219,7 +219,7 @@ To do that you may use instance methods that are designed for that purpose.
 #### `attribute_set` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_set)
-method called withount an argument **returns the attribute set containing all attributes for a current object**.
+instancemethod called withount an argument **returns the attribute set object containing all attributes known in a current object**.
 
 Example:
 
@@ -233,9 +233,9 @@ It works the same as the `all_attributes` method.
 #### `attribute_set(set_name)` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_set)
-(a.k.a `attributes_that`) method called with a single argument **returns the attribute set
+(a.k.a `attributes_that`) instance method called with a single argument **returns a copy of the attribute set
 of the given name**. It won't return the exact set object but a duplicate.
-It will always return an `AttributeSet` instance, even if there is not set of the given name
+It will always return an `AttributeSet` instance, even if there is no set of the given name defined for a model
 (in that case the resulting set will be empty).
 
 Example:
@@ -244,6 +244,24 @@ Example:
   User.first.attributes_that(:should_be_stripped)
   # =>  #<ActiveModel::AttributeSet: {"real_name", "username", "email"}>
 ```
+
+The returned object in transparently wrapped in a proxy class instance that allows you
+to apply additional methods and keywords to it. See the section
+['Syntactic sugar for queries'](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md#Syntactic_sugar_for_queries)
+for more info.
+
+There are also variants of this method that differ in a kind of taken argument:
+
+* `attribute_set(set_object)`
+
+> Allows to wrap an existing attribute set instance (e.g. created locally) with transparent proxy instance.
+> The resulting object will look like the same set but will be decorated with additional syntactic sugar.
+
+* `attribute_set(any_object)`
+
+> Allows to create local set that will be initialized using the given object (usually an array) that may not
+> be a `String`, a `Symbol` or an `AttributeSet` (these are reserved for the variants above). The resulting
+> object (a new `AttributeSet` instance) is also wrapped in a proxy.
 
 Instead of `attribute_set` you may also use one of the aliases:
 
@@ -762,6 +780,14 @@ The [`filter_attrs_from_set`](http://rubydoc.info/gems/attribute-filters/ActiveM
 It takes optional arguments and a block. The result of evaluating a block will become a new value for a processed
 attribute. Optional arguments will be passed as the last arguments of a block.
 
+The evaluated block can make use of the following arguments that are passed to it:
+
+* `attribute_value` [Object] - current attribute value that should be altered
+* `attribute_name` [String] - a name of currently processed attribute
+* `set_object` [Object] - currently processed set that attribute belongs to
+* `set_name` [Symbol] - a name of the processed attribute set
+* `args` [Array] - an optional arguments passed to the method
+
 By default only existing, changed and non-blank attributes are processed.
 You can change that behavior by adding a flags as the first arguments:
 
@@ -778,7 +804,7 @@ Example:
     before_validation :lolize
 
     def lolize
-      filter_attributes_that(:should_be_lolized, "lol") do |attribute_value, set_name, attribute_name, *args|
+      filter_attributes_that(:should_be_lolized, "lol") do |attribute_value, attribute_name, set_object, set_name, *args|
         [attribute_value, set_name.to_s, attribute_name, *args.flatten].join('-')
       end
     end
@@ -790,6 +816,9 @@ Example:
   u.username
   # => "john-should_be_lolized-username-lol"
 ```
+
+You can pass a set object (`AttributeSet` instance) instead of set name as an argument. The method
+will then work on that local data with one difference: the `set_name` passed to a block will be set to `nil`.
 
 Instead of `filter_attrs_from_set` you may also use one of the aliases:
 
@@ -805,6 +834,14 @@ It takes optional arguments and a block. The result of evaluating the given bloc
 but you can interact with the attribute object from within a block.
 Optional arguments will be passed as the last arguments of a block.
 
+The evaluated block can make use of the following arguments that are passed to it:
+
+* `attribute_value` [Object] - current attribute value that should be altered
+* `attribute_name` [String] - a name of currently processed attribute
+* `set_object` [Object] - currently processed set that attribute belongs to
+* `set_name` [Symbol] - a name of the processed attribute set
+* `args` [Array] - an optional arguments passed to the method
+
 By default only existing, changed and non-blank attributes are processed.
 You can change that behavior by adding a flags as the first arguments:
 
@@ -821,7 +858,7 @@ Example:
     before_validation :lolize
 
     def lolize
-      for_attributes_that(:should_be_lolized, :process_blank, "lol") do |attribute_object, set_name, attribute_name, *args|
+      for_attributes_that(:should_be_lolized, :process_blank, "lol") do |attribute_value, attribute_name, set_object, set_name, *args|
         attribute_object << '-' << [set_name.to_s, attribute_name, *args.flatten].join('-')
       end
     end
@@ -833,6 +870,9 @@ Example:
   u.username
   # => "john-should_be_lolized-username-lol"
 ```
+
+You can pass a set object (`AttributeSet` instance) instead of set name as an argument. The method
+will then work on that local data with one difference: the `set_name` passed to a block will be set to `nil`.
 
 Instead of `filter_attrs_from_set` you may also use one of the aliases:
 
@@ -918,7 +958,7 @@ Annotations
 -----------
 
 Annotations are portions of data that you can bind to attribute names residing within attribute sets.
-Why? To store something that is related to the specific attribute and that should be memorized within
+What for? To store something that is related to the specific attribute and that should be memorized within
 a set and/or its copies (if any). You can annotate each attribute name using key -> value pairs where the key is always a symbol and value is any kind of object you want. Only existing attributes can be annotated and deleting attribute
 will remove annotations that are assigned to it.
 
@@ -956,7 +996,7 @@ You can mix annotated attributes with unannotated; just put the last ones in fro
 
 ```ruby
   class User
-    attributes_that_are cool: [ :some_unannotated, { :email => { :some_key => "some value" } ]
+    attributes_that_are cool: [ :some_unannotated, { :email => { :some_key => "some value" } } ]
   end
 ```
 
@@ -964,7 +1004,7 @@ or
 
 ```ruby
   class User
-    attributes_that_are :cool => [ :some_unannotated, { :email => { :some_key => "some value" } ]
+    attributes_that_are :cool => [ :some_unannotated, { :email => { :some_key => "some value" } } ]
   end
 ```
 
@@ -1010,8 +1050,9 @@ You can use:
 * **`delete_annotations(attribute_name)`** - to delete all annotations for an attribute of the given name
 * **`remove_annotations()`** - to remove all annotations from a set
 
-Be aware that those methods won't work on a global sets queried from an instance methods.
-That's because you'll always get a copy when querying these sets. They will work in a model,
+Be aware that deleting annotations from within instnce methods won't work on a sets
+defined directly in classes describing models. That's because you'll always get
+a copy when querying these sets at instance-level. They will work in a model,
 at a class-level however.
 
 Example:
@@ -1024,7 +1065,7 @@ Example:
     attributes_that_are(:cool).delete_annotation(:email)
 
     # That won't affect the global set called 'cool'
-    # since we have its copy here not the original.
+    # since we have its copy here, not the original.
     def some_method
       attributes_that_are(:cool).delete_annotation(:email)
     end
@@ -1054,8 +1095,9 @@ Example:
 Caution: Annotating attributes that aren't present in a set
 with `annotate_attribute_set` or by using `annotate` method will raise an error.
 
-Be aware that updating annotations from within instnce methods won't work on a global sets.
-That's because you'll always get a copy when querying these sets. They will work in a model,
+Be aware that updating annotations from within instnce methods won't work on a sets
+defined directly in classes describing models. That's because you'll always get
+a copy when querying these sets at instance-level. They will work in a model,
 at a class-level however.
 
 ```ruby

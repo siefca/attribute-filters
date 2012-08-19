@@ -67,7 +67,7 @@ module ActiveModel
     #   
     #   The result of the given block is used to set a new values for processed attributes. 
     #   
-    #   @param set_name [Symbol] name of the attribute set
+    #   @param set_name [Symbol] name of the attribute set or a set object
     #   @param args [Array] optional additional arguments that will be passed to the block
     #   @param flags [Array<Symbol>] optional additional flags controlling the processing of attributes:
     #     * +:process_blank+ – tells to also process attributes that are blank (empty or +nil+)
@@ -133,7 +133,7 @@ module ActiveModel
     #   method in a block or explicitly assign new, calculated value to the attribute
     #   using its name (also passed to a block as one of arguments).
     #   
-    #   @param set_name [Symbol] name of the attribute set
+    #   @param set_name [Symbol] name of the attribute set or a set object
     #   @param args [Array] optional additional arguments that will be passed to a block
     #   @param flags [Array<Symbol>] optional additional flags controlling the processing of attributes:
     #     * +:process_blank+ – tells to also process attributes that are blank (empty or +nil+)
