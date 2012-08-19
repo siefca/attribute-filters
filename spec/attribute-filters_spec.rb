@@ -66,6 +66,18 @@ describe ActiveModel::AttributeFilters do
       c.annotate(:real_name, :operation, :other_value)
       s.instance_eval{annotations}.should ==  { 'real_name' => { :operation => :first_value }, 'email' => { :operation => :e_value } }
       c.instance_eval{annotations}.should ==  { 'real_name' => { :operation => :other_value } }
+      -> {TestModel.class_eval do
+        attributes_that :should_be_sth => [ :atr_one => {:ak => "av"}, :atr_two => {:sk => "sv"} ]
+        attributes_that :should_be_sth => { :atr_three => {:ak => "av"}, :atr_two => {:lala => "lala2"} }
+      end}.should_not raise_error
+      @tm.attributes_that(:should_be_sth).annotation(:atr_one).should == {:ak => "av"}
+      @tm.attributes_that(:should_be_sth).annotation(:atr_two, :lala).should == "lala2"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_x, :lalax).should == nil
+      @tm.attributes_that(:should_be_sth).has_annotations?.should == true
+      @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three).should == true
+      @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three, :ak).should == true
+      @tm.attributes_that(:should_be_sth).has_annotation?(:atr_nope).should == false
+      @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three, :nope).should == false
     end
   end
 
