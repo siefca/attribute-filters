@@ -37,7 +37,7 @@ module ActiveModel
     #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
     #   @return [AttributeSet] set of attributes (attribute name => previous_value)
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
-      atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set(set_name)
+      atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set_simple(set_name)
       if process_all
         no_presence_check ? atf : atf & (__vatrf(no_presence_check) + attributes.keys)
       else
@@ -234,9 +234,9 @@ module ActiveModel
         set_obj = set_name
         set_name = nil
       else
-        set_obj = attribute_set(set_name)
+        set_obj = attribute_set_simple(set_name)
       end
-      attrs_to_process  = attributes_to_filter(set_obj, process_all, no_presence_check)
+      attrs_to_process = attributes_to_filter(set_obj, process_all, no_presence_check)
       if alter_mode
         if process_blank
           # filtering without testing for blank

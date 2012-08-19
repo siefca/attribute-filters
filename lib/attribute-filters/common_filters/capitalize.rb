@@ -44,7 +44,7 @@ module ActiveModel
         # 
         # @return [void]
         def titleize_with_squeezed_spaces
-          s = attribute_set(:should_be_fully_capitalized) + attribute_set(:should_be_titleized)
+          s = attribute_set_simple(:should_be_fully_capitalized) + attribute_set_simple(:should_be_titleized)
           filter_attrs_from_set(s) do |atr|
             AttributeFiltersHelpers.each_element(atr, String) do |v|
               v.mb_chars.split(' ').map { |n| n.capitalize }.join(' ')

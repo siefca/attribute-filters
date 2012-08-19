@@ -49,6 +49,20 @@ module ActiveModel
     alias_method :attributes_set,             :attribute_set
     alias_method :properties_that,            :attribute_set
 
+    # Returns the attribute set of the given name without wrapping
+    # the result in proxy methods.
+    # 
+    # @note The returned value is a duplicate. Adding or removing
+    #  elements to it will have no effect. Altering attribute sets
+    #  is possible on a class-level only, since attribute sets
+    #  are part of models' interfaces.
+    # 
+    # @param set_name [Symbol] name of attribute set
+    # @return [AttributeSet] attribute set
+    def attribute_set_simple(set_name)
+      self.class.attribute_set(set_name)
+    end
+
     # Returns a set containing all attributes.
     # @return [AttributeSet] attribute set
     def all_attributes
