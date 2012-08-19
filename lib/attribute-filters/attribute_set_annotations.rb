@@ -16,6 +16,29 @@ module ActiveModel
   module AttributeFilters
     module ClassMethods
       # This method is a wrapper that helps to annotate attributes.
+      # 
+      # @overload annotate_attribute_set(set_name, attribute_name, annotation_key, value)
+      #   @param set_name [Symbol,String] name of a set
+      #   @param attribute_name [Symbol,String] name of annotated attribute
+      #   @param annotation_key [Symbol,String] name of annotation key
+      #   @param value [Object] annotation value
+      #
+      #  @overload annotate_attribute_set(set_name, attribute_name, annotation)
+      #   @param set_name [Symbol,String] name of a set
+      #   @param attribute_name [Symbol,String] name of annotated attribute
+      #   @param annotation [Hash{Symbol => Object}] annotation key => value pairs
+      # 
+      #  @overload annotate_attribute_set(set_name, annotation)
+      #   @param set_name [Symbol,String] name of a set
+      #   @param annotation [Hash{Symbol => Array<Symbol,Object>}] annotation key and value assigned to attribute name
+      # 
+      # @overload annotate_attribute_set(set_name, *annotation)
+      #   @param set_name [Symbol,String] name of a set
+      #   @param annotation [Array<Symbol,Symbol,Object>}] attribute name, annotation key and value
+      # 
+      #  @overload annotate_attribute_set(set_name, annotations)
+      #   @param set_name [Symbol,String] name of a set
+      #   @param annotations [Hash{Symbol => Hash{Symbol => Object}}] annotation key => value pairs for attributes
       def annotate_attribute_set(*args)
         first_arg = args.shift
         if first_arg.is_a?(Hash) # multiple sets defined
@@ -24,7 +47,6 @@ module ActiveModel
           end
         else
           atr_name, an_key, an_val = args.flatten.compact
-          # p "atr_name=#{atr_name}"
           if atr_name.is_a?(Hash)
             atr_name.each_pair do |k, v|
               annotate_attribute_set(first_arg, k, v)
@@ -34,8 +56,7 @@ module ActiveModel
               annotate_attribute_set(first_arg, atr_name, k, v)
             end
           else
-            #puts "#{atr_name}, #{an_key}, #{an_val}"
-            unless an_key.nil? || an_val.nil? || atr_name.nil?
+            unless an_key.nil? || atr_name.nil?
               attribute_set(first_arg).annotate(atr_name, an_key, an_val)
             end
           end
