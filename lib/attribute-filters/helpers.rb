@@ -36,15 +36,15 @@ module ActiveModel
       module_function :check_wanted_methods
 
       # @private
-      def each_element(value, must_be = nil)
+      def each_element(value, must_be = nil, &block)
         if value.is_a?(Array)
-          op = must_be.nil? ? lambda{ |v| yield(v) } : lambda{ |v| v.is_a?(must_be) ? yield(v) : v }
-          value.map(&op)
+          value.map { |v| each_element(v, must_be, &block) }
         elsif value.is_a?(Hash)
-          op = must_be.nil? ? lambda{ |k,ov| yield(ov) } : lambda{ |k,ov| ov.is_a?(must_be) ? yield(ov) : ov }
-          value.merge(value, &op)
+          value.merge(value) { |k, ov| each_element(ov, must_be, &block) }
+        elsif must_be.nil? || value.is_a?(must_be)
+          yield(value)
         else
-          must_be.nil? ? yield(value) : (value.is_a?(must_be) ? yield(value) : value)
+          value
         end
       end
       module_function :each_element
