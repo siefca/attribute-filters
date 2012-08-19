@@ -73,6 +73,7 @@ describe ActiveModel::AttributeFilters do
         annotate_attribute_set should_be_sth: {:atr_three => {:ak => "av"}, :atr_two => {:lala => "lala2"}, :yy => nil}
         annotate_attribute_set should_be_sth: [:atr_three, :oo => "oe"]
         annotate_attribute_set should_be_sth: [:atr_three, :aa, "bb"]
+        annotate_attributes_that :should_be_sth, :atr_three, :six => 6
         attributes_that(:should_be_sth).annotate(:atr_three, :cc, "dd")
         attributes_that(:should_be_sth).annotate(:atr_three, :ccc, "ddd")
         attributes_that(:should_be_sth).delete_annotation(:atr_three, :ccc)
@@ -84,6 +85,7 @@ describe ActiveModel::AttributeFilters do
       @tm.attributes_that(:should_be_sth).annotation(:atr_three, :aa).should == "bb"
       @tm.attributes_that(:should_be_sth).annotation(:atr_three, :cc).should == "dd"
       @tm.attributes_that(:should_be_sth).annotation(:atr_three, :ccc).should == nil
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :six).should == 6
       @tm.attributes_that(:should_be_sth).has_annotations?.should == true
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three).should == true
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three, :ak).should == true
@@ -95,6 +97,15 @@ describe ActiveModel::AttributeFilters do
       dupy = @tm.attributes_that(:should_be_sth)
       dupx.send(:annotations).should == dupy.send(:annotations) 
       dupx.object_id.should_not == dupy.object_id
+      -> {TestModel.class_eval do
+        attributes_that(:should_be_sth).annotate(:atr_three, :cc, "ee")
+        annotate_attribute_set should_be_sth: [:atr_three, :oo => "of"]
+        attributes_that should_be_sth: { :atr_one => {:ak => "ax"} }
+      end}.should_not raise_error
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :cc).should == "ee"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :oo).should == "of"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_one).should == {:ak => "ax"}
+      @tm.attributes_that(:should_be_sth).annotation(:atr_two, :lala).should == "lala2"
     end
   end
 
