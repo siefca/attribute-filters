@@ -68,6 +68,37 @@ The filtering code is not reusable since it operates on specific attributes.
 
 ### After ###
 
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  strip_attributes    :username, :email, :real_name
+  downcase_attributes :username, :email
+  titleize_attribute  :real_name
+
+  before_validation :filter_attributes
+end
+```
+
+or if you want to have more control:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Strip
+  include ActiveModel::AttributeFilters::Common::Downcase
+  include ActiveModel::AttributeFilters::Common::Titleize  
+
+  attributes_that should_be_stripped:   [ :username, :email, :real_name ]
+  attributes_that should_be_downcased:  [ :username, :email ]
+  attributes_that should_be_titleized:  [ :real_name ]
+
+  before_validation :strip_attributes
+  before_validation :downcase_attributes
+  before_validation :titleize_attributes
+end
+```
+
+or if you would like to create filtering methods on your own:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -97,41 +128,18 @@ class User < ActiveRecord::Base
 end
 ```
 
-or even shorter:
+Attributes that should be altered may be simply added
+to the attribute sets that you define and then filtered
+with generic methods that operate on that sets. You can share
+these methods across all of your models by putting them into your own
+handy module that will be included in models that needs it.
 
-```ruby
-class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common::Strip
-  include ActiveModel::AttributeFilters::Common::Downcase
-  include ActiveModel::AttributeFilters::Common::Titleize  
+Alternatively (as presented at the beginning) you can use predefined filtering methods from `ActiveModel::AttributeFilters::Common` module and its submodules. They contain filters
+for changing the case, stripping, squishng, squeezing, joining, splitting
+[and more](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md#Predefined_filters).
 
-  attributes_that should_be_stripped:   [ :username, :email, :real_name ]
-  attributes_that should_be_downcased:  [ :username, :email ]
-  attributes_that should_be_titleized:  [ :real_name ]
-
-  before_validation :strip_attributes
-  before_validation :downcase_attributes
-  before_validation :titleize_attributes
-end
-```
-
-or even more shorter:
-
-
-```ruby
-class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common
-
-  strip_attributes    :username, :email, :real_name
-  downcase_attributes :username, :email
-  titleize_attribute  :real_name
-
-  before_validation :filter_attributes
-end
-```
-
-If you would rather like to group filters by attribute names then
-the alternative syntax may be helpful:
+If you would rather like to group filters by attribute names while
+registering them then the alternative syntax may be helpful:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -141,20 +149,10 @@ class User < ActiveRecord::Base
 end
 ```
 
-Attributes that should be altered may be simply added
-to the attribute sets that you define and then filtered
-with generic methods. You can use these methods in all
-your models if you wish.
-
-The last action can be performed by putting the filtering methods into
-some base class that all your models inherit form or (better) into your own
-handy module that is included in all your models. Alternatively you can
-use predefined filters from `ActiveModel::AttributeFilters::Common` module.
-
 Usage and more examples
 -----------------------
 
-You can use it to filter attributes (as presented above) but you can also
+You can use Attribute Filters to filter attributes (as presented above) but you can also
 use it to express some logic
 [on your own](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md#Custom_applications).
 

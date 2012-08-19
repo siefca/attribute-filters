@@ -15,15 +15,15 @@ module ActiveModel
     # known filtering methods if they are present.
     # 
     # Calling order:
-    #   * split_attributes
-    #   * join_attributes
-    #   * squeeze_attributes
-    #   * strip_attributes
-    #   * upcase_attributes
-    #   * downcase_attributes
-    #   * capitalize_attributes
-    #   * fully_capitalize_attributes
-    #   * titleize_attributes
+    # * split_attributes
+    # * join_attributes
+    # * squeeze_attributes
+    # * strip_attributes
+    # * upcase_attributes
+    # * downcase_attributes
+    # * capitalize_attributes
+    # * fully_capitalize_attributes
+    # * titleize_attributes
     def filter_attributes
       respond_to?(:split_attributes)            and split_attributes
       respond_to?(:join_attributes)             and join_attributes

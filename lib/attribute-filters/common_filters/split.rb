@@ -22,7 +22,8 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # The pattern used to split a string and the optional limit argument
-        # should be set using the model's class method +split_attribute+.
+        # should be set using the model's class method +split_attribute+
+        # or directly with annotations.
         # 
         # @example TODO
         #   class User < ActiveRecord::Base

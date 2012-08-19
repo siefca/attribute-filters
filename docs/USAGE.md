@@ -16,10 +16,14 @@ on all attributes that are listed in a set.
 
 Attribute sets are instances of
 [`ActiveModel::AttributeSet`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeSet)
-class. They are stored within your model as [class instance variables](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
-You cannot and should not interact with them directly
+class. You can create and update sets freely and store them wherever you want,
+but when it comes to models then (at the class-level) you can and should rely
+on a storage for sets that is already prepared.
+
+The attribute sets assigned to models are stored within them as [class instance variable](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
+You cannot and should not interact with that storage directly
 but by using dedicated class methods that are available in your models.
-These methods will allow you to read or write some data from/to attribute sets.
+These methods will allow you to read or write some data from/to stored attribute sets.
 
 Attribute Filters are using `AttributeSet` instances
 not just to store internal data but also to interact
@@ -207,7 +211,7 @@ is a wrapper that calls `attributes_to_sets` which returns
 a hash containing **all filtered attributes and arrays of sets**
 that the attributes belong to.
 
-### Querying sets in objects ###
+### Querying sets in model objects ###
 
 It is possible to access attribute sets from within the ActiveModel (or ORM, like ActiveRecord) objects.
 To do that you may use instance methods that are designed for that purpose.
@@ -910,6 +914,37 @@ if both, a setter and a getter, methods exist,
 unless the `no_presence_check` flag is passed
 to a filtering method.
 
+Annotations
+-----------
+
+Annotations are portions of data that you can bind to attribute names residing within attribute sets.
+Why? To store something that is related to the specific attribute and that should be memorized within
+a set and/or its copies (if any).
+
+You can annotate each attribute name using key -> value pairs where the key is always a symbol and value
+is any kind of object you want. Only existing attributes can be annotated and deleting attribute
+will remove annotations that are assigned to it.
+
+When you copy a set, create difference or intersection of attribute sets then annotations are also copied. If the
+operation creates a sum or joins sets then the annotations are mixed too.
+
+The annotations are used by some of the predefined filters described later to precise operations that have
+to be taken (e.g. specifying separator string for attribute joining filter and so on).
+
+### Creating annotations ###
+
+You can create annotations while defining a set or you can add them later with `annotate` method called on
+the instance of `AttributeSet`.
+
+Example:
+
+```ruby
+  class User
+    attributes_that :should_be_something,       [:name => { :some_key => "some value" }, :
+    attributes_that_are :required_to_something, :account  => { :some_key => "some value" }
+  end
+```
+
 Predefined filters
 ------------------
 
@@ -917,11 +952,123 @@ Predefined filters are ready-to-use methods
 for filtering attributes. You just have to call them
 or pass their names to callback hooks.
 
-To use predefined filters you have to manually
+To use all predefined filters you have to manually
 include the [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
-module. If you don't want to include portions of code that you'll never use, you can also include some filters selectively. To do that just include just a submodule containing certain filtering method.
+module. That will include **all available filtering methods** into your model.
 
-Here is a list of the predefined filtering methods:
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  the_attribute name:   [:should_be_downcased, :should_be_titleized ]
+
+  before_validation :downcase_attributes
+  before_validation :titleize_attributes
+end
+```
+
+If you don't want to include portions of code that you'll never use, you can include some filters selectively. To do that include just a submodule containing certain filtering method:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Downcase
+  include ActiveModel::AttributeFilters::Common::Titleize
+
+  the_attribute name:   [:should_be_downcased, :should_be_titleized ]
+
+  before_validation :downcase_attributes
+  before_validation :titleize_attributes
+end
+```
+
+As you can see, to use any filter you should include a proper submodule, add attribute
+names to a proper set and register a callback. The name of a set
+that a filtering method will use is predetermined and follows the
+convention that it should correspond to the name of a filter. So the
+set used by squeezing filter will be named `should_be_squeezed`.
+
+For example, to squeeze attributes `name` and `email` you can write:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+  attributes_that should_be_sqeezed: [:email, :name]
+  before_validation :squeeze_attributes
+end
+```
+
+The filtering methods usually come with class-level DSL methods
+that are a simple wrappers calling `the_attribute`. So you can
+also write:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+  squeeze_attributes :email, :name
+  before_validation :squeeze_attributes
+end
+```
+
+### Calling all at once ###
+
+There is a special method called
+[`filter_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters.html#filter_attributes-instance_method) that can be registered as a callback. It will call all possible (known) filtering methods
+in a predetermined order.
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+  include ActiveModel::AttributeFilters::Common::Capitalize
+
+  squeeze_attributes :email, :name
+  capitalize_attributes :name
+
+  before_validation :filter_attributes
+end
+```
+
+Use this method if you're really lazy.
+You can also create your own method like that and call all needed filters there:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+  include ActiveModel::AttributeFilters::Common::Capitalize
+
+  squeeze_attributes :email, :name
+  capitalize_attributes :name
+
+  before_validation :my_total_filtering_method
+
+  def my_total_filtering_method
+    squeeze_attributes
+    capitalize_attributes
+  end
+end
+```
+
+But to increase readability you should go with the old-fashion way and register
+each filtering callback method separately.
+
+### Data types ###
+
+The common filters are aware and can operate on attributes that
+are arrays or hashes. If an array or a hash is detected then
+the filtering is made **recursively** for each element (or for each value in case
+of a hash) and the produced structure is returned. If the attribute has an
+unknown type then its value is not altered at all and left intact.
+
+Some of the common filters may treat arrays and hashes in a slight different
+way (e.g. joining and splitting filters do that).
+
+The common filters are aware of multibyte strings so string
+operations should handle diacritics properly.
+
+### List of filters ###
 
 * `capitalize_attributes` (submodule: `Capitalize`)
 * `fully_capitalize_attributes` (submodule: `Capitalize`)
@@ -932,39 +1079,119 @@ Here is a list of the predefined filtering methods:
 * `squeeze_attributes` (submodule: `Squeeze`)
 * `squish_attributes` (submodule: `Squish`)
 
-Example:
+#### Capitalization ####
 
-```ruby
-class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common
-  
-  the_attribute user:   [:should_be_squished, :should_be_downcased  ]
-  the_attribute email:  [:should_be_squished, :should_be_downcased  ]
-  the_attribute name:   [:should_be_squished, :should_be_downcased, :should_be_titleized ]
-  
-  before_validation :squish_attributes
-  before_validation :downcase_attributes
-  before_validation :titleize_attributes
-end
-```
+* Submodule: [`Capitalize`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Capitalize.html)
 
-or (better):
+##### `capitalize_attributes` #####
 
-```ruby
-class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common::Squish
-  include ActiveModel::AttributeFilters::Common::Downcase
-  include ActiveModel::AttributeFilters::Common::Titleize
-  
-  the_attribute user:   [:should_be_squished, :should_be_downcased  ]
-  the_attribute email:  [:should_be_squished, :should_be_downcased  ]
-  the_attribute name:   [:should_be_squished, :should_be_downcased, :should_be_titleized ]
-  
-  before_validation :squished_attributes
-  before_validation :downcase_attributes
-  before_validation :titleize_attributes
-end
-```
+Capitalizes attributes.
+
+* Callback method: `capitalize_attributes`
+* Class-level helper: `capitalize_attributes(*attribute_names)`
+* Uses set: `:should_be_capitalized`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+##### `fully_capitalize_attributes` #####
+
+Capitalizes attributes and squeezes spaces that separate strings.
+
+* Callback method: `fully_capitalize_attributes`
+* Class-level helper: `fully_capitalize_attributes(*attribute_names)`
+* Uses set: `:should_be_fully_capitalized` and `:should_be_titleized`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+##### `titleize_attributes` #####
+
+Titleizes attributes.
+
+* Callback method: `titleize_attributes`
+* Class-level helper: `titleize_attributes(*attribute_names)`
+* Uses set: `:should_be_titleized`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+#### Case ####
+
+* Submodule: [`Case`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Case.html)
+
+##### `upcase_attributes` #####
+
+Upcases attributes.
+
+* Callback method: `upcase_attributes`
+* Class-level helper: `upcase_attributes(*attribute_names)`
+* Uses set: `:should_be_upcased`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+##### `downcase_attributes` #####
+
+Downcases attributes.
+
+* Callback method: `downcase_attributes`
+* Class-level helper: `downcase_attributes(*attribute_names)`
+* Uses set: `:should_be_downcased`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+#### Strip ####
+
+* Submodule: [`Strip`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Strip.html)
+
+##### `strip_attributes` #####
+
+Strips attributes of leading and trailing spaces.
+
+* Callback method: `strip_attributes`
+* Class-level helper: `strip_attributes(*attribute_names)`
+* Uses set: `:should_be_stripped`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+#### Squeeze ####
+
+* Submodule: [`Squeeze`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Squeeze.html)
+
+##### `squeeze_attributes` #####
+
+Squeezes attributes (squeezes repeating spaces into one).
+
+* Callback method: `squeeze_attributes`
+* Class-level helper: `squeeze_attributes(*attribute_names)`
+* Uses set: `:should_be_squeezed`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+##### `squish_attributes` #####
+
+Squishes attributes (removes all whitespace characters on both ends of the string, and then changes remaining consecutive whitespace groups into one space each).
+
+* Callback method: `squish_attributes`
+* Class-level helper: `squish_attributes(*attribute_names)`
+* Uses set: `:should_be_squished`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: no
+
+#### Split ####
+
+* Submodule: [`Split`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Split.html)
+
+##### `split_attributes` #####
+
+Splits attributes.
+
+* Callback method: `split_attributes`
+* Class-level helper: `split_attributes(*attribute_names)`
+* Uses set: `:should_be_splitted`
+* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Uses annotations: yes
+ * 
+
+It splits the 
+
 
 See the
 [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
