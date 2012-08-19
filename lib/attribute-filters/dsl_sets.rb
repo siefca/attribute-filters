@@ -60,7 +60,7 @@ module ActiveModel
     # @param set_name [Symbol] name of attribute set
     # @return [AttributeSet] attribute set
     def attribute_set_simple(set_name)
-      self.class.attribute_set(set_name)
+      self.class.attribute_set(set_name).dup
     end
 
     # Returns a set containing all attributes.
@@ -135,13 +135,13 @@ module ActiveModel
     # that create DSL for managing attribute sets.
     module ClassMethods
       # @overload attribute_set()
-      #   Gets all the defined attribute sets.
+      #   Gets all the defined attribute sets by calling +attribute_sets+.
       #   @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
       # 
       # @overload attribute_set(set_name)
-      #   Gets the contents of an attribute set of the given name.
+      #   Gets the attribute set of the given name from internal storage.
       #   @param set_name [Symbol,String] name of a set
-      #   @return [AttributeSet<String>] the collection of attribute sets
+      #   @return [AttributeSet<String>] the attribute set
       # 
       # @overload attribute_set(set_name, *attribute_names)
       #   Adds new attributes to a set of attributes.

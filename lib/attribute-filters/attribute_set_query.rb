@@ -33,7 +33,7 @@ module ActiveModel
           set_object = ::ActiveModel::AttributeSet.new
         end
         if set_object.is_a?(::Symbol) || set_object.is_a?(::String)
-          set_object = am_object.class.attribute_set(set_object)
+          set_object = am_object.class.attribute_set(set_object).dup
         elsif !set_object.is_a?(::ActiveModel::AttributeSet)
           set_object = ::ActiveModel::AttributeSet.new(set_object)
         end
@@ -157,7 +157,7 @@ module ActiveModel
       # Gets attribute names and their values for attributes from current set.
       # If an attribute does not exist it puts +nil+ as its value.
       # 
-      # @return [Hash<String,Object>] attribute names and their values
+      # @return [Hash{String => Object}] attribute names and their values
       def values_hash
         r = {}
         @am_object.for_each_attr_from_set(@set_object,  :process_all,
