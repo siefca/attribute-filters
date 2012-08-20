@@ -913,46 +913,225 @@ if the filtering operation occured.
 
 There are cases that virtual attributes (the ones that does not really exist in a database)
 are to be filtered. By default it won't happen since all the filtering methods assume
-the presence of any processed attribute as "the real" attribute. There are three ways
+the presence of any processed attribute as 'a real' attribute. There are three ways
 to overcome that problem.
 
-First (the messy one) is to add/update a virtual attribute in `attributes` hash each time
-a setter for your attribute is called. It interacts with the Rails internals so
-use it at your own risk. You should also register attribute as changed if any changes
-are made on it. To do that look at your ORM's documentation and see
-[`ActiveModel::Dirty`](http://api.rubyonrails.org/classes/ActiveModel/Dirty.html).
+#### Unconditional filtering ####
 
-The second way is to pass the `:no_presence_check` and `process_all` flags to the filtering method.
-Be aware that by doing that you take full responsibility for attribute set defined in your model.
-If you put a name of nonexistent attribute to the set then later you may get ugly error.
+The first way is to pass the `:no_presence_check` and `:process_all` flags to the filtering method.
+That causes filter to be executed for each attribute from a set without any conditions (no checking
+for presence of setter/getter method and no checking for changes).
 
-The third way is to use `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
-(available from version 1.2.0 of Attribute Filters). That's **the preferred one**.
+Be aware that by doing that you take full responsibility for attribute set names added to your set.
+If you put a name of nonexistent attribute then you may get ugly error later.
 
-Just add your virtual attributes to the model like that:
+With that approach you can filter virtual attributes that are inaccessible to controllers
+and don't show up when model is queried for known attributes. Using it may also cause some filters
+to be executed more often than needed, since the changes tracking is disabled (`process_all`).
 
-```ruby
-  class User
-    treat_as_real :some, :virtual, :attributes
-  end
-```
-
-Be aware that the virtual attributes will always be filtered regardless of `process_all` flag,
-since there is no way to know whether they have changed or not. If you are somehow updating
-`changes` (or `changed_attributes` hash) on your own then you can modify that behavior
-for specific model by putting `filter_virtual_attributes_that_have_changed` keyword into it:
+Example:
 
 ```ruby
-  class User
-    filter_virtual_attributes_that_have_changed
-    treat_as_real :some, :virtual, :attributes
+class User
+
+  # declare a virtual attribute
+  attr_accessor :real_name
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted, :no_presence_check, :process_all) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]  # assuming first_name exists in a database
+      self.last_name  = names[1]  # assuming last_name exists in a database
+    end
   end
+
+end
 ```
 
-The presence of virtual attributes is tested by checking
-if both, a setter and a getter, methods exist,
-unless the `no_presence_check` flag is passed
-to a filtering method.
+#### Marking attributes semi-real ####
+
+The second way is to use `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
+(available from version 1.2.0 of Attribute Filters). That approach may be applied to attributes
+that aren't (may not or should not be) tracked for changes and aren't (may not or should not be) accessible
+(to a controller) nor marked as protected.
+
+There are two main differences from the unconditional filtering. First is that marking attribute
+as real causes it to be added to the list of all known attributes that is returned by `all_attributes_set`
+(a.k.a `all_attributes`). The second is that nothing ugly will happen if there will be non-existent
+attributes in a set when filtering method kicks in. That's because the filtering method doesn't require
+`:no_presence_check` flag to pick up such attributes. Attributes that could not be handled are simply ignored.
+
+The `:process_all` flag is also not needed since all virtual attributes marked as real are by default
+not checked for changes.
+
+Example:
+
+```ruby
+class User
+
+  # declare a virtual attribute
+  attr_accessor :real_name
+
+  # mark the attribute as real
+  treat_as_real :real_name
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]  # assuming first_name exists in a database
+      self.last_name  = names[1]  # assuming last_name exists in a database
+    end
+  end
+
+end
+```
+
+Be aware that the virtual attributes declared that way will always be filtered
+since there is no way to know whether they have changed or not.
+That may lead to strange results under some circumstances, e.g. in case of
+cutting some part of a string stored in a virtual attribute by using a filter
+registered with `before_validation`; if such validation will be performed
+more than once then the filtering will be performed more than once too.
+
+The presence of virtual attributes is tested by checking if both, a setter and a getter,
+methods exist, unless the `no_presence_check` flag is passed to a filtering method.
+If both accessors don't exist then the attribute is not processed.
+
+This approach can be easily used with predefined filters.
+
+#### Making attributes trackable ####
+
+Since version 1.4.0 of Attribute Filters the **recommended way of dealing with
+virtual attributes** is to make use of changes tracking available in Active Model.
+To do that look at your ORM's documentation and see 
+[`ActiveModel::Dirty`](http://api.rubyonrails.org/classes/ActiveModel/Dirty.html)
+and a method `attribute_will_change` that it contains. Just call that method from within
+your setter and you're done.
+
+This approach can be easily used with predefined filters.
+
+Conditions:
+
+* Use `attr_accessible` or `attr_protected` to mark the attribute as known
+* Use your own setter for notifying that attribute value has changed or `attr_virtual`
+
+The benefit of that approach is that a filter will never be called redundantly contrary
+to previous methods.
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+
+  # declare a virtual attribute
+  attr_reader       :real_name
+  attr_accessible   :real_name
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create writer that notifies Active Model about changes
+  def real_name=(val)
+    attribute_will_change!('real_name') if val != real_name
+    @real_name = val
+  end
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]  # assuming first_name exists in a database
+      self.last_name  = names[1]  # assuming last_name exists in a database
+    end
+  end
+
+end
+```
+
+You can also use built-in DSL keyword **`attr_virtual`** that will create setter and getter
+for you:
+
+```ruby
+class User < ActiveRecord::Base
+
+  # declare a virtual attribute
+  attr_virtual      :real_name
+  attr_accessible   :real_name
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]
+      self.last_name  = names[1]
+    end
+  end
+
+end
+```
+
+#### Making attributes trackable and semi-real ####
+
+That's a variant of the recommended way of dealing with virtual attributes. It may be useful
+if you don't want to (or cannot) add virtual attributes to access lists using `attr_accessible`
+or `attr_protected`.
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+
+  # declare a virtual attribute
+  attr_virtual    :real_name
+
+  # mark the attribute as real
+  treat_as_real   :real_name
+
+  # tell the engine that all virtual attributes
+  # are tracked for changes and it should pick from changed
+  # not from all
+  virtual_attributes_are_tracked
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]
+      self.last_name  = names[1]
+    end
+  end
+
+end
+```
 
 Annotations
 -----------
@@ -1282,6 +1461,10 @@ operations should handle diacritics properly.
 * **`squeeze_attributes`**
 * **`squish_attributes`**
 
+See the
+[`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
+for detailed descriptions.
+
 #### Capitalization ####
 
 * Submodule: [`Capitalize`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Capitalize.html)
@@ -1384,21 +1567,73 @@ Squishes attributes (removes all whitespace characters on both ends of the strin
 
 ##### `split_attributes` #####
 
-Splits attributes.
+Splits attributes and puts the results to other attributes or to the same attributes as arrays.
 
-* Callback method: `split_attributes`
-* Class-level helper: `split_attributes(*attribute_names)`
+* Callback methods: `split_attributes`
+* Class-level helpers:
+ * `split_attributes(attribute_name, parameters_hash)`
+ * `split_attributes(attribute_name)`
 * Uses set: `:should_be_splitted`
-* Operates on: strings, arrays of strings, hashes of strings (as values)
+* Operates on: strings, arrays of strings
 * Uses annotations: yes
- * 
+ * `split_pattern` - a pattern passed to [`split`](http://www.ruby-doc.org/core/String.html#method-i-split) method (optional)
+ * `split_limit` - a limit passed to `split` method (optional)
+ * `split_into` - attribute names used as destinations for parts
 
-It splits the 
+If the separator is not specified and the source attribute is a kind of string then the default
+separator is applied, which is a whitespace character. You can change that by explicitly setting
+the separator to `nil`. In such case the split will occuch for each character. If there are more
+resulting parts then destination attributes then the redundant elements are ignored. If there is
+a limit given and there are more array elements than attributes then the filter behaves like
+puts leaves the redundant (unsplittable) and puts it into the last destination attribute.
 
+If the source attribute is an array then the filter will put each element of that array into each
+destination attribute. If there are more array elements than attributes then the reduntant elements
+are ignored.
 
-See the
-[`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
-for detailed descriptions.
+If the destination attributes are not given then the split filter will generate an array and replace
+currently processed attribute with an array.
+
+Examples:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Split
+
+  # virtual attribute
+  attr_reader       :real_name
+  attr_accessible   :real_name
+  def real_name=(val)
+    attribute_will_change!('real_name') if val != real_name
+    @real_name = val
+  end
+
+  # treat_as_real     :real_name
+
+  split_attributes  :real_name
+  before_validation :split_attributes
+
+end
+```
+
+#### Join ####
+
+* Submodule: [`Join`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Join.html)
+
+##### `join_attributes` #####
+
+Joins attributes and puts the results to other attributes or to the same attributes as strings.
+
+* Callback method: `join_attributes`
+* Class-level helpers:
+ * `join_attributes(attribute_name, parameters_hash)`
+ * `join_attributes(attribute_name)`
+* Uses set: `:should_be_joined`
+* Operates on: strings, arrays of strings
+* Uses annotations: yes
+ * `join_separator` - a pattern passed to [`join`](http://www.ruby-doc.org/core/Array.html#method-i-join) method (optional)
+ * `join_compact` - compact flag; if true then an array is compacted before it's joined (optional)
+ * `join_from` - attribute names used as sources for joins
 
 Custom applications
 -------------------
