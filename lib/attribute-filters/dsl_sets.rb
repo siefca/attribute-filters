@@ -318,6 +318,7 @@ module ActiveModel
             end
             return
           else
+            atr_name = atr_name.to_s
             __attributes_to_sets_map[atr_name] ||= ActiveModel::AttributeSet.new
             __attributes_to_sets_map[atr_name] << set_name
           end
