@@ -13,6 +13,7 @@ require 'attribute-filters/attribute_set_attrquery'
 require 'attribute-filters/helpers'
 require 'attribute-filters/dsl_sets'
 require 'attribute-filters/dsl_filters'
+require 'attribute-filters/dsl_attr_virtual'
 require 'attribute-filters/common_filters'
 
 if defined? ::Rails
