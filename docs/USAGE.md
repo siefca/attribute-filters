@@ -955,7 +955,7 @@ class User
 end
 ```
 
-#### Marking attributes semi-real ####
+#### Marking as semi-real ####
 
 The second way is to use `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
 (available from version 1.2.0 of Attribute Filters). That approach may be applied to attributes
@@ -1013,7 +1013,7 @@ If both accessors don't exist then the attribute is not processed.
 
 This approach can be easily used with predefined filters.
 
-#### Making attributes trackable ####
+#### Marking as trackable ####
 
 Since version 1.4.0 of Attribute Filters the **recommended way of dealing with
 virtual attributes** is to make use of changes tracking available in Active Model.
@@ -1093,7 +1093,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-#### Making attributes trackable and semi-real ####
+#### Marking as trackable and semi-real ####
 
 That's a variant of the recommended way of dealing with virtual attributes. It may be useful
 if you don't want to (or cannot) add virtual attributes to access lists using `attr_accessible`
@@ -1551,6 +1551,36 @@ Squeezes attributes (squeezes repeating spaces into one).
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
 
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+
+  squeeze_attributes  :name
+  before_validation   :squeeze_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+
+  attributes_that     :should_be_squeezed => [ :name ]
+  before_validation   :squeeze_attributes
+end
+```
+
+Result:
+
+> `Some    Name`
+
+will become:
+
+> `Some Name`
+
 ##### `squish_attributes` #####
 
 Squishes attributes (removes all whitespace characters on both ends of the string, and then changes remaining consecutive whitespace groups into one space each).
@@ -1600,21 +1630,101 @@ Examples:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Split
 
-  # virtual attribute
-  attr_reader       :real_name
+  attr_virtual      :real_name
   attr_accessible   :real_name
-  def real_name=(val)
-    attribute_will_change!('real_name') if val != real_name
-    @real_name = val
-  end
-
-  # treat_as_real     :real_name
-
   split_attributes  :real_name
   before_validation :split_attributes
-
 end
 ```
+
+or without a `split_attributes` helper:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Split
+
+  attr_virtual      :real_name
+  attr_accessible   :real_name
+
+  attributes_that   :should_be_splitted => :real_name
+  before_validation :split_attributes
+end
+```
+
+The result of executing filter (before validation) will be replacement of a string by an array containing
+words (each one in a separate element). The `real_name` attribute is a virtual attribute in this example
+but it could be real attribute. The result will be written as an array into the same attribute since there
+are no destination attributes given.
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Split
+
+  attr_virtual      :real_name
+  attr_accessible   :real_name
+  split_attributes  :real_name, :limit => 2
+  before_validation :split_attributes
+end
+```
+
+or without a `split_attributes` helper:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Split
+
+  attr_virtual      :real_name
+  attr_accessible   :real_name
+
+  attributes_that   :should_be_splitted => { :real_name => { :split_limit => 2 } }
+  before_validation :split_attributes
+end
+```
+
+The result of the above example will be the same as the previous one with the difference that any
+reduntant elements will be left intact and placed as the last element of an array. So for data:
+
+> `'Paul Thomas Wolf'`
+
+the array will be:
+
+> `[ 'Paul', 'Thomas Wolf' ]`
+
+Another example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Split
+
+  attr_virtual      :real_name
+  attr_accessible   :real_name
+  split_attributes  :real_name, :limit => 2, :into => [ :first_name, :last_name ]
+  before_validation :split_attributes
+end
+```
+
+This will split a value of the `real_name` attribute and place the results in the attributes
+called `first_name` and `last_name`, so for:
+
+> `'Paul Thomas Wolf'`
+
+the result will be:
+
+> first\_name == 'Paul'
+
+> last\_name  == 'Thomas Wolf'
+
+If you remove the limit, then it will be quite different:
+
+> first\_name == 'Paul'
+
+> last\_name  == 'Thomas'
+
+That's because there are more results than attributes they can fit into. You just have to keep in mind
+that this filter behaves like the String's split method with the difference when the results are written
+into other attributes. In that case the limit causes redundant data to be placed in last element (if the limit
+is lower or the same as a count of destination attributes) and its lack causes some of the resulting data to
+be ignored (if there is more slices than receiving attributes).
 
 #### Join ####
 
@@ -1622,7 +1732,7 @@ end
 
 ##### `join_attributes` #####
 
-Joins attributes and puts the results to other attributes or to the same attributes as strings.
+Joins attributes and places the results into other attributes or into the same attributes as strings.
 
 * Callback method: `join_attributes`
 * Class-level helpers:
@@ -1634,6 +1744,8 @@ Joins attributes and puts the results to other attributes or to the same attribu
  * `join_separator` - a pattern passed to [`join`](http://www.ruby-doc.org/core/Array.html#method-i-join) method (optional)
  * `join_compact` - compact flag; if true then an array is compacted before it's joined (optional)
  * `join_from` - attribute names used as sources for joins
+
+
 
 Custom applications
 -------------------
