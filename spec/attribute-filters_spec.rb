@@ -11,6 +11,11 @@ describe ActiveModel::AttributeFilters do
       @tm = TestModel.new
     end
 
+    it "should return list of sets attribute belongs to" do
+      @tm.the_attribute(:email).should include :should_be_stripped
+      @tm.the_attribute('email').should include :should_be_stripped
+    end
+
     it "should be able to filter model attributes properly" do
       @tm.username          = " UPCASEĄĘŚĆ      "
       @tm.email             = " Some@EXAMPLE.com   "
