@@ -205,6 +205,7 @@ module ActiveModel
       end
       alias_method :filter_virtual_attributes_that_changed, :filter_virtual_attributes_that_have_changed
       alias_method :filter_changed_virtual_attributes,      :filter_virtual_attributes_that_have_changed
+      alias_method :virtual_attributes_are_tracked,         :filter_virtual_attributes_that_have_changed
 
       # Gets the internal flag that causes to check virtual attributes
       # for changes when selecting attributes for filtering.
