@@ -74,10 +74,14 @@ module ActiveModel
       self.class.attribute_set(set_name).dup
     end
 
-    # Returns a set containing all attributes.
+    # Returns a set containing all known attributes.
     # @return [AttributeSet] attribute set
     def all_attributes
-      ActiveModel::AttributeSet::Query.new(AttributeSet.new(attributes.keys), self)
+      all_attrs = ActiveModel::AttributeSet::Query.new(attributes.keys, self)
+      all_attrs += self.class.accessible_attributes
+      all_attrs += self.class.protected_attributes
+      all_attrs += self.class.treat_as_real
+      all_attrs.delete("")
     end
     alias_method :all_attributes_set, :all_attributes
 

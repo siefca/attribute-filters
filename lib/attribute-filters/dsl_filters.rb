@@ -276,7 +276,7 @@ module ActiveModel
 
     private
 
-    # Helper that collects virtual attributes that
+    # Helper that collects untracked virtual attributes that
     # have setters and getters.
     def __vatrf(no_presence_check = false)
       tar = self.class.send(:__treat_as_real)
