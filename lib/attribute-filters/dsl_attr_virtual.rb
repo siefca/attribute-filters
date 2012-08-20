@@ -27,7 +27,7 @@ module ActiveModel
               self.class_eval <<-EVAL
                 alias_method :#{atr_name}_without_change_tracking=, :#{writer_name}
                 def #{writer_name}(val)
-                  attribute_will_change!('#{atr_name}') if val != #{'atr_name'}
+                  attribute_will_change!('#{atr_name}') if val != '#{atr_name}'
                   #{atr_name}_without_change_tracking=(val)
                 end
               EVAL
