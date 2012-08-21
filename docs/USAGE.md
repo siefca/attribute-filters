@@ -1004,7 +1004,7 @@ Be aware that the virtual attributes declared that way will always be filtered
 since there is no way to know whether they have changed or not.
 That may lead to strange results under some circumstances, e.g. in case of
 cutting some part of a string stored in a virtual attribute by using a filter
-registered with `before_validation`; if such validation will be performed
+registered with `before_save`; if such operation will be performed
 more than once then the filtering will be performed more than once too.
 
 The presence of virtual attributes is tested by checking if both, a setter and a getter,
@@ -1597,42 +1597,59 @@ Squishes attributes (removes all whitespace characters on both ends of the strin
 
 ##### `split_attributes` #####
 
-Splits attributes and puts the results to other attributes or to the same attributes as arrays.
+Splits attributes into arrays and puts the results into other attributes or into the same attributes.
 
 * Callback methods: `split_attributes`
 * Class-level helpers:
  * `split_attributes(attribute_name, parameters_hash)`
  * `split_attributes(attribute_name)`
 * Uses set: `:should_be_splitted`
-* Operates on: strings, arrays of strings
+* Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: yes
  * `split_pattern` - a pattern passed to [`split`](http://www.ruby-doc.org/core/String.html#method-i-split) method (optional)
  * `split_limit` - a limit passed to `split` method (optional)
  * `split_into` - attribute names used as destinations for parts
+ * `split_flatten` - flag that causes resulting array to be flattened
+ 
+If some source attribute is an array or a hash then the filter will recursively traverse it and
+operate on each element. The filter works the same way as the `split` method from the `String` class
+of Ruby's standard library. If the filter encounters an object which is not a string nor an array or a hash,
+it simply leaves it as is.
 
-If the separator is not specified and the source attribute is a kind of string then the default
-separator is applied, which is a whitespace character. You can change that by explicitly setting
-the separator to `nil`. In such case the split will occuch for each character. If there are more
-resulting parts then destination attributes then the redundant elements are ignored. If there is
-a limit given and there are more array elements than attributes then the filter behaves like
-puts leaves the redundant (unsplittable) and puts it into the last destination attribute.
+You can set `:pattern` (`:split_pattern`) and `:limit` (`:split_limit`) arguments passed to
+`split` method but note that **a limit is applied to each processed string separately**,
+not to the resulting array **(if the processed attribute is an array)**. For instance,
+if there is a string containing 3 words (`'A B C'`) and the limit is set to 2 then the last two words
+will be left intact and placed in a second element of the resulting array (`['A', 'B C']`).
+If the source is an array (`['A', 'B B B B', 'C']`) the result of this operation will be array of arrays
+(`[ ['A'], ['B B'], ['C'] ]`); as you can see the limit will be applied to its second element.
 
-If the source attribute is an array then the filter will put each element of that array into each
-destination attribute. If there are more array elements than attributes then the reduntant elements
-are ignored.
+If there are no destination attributes defined (`:into` or `:split_into` option) then
+the resulting array will be written to a current attribute. If there are destination attributes
+given then the resulting array will be written into them (each subsequent element into each next attribute).
+The elements that don't fit in the collection are simply ignored.
 
-If the destination attributes are not given then the split filter will generate an array and replace
-currently processed attribute with an array.
+There is also `flatten` (or `:split_flatten`) parameter that causes the resulting array to be
+flattened. Note that it doesn't change how the limits work; they still will be applied but to a single
+split results, not to the whole resulting array (in case of array of arrays).
 
 Examples:
 
 ```ruby
 class User < ActiveRecord::Base
+  # Including common filter for splitting
   include ActiveModel::AttributeFilters::Common::Split
 
+  # Registering virtual attribute
   attr_virtual      :real_name
   attr_accessible   :real_name
+
+  # Adding attribute name to :should_be_splitted set
   split_attributes  :real_name
+
+  # Registering callback method
+  # Warning: it will be executed each time model object is validated
+  #          (the nice thing is that it allows to validate the results, not the unsplitted data)
   before_validation :split_attributes
 end
 ```
@@ -1641,20 +1658,27 @@ or without a `split_attributes` helper:
 
 ```ruby
 class User < ActiveRecord::Base
+  # Including common filter for splitting
   include ActiveModel::AttributeFilters::Common::Split
 
+  # Registering virtual attribute
   attr_virtual      :real_name
   attr_accessible   :real_name
 
+  # Adding attribute name to :should_be_splitted set (by hand)
   attributes_that   :should_be_splitted => :real_name
+
+  # Registering callback method
   before_validation :split_attributes
 end
 ```
 
-The result of executing filter (before validation) will be replacement of a string by an array containing
+The result of executing the filter above will be replacement of a string by an array containing
 words (each one in a separate element). The `real_name` attribute is a virtual attribute in this example
 but it could be real attribute. The result will be written as an array into the same attribute since there
-are no destination attributes given.
+are no destination attributes given. So `'Paul Wolf'` will become `['Paul', 'Wolf']`.
+
+Using limit:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1667,7 +1691,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-or without a `split_attributes` helper:
+or without a `split_attributes` keyword:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1690,7 +1714,7 @@ the array will be:
 
 > `[ 'Paul', 'Thomas Wolf' ]`
 
-Another example:
+Another example, let's write results to some attributes:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1698,10 +1722,12 @@ class User < ActiveRecord::Base
 
   attr_virtual      :real_name
   attr_accessible   :real_name
-  split_attributes  :real_name, :limit => 2, :into => [ :first_name, :last_name ]
+  split_attributes  :real_name, :limit => 2, :into => [ :first_name, :last_name ], :pattern => ' '
   before_validation :split_attributes
 end
 ```
+
+(The `:pattern` is given here but you may skip it if it's a space.)
 
 This will split a value of the `real_name` attribute and place the results in the attributes
 called `first_name` and `last_name`, so for:
@@ -1710,21 +1736,26 @@ called `first_name` and `last_name`, so for:
 
 the result will be:
 
-> first\_name == 'Paul'
-
-> last\_name  == 'Thomas Wolf'
+```
+  first_name: 'Paul'
+  last_name:  'Thomas Wolf'
+```
 
 If you remove the limit, then it will be quite different:
 
-> first\_name == 'Paul'
+```
+  first_name: 'Paul'
+  last_name:  'Thomas'
+```
 
-> last\_name  == 'Thomas'
-
-That's because there are more results than attributes they can fit into. You just have to keep in mind
+That's because there are more results than attributes they fit into. You just have to keep in mind
 that this filter behaves like the String's split method with the difference when the results are written
-into other attributes. In that case the limit causes redundant data to be placed in last element (if the limit
-is lower or the same as a count of destination attributes) and its lack causes some of the resulting data to
-be ignored (if there is more slices than receiving attributes).
+into other attributes. In that case the limit causes redundant data to be placed in the last element (if a limit
+is lower or is the same as the count of destination attributes) and its lack causes some of the resulting data to
+be ignored (if there are more slices than receiving attributes).
+
+The pattern parameter (`:pattern` when using `split_attributes` or `:split_pattern` when directly
+annotating attribute in a set) should be a string.
 
 #### Join ####
 
@@ -1744,6 +1775,15 @@ Joins attributes and places the results into other attributes or into the same a
  * `join_separator` - a pattern passed to [`join`](http://www.ruby-doc.org/core/Array.html#method-i-join) method (optional)
  * `join_compact` - compact flag; if true then an array is compacted before it's joined (optional)
  * `join_from` - attribute names used as sources for joins
+
+The join filter uses `join` instance method of `Array` class to produce single string from multiple strings.
+These strings may be values of other attributes (source attributes), values of an array stored in an attribute
+or mix of it. If the `:compact` (`:join_compact` in case of manually annotating a set) parameter is given
+and it's not `false` nor `nil` then results are compacted during processing. That means any slices equals to `nil` are 
+removed.
+
+The splitted source is a current attribute if the parameter `:from` (or annotation key `:join_from`) is not given.
+If the attribute content is a string
 
 
 
