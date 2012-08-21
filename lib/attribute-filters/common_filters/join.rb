@@ -37,7 +37,13 @@ module ActiveModel
             vals = AttributeSet::Query.new(from, self).values
             separator = set_obj.has_annotation?(atr_name, :join_separator) ?
                         set_obj.annotation(atr_name, :join_separator) : " "
-            compact ? vals.compact.join(separator) : vals.join(separator)
+            if compact && vals.respond_to?(:compact)
+              vals.compact.join(separator)
+            elsif vals.respond_to?(:join)
+              vals.join(separator)
+            else
+              vals
+            end
           end
         end
 
