@@ -210,7 +210,9 @@ describe ActiveModel::AttributeFilters do
     end
 
     shared_examples "splitting_array" do |de, ev, rn|
-      before { TestModel.class_eval{before_save :split_attributes} }
+      before do
+        TestModel.class_eval{before_save :split_attributes}
+      end
       it "should split array attribute #{de}" do
         TestModel.class_eval(ev)
         @tm.real_name = rn
@@ -241,54 +243,54 @@ describe ActiveModel::AttributeFilters do
     end
     
     context "with no pattern and no limit" do
-      include_examples "splitting_array", "", "split_attribute :real_name => [ :first_name, :last_name ]",
+      include_examples "splitting_array", "", "split_attribute :real_name => { :into => [ :first_name, :last_name ], :flatten => true }",
                                           ["Paweł", "Wilk", "Trzy"]
     end
 
     context "with a single space pattern and without a limit" do
       include_examples  "splitting_array", "having 3 elements",
-                        "split_attribute :real_name => {:pattern => ' ', :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:pattern => ' ', :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł", "Wilk", "Trzy"]
       include_examples  "splitting_array", "having 2 elements and first containing pattern (space)",
-                        "split_attribute :real_name => {:pattern => ' ', :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:pattern => ' ', :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł Wilk", "Trzy"]
     end
 
     context "with a single space pattern and with a limit" do
       include_examples  "splitting_array", "having 3 elements",
-                        "split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł", "Wilk", "Trzy"]
       include_examples  "splitting_array", "having 2 elements and first containing pattern (space)",
-                        "split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł Wilk", "Trzy"]
       include_examples  "splitting_array", "having 2 elements and first containing pattern (space)",
-                        "split_attribute :real_name => {:pattern => ' ', :limit => 10, :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:pattern => ' ', :limit => 10, :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł", "Wilk"]
       include_examples  "splitting_array", "having 1 element and first containing pattern (space)",
-                        "split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł Wilk"]
       it "should split array attribute having 2 elements and second containing pattern (space)" do
-        TestModel.class_eval{split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ]}}
+        TestModel.class_eval{split_attribute :real_name => {:pattern => ' ', :limit => 2, :into => [ :first_name, :last_name ], :flatten => true}}
         @tm.real_name = ["Paweł", "Wilk Trzy", "Cztery"]
         @tm.first_name = nil
         @tm.last_name = nil
         -> { @tm.save }.should_not raise_error
         @tm.first_name.should == 'Paweł'
-        @tm.last_name.should == 'Wilk Trzy'
+        @tm.last_name.should == 'Wilk'
       end
     end
 
     context "without a pattern and with a limit" do
       include_examples  "splitting_array", "having 3 elements",
-                        "split_attribute :real_name => {:limit => 2, :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:limit => 2, :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł", "Wilk", "Trzy"]
       include_examples  "splitting_array", "having 2 elements",
-                        "split_attribute :real_name => {:limit => 2, :into => [ :first_name, :last_name ]}",
+                        "split_attribute :real_name => {:limit => 2, :into => [ :first_name, :last_name ], :flatten => true}",
                         ["Paweł", "Wilk"]
     end
 
     it "should split array attribute with the destination in the same place" do
-      TestModel.class_eval{split_attribute :real_name}
+      TestModel.class_eval{split_attribute :real_name => { :flatten => true } }
       TestModel.class_eval{before_save :split_attributes}
       @tm.real_name = ["Paweł", "Wilk Trzy", "Cztery"]
       @tm.first_name = nil
@@ -296,19 +298,22 @@ describe ActiveModel::AttributeFilters do
       -> { @tm.save }.should_not raise_error
       @tm.first_name.should == nil
       @tm.last_name.should == nil
-      @tm.real_name.should == ["Paweł", "Wilk Trzy", "Cztery"]
+      @tm.real_name.should == ["Paweł", "Wilk", "Trzy", "Cztery"]
+
       TestModel.class_eval{split_attribute :real_name => {:limit => 2}}
-      @tm.real_name = ["Paweł", "Wilk Trzy", "Cztery"]
+      @tm.real_name = ["Paweł", "Wilk Trzy Osiem Dziewiec", "Cztery"]
       -> { @tm.save }.should_not raise_error
-      @tm.real_name.should == ["Paweł", "Wilk Trzy"]
+      @tm.real_name.should == [["Paweł"], ["Wilk", "Trzy Osiem Dziewiec"], ["Cztery"]]
+
       TestModel.class_eval{split_attribute :real_name => {:limit => 2, :pattern => ' '}}
       @tm.real_name = ["Paweł", "Wilk Trzy", "Cztery"]
       -> { @tm.save }.should_not raise_error
-      @tm.real_name.should == ["Paweł", "Wilk Trzy"]
+      @tm.real_name.should == [["Paweł"], ["Wilk", "Trzy"], ["Cztery"]]
+
       TestModel.class_eval{split_attribute :real_name => {:pattern => ' '}}
       @tm.real_name = ["Paweł", "Wilk Trzy", "Cztery"]
       -> { @tm.save }.should_not raise_error
-      @tm.real_name.should == ["Paweł", "Wilk", "Trzy", "Cztery"]
+      @tm.real_name.should == [["Paweł"], ["Wilk", "Trzy"], ["Cztery"]]
     end
 
     shared_examples "joining" do |ev,rn,rns,rnt|
@@ -320,25 +325,26 @@ describe ActiveModel::AttributeFilters do
         @tm.first_name = "Paweł"
         @tm.last_name = "Wilk"
         -> { @tm.save }.should_not raise_error
-        # source attributes are strings and nils:
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == 'Wilk'
         @tm.real_name.should == 'Paweł Wilk'
+        # source attributes are strings and nils:
         @tm.first_name = "Paweł"
         @tm.last_name = nil
         @tm.real_name = rns
         @tm.class.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
-        # source attributes are arrays and strings:
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == nil
         @tm.real_name.should == 'Paweł'
+        # source attributes are arrays and strings:
         @tm.first_name = ["Paweł", "Wilk"]
         @tm.last_name = "Trzeci"
         @tm.real_name = rnt
         @tm.class.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
         @tm.real_name.should == 'Paweł Wilk Trzeci'
+        
       end
     end
 
