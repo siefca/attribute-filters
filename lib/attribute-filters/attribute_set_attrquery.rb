@@ -102,13 +102,6 @@ module ActiveModel
           @set_object.respond_to?(name) || name.to_s.slice(-1,1) == '?'
         end
       end
-
-      # @private
-      def is_a?(klass)
-        super || @set_object.is_a?(klass)
-      end
-      alias_method :kind_of?, :is_a?
-
     end # class AttrQuery
   end # class AttributeSet
 end # module ActiveModel

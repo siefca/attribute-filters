@@ -132,6 +132,11 @@ module ActiveModel
       alias_method :kind_of?, :is_a?
 
       # @private
+      def instance_of?(klass)
+        super || @set_object.instance_of?(klass)
+      end
+
+      # @private
       def instance_eval(*args, &block)
         @set_object.instance_eval(*args, &block)
       end
