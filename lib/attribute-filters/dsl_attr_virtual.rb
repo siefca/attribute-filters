@@ -11,6 +11,9 @@
 module ActiveModel
   module AttributeFilters
     module ClassMethods
+
+      private
+
       unless method_defined?(:attr_virtual)
         # This method creates setter and getter for attributes of the given names
         # and ensures that changes of their values are tracked.
