@@ -77,7 +77,9 @@ module ActiveModel
             from        = parameters[:from] || parameters[:source] || parameters[:sources] || parameters[:join_from]
             compact = parameters.key?(:compact) ? !!parameters[:compact] : !!parameters[:join_compact]
             annotate_attributes_that(:should_be_joined, atr_name =>
-                                     {:join_separator => separator, :join_compact => compact, :join_from => from})
+                                     { :join_separator => separator,
+                                       :join_compact => compact,
+                                       :join_from => from })
           end
           alias_method :join_attributes, :join_attribute
         end # module ClassMethods

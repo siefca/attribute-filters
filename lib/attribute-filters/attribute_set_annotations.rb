@@ -98,8 +98,10 @@ module ActiveModel
             end
           end
         else
-          return unless __attribute_sets.include?(set_name)
-          __attribute_sets[set_name.to_sym].delete_annotation(atr_name, *annotations)
+          set_name = set_name.to_sym
+          return unless __attribute_sets.include?(set_name) && atr_name.present?
+          atr_name = atr_name.to_sym
+          __attribute_sets[set_name].delete_annotation(atr_name, *annotations)
         end
       end
       alias_method :delete_annotations_from_set,  :delete_annotation_from_set
