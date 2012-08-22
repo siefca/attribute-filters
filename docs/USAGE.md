@@ -219,7 +219,7 @@ To do that you may use instance methods that are designed for that purpose.
 #### `attribute_set` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_set)
-instancemethod called withount an argument **returns the attribute set object containing all attributes known in a current object**.
+instance method called withount an argument **returns the attribute set object containing all attributes known in a current object**.
 
 Example:
 
@@ -404,6 +404,7 @@ Example:
 
 Note that the returned hash will have a default value set to instance of the `AttributeSet`.
 It won't return the exact internal hash but a duplicate.
+
 If you'll try to get the value of an element that doesn't exist **the empty set will be returned**.
 
 Instead of `attributes_to_sets` you may also use one of the aliases:
@@ -1189,7 +1190,7 @@ or
 
 #### After defining sets ####
 
-To create annotations separately use the [`annotate_attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods.html#annotate_attribute_set-instance_method) method (an its aliases):
+To create annotations for class-level sets use the [`annotate_attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods.html#annotate_attribute_set-instance_method) method (an its aliases):
 
 * **`annotate_attributes_that_are`**
 * **`annotate_attributes_that`**
@@ -1203,36 +1204,31 @@ Example:
 
 ```ruby
   class User
-    attributes_that_are cool: [ :some_unannotated, :email ]
+    attributes_that_are cool: [ :some_unannotated, :email, :username ]
     annotate_attributes_that_are cool: [ :email, :some_key, "some value" ]
-  end
-```
-
-or use `annotate` method that operates on attribute set:
-
-```ruby
-  class User
-    attributes_that_are cool: [ :some_unannotated, :email ]
-    attributes_that_are(:cool).annotate :email, :some_key, "some value"
+    annotate_attributes_that_are :cool => { :username => { :some_key => "some value", :other_k => 'other v' } }
   end
 ```
 
 Caution: Annotating attributes that aren't present in a set
-with `annotate_attribute_set` or by using `annotate` method will raise an error.
+with `annotate_attribute_set` will raise an error.
 
 ### Removing annotations ###
 
-It is possible to remove annotations **localy**.
-You can use:
+To remove annotations **localy** you can use:
 
 * **`delete_annotation(attribute_name, annotation_key)`** - to delete specified annotation key for the given attribute
 * **`delete_annotations(attribute_name)`** - to delete all annotations for an attribute of the given name
 * **`remove_annotations()`** - to remove all annotations from a set
 
-Be aware that deleting annotations from within instnce methods won't work on a sets
-defined directly in classes describing models. That's because you'll always get
-a copy when querying these sets at instance-level. They will work in a model,
-at a class-level however.
+Be aware that using these method to delete annotations from class-level sets won't work.
+That's because you'll always get a copy when querying these sets. There are methods that
+will work in a model, at a class-level however:
+
+* **`delete_annotations_from_set(set_name, attribute, *annotation_keys)`** - to delete annotation keys for the given attribute
+* **`delete_annotations_from_set(set_name, attribute)`** - to delete all annotation keys for the given attribute
+* **`delete_annotations_from_set(set_name => *attributes)`** - to delete all annotation keys for the given attribute
+* **`delete_annotations_from_set(set_name => { attribute => keys})`** - to delete specified annotation keys for the given attributes
 
 Example:
 
@@ -1241,13 +1237,19 @@ Example:
     attributes_that_are cool: [ :some_unannotated, :email ]
 
     # That will work
-    attributes_that_are(:cool).delete_annotation(:email)
+    delete_annotations_from_set cool: :email
+    delete_annotations_from_set cool: [ :email, :key_one ]
+    delete_annotation_from_set cool: { :email => [:key_one, :other_key], :name => :some_key }
 
     # That won't affect the global set called 'cool'
     # since we have its copy here, not the original.
     def some_method
       attributes_that_are(:cool).delete_annotation(:email)
     end
+
+    # That won't affect the global set called 'cool'
+    # since we have its copy here, not the original.
+    attributes_that_are(:cool).delete_annotation(:email)
   end
 ```
 
@@ -1264,7 +1266,7 @@ Example:
     attributes_that_are cool: { :email => { :other_key => "other_value"   } }
     attributes_that_are cool: { :email => { :some_key  => "another_value" } }
     annotate_attributes_that_are :cool, :email, :some_key => "x"
-    attributes_that_are(:cool).delete_annotation(:email, :other_key)
+    delete_annotation_from_set :cool => { :email => :other_key }
   end
   
   # In the result there will be only one annotation key left;
@@ -1274,23 +1276,20 @@ Example:
 Caution: Annotating attributes that aren't present in a set
 with `annotate_attribute_set` or by using `annotate` method will raise an error.
 
-Be aware that updating annotations from within instnce methods won't work on a sets
+Be aware that updating annotations directly (using `annotate` method) won't work on sets
 defined directly in classes describing models. That's because you'll always get
-a copy when querying these sets at instance-level. They will work in a model,
-at a class-level however.
+a copy when querying these sets.
 
 ```ruby
   class User
     attributes_that_are :cool => { :email => { :some_key => "some value"  } }
     
+    # Calling `some_method` won't work on 'cool' global set.
     def some_method
       attributes_that_are(:cool).delete_annotation(:email, :other_key)
     end
   end
   
-  # Calling some method won't work in 'cool' global set since instance method
-  # attributes_that_are returns a copy. The global set 'cool' will still have
-  # the annotation.
 ```
 
 ## Querying annotations ###

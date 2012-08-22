@@ -114,10 +114,11 @@ module ActiveModel
             elsif !into.is_a?(Array)
               into = into.respond_to?(:to_a) ? into.to_a : [ into ]
             end
-            a.annotate(atr_name, :split_flatten, flatten)
-            a.annotate(atr_name, :split_pattern, pattern)
-            a.annotate(atr_name, :split_limit, limit)
-            a.annotate(atr_name, :split_into, into)
+            annotate_attributes_that(:should_be_splitted, atr_name => {
+                                     :split_flatten => flatten,
+                                     :split_pattern => pattern,
+                                     :split_limit => limit,
+                                     :split_into => into})
           end
           alias_method :split_attributes, :split_attribute
         end # module ClassMethods

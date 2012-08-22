@@ -26,8 +26,8 @@ module ActiveModel
     # returns a copy of a set that is stored within a model class. The copy
     # is wrapped in a `AttributeSet::AttrQuery` instance.
     # 
-    # If the argument is a kind of +AttributeSet+ then the local set
-    # is taken and wrapped in a `AttributeSet::AttrQuery` instance.
+    # If the argument is a kind of {AttributeSet} then the local set
+    # is taken and wrapped in a {AttributeSet::AttrQuery} instance.
     # 
     # If the argument is other kind than the specified above then
     # the method tries to initialize new, local set object and wraps
@@ -108,12 +108,19 @@ module ActiveModel
     alias_method :inaccessible_attributes_set,    :all_inaccessible_attributes
 
     # Gets all the defined attribute sets.
+    # 
     # @note Use +key+ method explicitly to check if the given set exists. The hash returned by this method
     #  will always return {AttributeSet} object. If there is no such set defined then the returned,
     #  matching set will be empty.
+    # 
     # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
     def attribute_sets
-      self.class.attribute_sets
+      s = self.class.attribute_sets
+      s.merge!(s) do |set_name, set_object|
+        ActiveModel::AttributeSet::Query.new(set_object, self)
+      end
+      s.default = ActiveModel::AttributeSet::Query.new(ActiveModel::AttributeSet.new.freeze, self)
+      s
     end
     alias_method :attributes_sets, :attribute_sets
     alias_method :properties_sets, :attribute_sets
@@ -137,9 +144,11 @@ module ActiveModel
     alias_method :are_the_attributes,   :filtered_attribute
 
     # Gets all the defined attribute set names hashed by attribute names.
+    # 
     # @note Use +key+ method explicitly to check if the given attribute is assigned to any set. The hash
     #  returned by this method will always return {AttributeSet} object. If the attribute is not assigned
     #  to any set then the returned, matching set will be empty.
+    # 
     # @return [Hash{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
     def attributes_to_sets
       self.class.attributes_to_sets
@@ -177,7 +186,6 @@ module ActiveModel
       #   @param attribute_names [Array<Symbol,String>] names of additional attributes to be stored in set
       #   @return [nil]
       def attribute_set(*args)
-        AttributeFiltersHelpers.check_wanted_methods(self)
         case args.size
         when 0
           attribute_sets
@@ -196,6 +204,7 @@ module ActiveModel
               attribute_set(k, v, args)
             end
           else
+            AttributeFiltersHelpers.check_wanted_methods(self)
             add_atrs_to_set(first_arg.to_sym, *args)
           end
           nil
@@ -278,26 +287,34 @@ module ActiveModel
       alias_method :filtered_attributes,  :filter_attribute
 
       # Gets all the defined attribute sets.
+      # 
       # @note Use +key+ method explicitly to check if the given set exists. The hash returned by this method
       #  will always return {AttributeSet} object. If there is no such set defined then the returned,
-      #  matching set will be empty.
+      #  matching set will be empty. All set objects are duplicates of the defined sets.
+      # 
       # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
       def attribute_sets
-        d = __attribute_sets.dup
-        d.default = ActiveModel::AttributeSet.new
+        d = Hash.new(ActiveModel::AttributeSet.new.freeze)
+        __attribute_sets.each_pair do |set_name, set_object|
+          d[set_name] = set_object.dup
+        end
         d
       end
       alias_method :attributes_sets, :attribute_sets
       alias_method :properties_sets, :attribute_sets
 
       # Gets all the defined attribute set names hashed by attribute names.
+      # 
       # @note Use +key+ method explicitly to check if the given attribute is assigned to any set. The hash
       #  returned by this method will always return {AttributeSet} object. If the attribute is not assigned
       #  to any set then the returned, matching set will be empty.
+      # 
       # @return [Hash{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
       def attributes_to_sets
-        d = __attributes_to_sets_map.dup
-        d.default = ActiveModel::AttributeSet.new
+        d = Hash.new(ActiveModel::AttributeSet.new.freeze)
+        __attributes_to_sets_map.each_pair do |set_name, set_object|
+          d[set_name] = set_object.dup
+        end
         d
       end
       alias_method :attribute_sets_map, :attributes_to_sets
@@ -318,7 +335,7 @@ module ActiveModel
           if atr_name.is_a?(Hash) # annotation
             atr_name.each_pair do |atr_name_b, a_defs|
               add_atrs_to_set(set_name, atr_name_b)
-              s = attribute_sets[set_name] and a_defs.nil? or a_defs.each_pair { |n, v| s.annotate(atr_name_b, n, v) }
+              s = __attribute_sets[set_name] and a_defs.nil? or a_defs.each_pair { |n, v| s.annotate(atr_name_b, n, v) }
             end
             return
           else

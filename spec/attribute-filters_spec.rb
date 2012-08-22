@@ -78,10 +78,12 @@ describe ActiveModel::AttributeFilters do
         annotate_attribute_set should_be_sth: {:atr_three => {:ak => "av"}, :atr_two => {:lala => "lala2"}, :yy => nil}
         annotate_attribute_set should_be_sth: [:atr_three, :oo => "oe"]
         annotate_attribute_set should_be_sth: [:atr_three, :aa, "bb"]
+        annotate_attribute_set should_be_sth: [:atr_three, :hh, "hh"]
         annotate_attributes_that :should_be_sth, :atr_three, :six => 6
-        attributes_that(:should_be_sth).annotate(:atr_three, :cc, "dd")
-        attributes_that(:should_be_sth).annotate(:atr_three, :ccc, "ddd")
-        attributes_that(:should_be_sth).delete_annotation(:atr_three, :ccc)
+        annotate_attribute_set :should_be_sth => [:atr_three, :cc, "dd"]
+        annotate_attribute_set :should_be_sth => [:atr_three, :ccc, "ddd"]
+        delete_annotation_from_set :should_be_sth, :atr_three, :ccc
+        delete_annotation_from_set :should_be_sth => { :atr_three => [ :hh ] }
       end}.should_not raise_error
       @tm.attributes_that(:should_be_sth).annotation(:atr_one).should == {:ak => "av"}
       @tm.attributes_that(:should_be_sth).annotation(:atr_two, :lala).should == "lala2"
@@ -98,12 +100,13 @@ describe ActiveModel::AttributeFilters do
       @tm.attributes_that(:should_be_sth).has_annotation?(:atr_three, :nope).should == false
       @tm.attributes_that(:should_be_sth).delete_annotation(:atr_three, :cc)
       @tm.attributes_that(:should_be_sth).annotation(:atr_three, :cc).should == "dd"
+      @tm.attributes_that(:should_be_sth).annotation(:atr_three, :hh).should == nil
       dupx = TestModel.attributes_that(:should_be_sth)
       dupy = @tm.attributes_that(:should_be_sth)
       dupx.send(:annotations).should == dupy.send(:annotations) 
       dupx.object_id.should_not == dupy.object_id
       -> {TestModel.class_eval do
-        attributes_that(:should_be_sth).annotate(:atr_three, :cc, "ee")
+        annotate_attributes_that :should_be_sth => { :atr_three => { :cc => "ee" } }
         annotate_attribute_set should_be_sth: [:atr_three, :oo => "of"]
         attributes_that should_be_sth: { :atr_one => {:ak => "ax"} }
       end}.should_not raise_error
@@ -197,7 +200,8 @@ describe ActiveModel::AttributeFilters do
         @tm.real_name = "Paweł Wilk Trzy"
         @tm.first_name = nil
         @tm.last_name = nil
-        -> { @tm.save }.should_not raise_error
+        #-> { @tm.save }.should_not raise_error
+        @tm.save
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == 'Wilk'
         @tm.first_name = nil
@@ -332,7 +336,7 @@ describe ActiveModel::AttributeFilters do
         @tm.first_name = "Paweł"
         @tm.last_name = nil
         @tm.real_name = rns
-        @tm.class.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
+        @tm.class.annotate_attributes_that(:should_be_joined, :real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == nil
@@ -341,7 +345,6 @@ describe ActiveModel::AttributeFilters do
         @tm.first_name = ["Paweł", "Wilk"]
         @tm.last_name = "Trzeci"
         @tm.real_name = rnt
-        @tm.class.attributes_that(:should_be_joined).annotate(:real_name, :join_compact, true)
         -> { @tm.save }.should_not raise_error
         @tm.real_name.should == 'Paweł Wilk Trzeci'
         

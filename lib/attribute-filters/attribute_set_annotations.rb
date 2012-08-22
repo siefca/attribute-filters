@@ -46,18 +46,24 @@ module ActiveModel
             annotate_attribute_set(k, v, *args)
           end
         else
-          atr_name, an_key, an_val = args.flatten.compact
+          atr_name, an_key, an_val = args
           if atr_name.is_a?(Hash)
             atr_name.each_pair do |k, v|
               annotate_attribute_set(first_arg, k, v)
             end
+          elsif atr_name.is_a?(Array)
+            annotate_attribute_set(first_arg, *atr_name) 
           elsif an_key.is_a?(Hash)
             an_key.each_pair do |k, v|
               annotate_attribute_set(first_arg, atr_name, k, v)
             end
           else
             unless an_key.nil? || atr_name.nil?
-              attribute_set(first_arg).annotate(atr_name, an_key, an_val)
+              first_arg = first_arg.to_sym
+              unless __attribute_sets.include?(first_arg)
+                raise ArgumentError, "trying to annotate non-existent set '#{first_arg}'"
+              end
+              __attribute_sets[first_arg].annotate(atr_name, an_key, an_val)
             end
           end
         end
@@ -70,8 +76,36 @@ module ActiveModel
       alias_method :annotate_attributes_set,      :annotate_attribute_set
       alias_method :annotate_properties_that,     :annotate_attribute_set
       alias_method :annotate_attributes,          :annotate_attribute_set
-    end
-  end
+      alias_method :attribute_set_annotate,       :annotate_attribute_set
+    
+      # Deletes annotaion from a given set
+      # 
+      # @param set_name [String,Symbol] set name  
+      # @param atr_name [String,Symbol] attribute name
+      # @param annotations [Array<String,Symbol>] annotation keys
+      # 
+      # @return [void]
+      def delete_annotation_from_set(set_name, atr_name = nil, *annotations)
+        if set_name.is_a?(Hash)
+          r = {}
+          set_name.each_pair do |k_set, v_attrs|
+            if v_attrs.is_a?(Hash)
+              v_attrs.each_pair do |k_attr, v_annotations|
+                delete_annotation_from_set(k_set, k_attr, *v_annotations)
+              end
+            else
+              delete_annotation_from_set(k_set, v_attrs, *annotations)
+            end
+          end
+        else
+          return unless __attribute_sets.include?(set_name)
+          __attribute_sets[set_name.to_sym].delete_annotation(atr_name, *annotations)
+        end
+      end
+      alias_method :delete_annotations_from_set,  :delete_annotation_from_set
+      alias_method :unannotate_set,               :delete_annotation_from_set
+    end # module ClassMethods
+  end # module AttributeFilters
 
   module AttributeSet::Annotations
     # Adds an annotation to the given attribute.
