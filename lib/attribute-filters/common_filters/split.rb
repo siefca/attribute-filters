@@ -103,7 +103,6 @@ module ActiveModel
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| split_attribute(k, v) }
             parameters = { :into => parameters } unless parameters.is_a?(Hash)
             the_attribute(atr_name, :should_be_splitted)
-            a = attributes_that(:should_be_splitted)
             pattern = parameters[:with]   || parameters[:pattern] || parameters[:split_pattern]
             into    = parameters[:into]   || parameters[:to]      || parameters[:split_into]
             limit   = parameters[:limit]  || parameters[:split_limit]
