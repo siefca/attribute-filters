@@ -17,13 +17,13 @@ on all attributes that are listed in a set.
 Attribute sets are instances of
 [`ActiveModel::AttributeSet`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeSet)
 class. You can create and update sets freely and store them wherever you want,
-but when it comes to models then (at the class-level) you can and should rely
-on a storage for sets that is already prepared.
+but when it comes to models then (at the class-level) you can (and you should) rely
+on a storage that is already prepared to handle sets.
 
-The attribute sets assigned to models are stored within them as [class instance variable](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
-You cannot and should not interact with that storage directly
+The attribute sets assigned to models are stored as [class instance variable](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
+**You cannot and should not interact with that storage directly**
 but by using dedicated class methods that are available in your models.
-These methods will allow you to read or write some data from/to stored attribute sets.
+These methods will allow you to read or write some data from/to global attribute sets.
 
 Attribute Filters are using `AttributeSet` instances
 not just to store internal data but also to interact
@@ -37,15 +37,26 @@ Note that when sets are returned the convention is that:
   * **attribute names are strings**
   * **set names are symbols**
 
+Also note that once you create a set that is bound to your model you cannot
+remove elements from it and any query returning its contents will give you
+a copy. That's because **model-bound attribute sets should be considered
+a part of the interface**.
+
 ### Defining the attribute sets ###
 
 First thing that should be done when using the Attribute Filters
 is defining the sets of attributes in models.
 
+You can also create local sets (using `ActiveModel::AttributeSet.new`)
+or a local sets with extra syntactic sugar (using `ActiveModel::AttributeSet.new`)
+but in real-life scenarios you should first create some model-bound sets that
+can be later used by filters and by your own methods.
+ 
 #### `attribute_set(set_name => attr_names)` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_set)
-(a.k.a `attributes_that`) class method allows to **create or update a set**.
+(a.k.a `attributes_that`) class method allows to **create or update a set** that will be
+tied to a model.
 
 Example:
 
@@ -110,15 +121,15 @@ end
 
 ### Querying sets in models ###
 
-When your attribute sets are defined then you can use couple
-of class methods to query them, e.g. to check their contents.
+When your "global" attribute sets are defined, you can use couple
+of class methods to query them.
 
 #### `attribute_set(set_name)` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_set)
 (a.k.a `attributes_that`) class method called with a single argument **returns the attribute set
-of the given name**. It will always return an `AttributeSet` instance, even if there is not set of the given name
-(in that case the resulting set will be empty).
+of the given name**. It will always return the instance of `AttributeSet` class, even if there
+is no set registered under the given name (in that case the resulting set will be empty).
 
 Example:
 
@@ -126,6 +137,8 @@ Example:
   User.attributes_that(:should_be_stripped) - User.attributes_that(:should_be_downcased)
   # => #<ActiveModel::AttributeSet: {"real_name"}>
 ```
+
+Note that the returned set will be a copy of the original set stored within your model.
 
 Instead of `attribute_set` you may also use one of the aliases:
 
@@ -155,6 +168,8 @@ It won't return the exact internal hash but a duplicate.
 Instead of `attribute_sets` you may also use one of the aliases:
 
   * `attributes_sets`, `properties_sets`
+
+Note that the returned sets will be copies of the original sets stored within your model.
 
 #### `attribute_set` ####
 
@@ -259,7 +274,7 @@ There are also variants of this method that differ in a kind of taken argument:
 
 * `attribute_set(any_object)`
 
-> Allows to create local set that will be initialized using the given object (usually an array) that may not
+> Allows to create local set that will be initialized with the given object (usually an array) that may not
 > be a `String`, a `Symbol` or an `AttributeSet` (these are reserved for the variants above). The resulting
 > object (a new `AttributeSet` instance) is also wrapped in a proxy.
 
@@ -274,7 +289,8 @@ Instead of `attribute_set` you may also use one of the aliases:
 
 The [`attribute_sets`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_sets)
 method returns a hash containing **all the defined attribute sets** indexed by their names.
-It won't return the exact internal hash but a duplicate.
+It won't return the exact internal hash but a duplicate and every set within it will also be a duplicate
+of the original one.
 
 Example:
 
@@ -770,9 +786,9 @@ for altering attribute values: `for_attributes_that` and
 
 Filtering attributes basically means calling a proper
 method that will collect the attributes (matching certain
-criteria and belonging to the given set) and call some code block
-used that will either produce their new values or just call
-some method on each of them.
+criteria and belonging to the given set) and calling some code block
+that will either produce new values or just call some method on each
+of current attribute value and name.
 
 #### `filter_attrs_from_set(set_name,...)` ####
 
@@ -1142,21 +1158,21 @@ What for? To store something that is related to the specific attribute and that 
 a set and/or its copies (if any). You can annotate each attribute name using key -> value pairs where the key is always a symbol and value is any kind of object you want. Only existing attributes can be annotated and deleting attribute
 will remove annotations that are assigned to it.
 
-When you copy a set, create difference or intersection of attribute sets then annotations are also copied. If the
-operation creates a sum or joins sets then the annotations are mixed too.
+When you copy a set, create difference or intersection of attribute sets, any existing annotations are also copied.
+If the operation creates a sum or joins sets then the annotations are mixed too.
 
 The annotations are used by some of the predefined filters described later to precise operations that have
 to be taken (e.g. specifying separator string for attribute joining filter and so on).
 
 ### Creating annotations ###
 
-You can create annotations during defining a set or you can add them later with `annotate` method called on
-the instance of `AttributeSet`.
+You can create annotations during defining a set or you can add them later with `annotate_attribute_set`.
+In case of local sets you can also use a method called `annotate`.
 
 #### When defining sets ####
 
 When using the first method just replace attrbute name with a hash, where attribute name is a key
-and annotations is another hash containing keys and values.
+and annotations are another hash containing keys and values.
 
 Example:
 
@@ -1213,17 +1229,32 @@ Example:
 Caution: Annotating attributes that aren't present in a set
 with `annotate_attribute_set` will raise an error.
 
+#### Annotating local sets ####
+
+* **`annotate`**
+
+Example:
+
+```ruby
+  class User
+    def some_method
+      s = ActiveModel::AttributeSet.new([:first_element, :second_element])
+      s.annotate(:first_element, :key, 'value')
+    end
+  end
+```
+
 ### Removing annotations ###
 
-To remove annotations **localy** you can use:
+To remove annotations locally (from sets that are not directly bound to models) you can use:
 
 * **`delete_annotation(attribute_name, annotation_key)`** - to delete specified annotation key for the given attribute
 * **`delete_annotations(attribute_name)`** - to delete all annotations for an attribute of the given name
 * **`remove_annotations()`** - to remove all annotations from a set
 
 Be aware that using these method to delete annotations from class-level sets won't work.
-That's because you'll always get a copy when querying these sets. There are methods that
-will work in a model, at a class-level however:
+That's because you'll always get a copy when querying these sets. However there are methods that
+will work in a model:
 
 * **`delete_annotations_from_set(set_name, attribute, *annotation_keys)`** - to delete annotation keys for the given attribute
 * **`delete_annotations_from_set(set_name, attribute)`** - to delete all annotation keys for the given attribute
@@ -1289,7 +1320,6 @@ a copy when querying these sets.
       attributes_that_are(:cool).delete_annotation(:email, :other_key)
     end
   end
-  
 ```
 
 ## Querying annotations ###
