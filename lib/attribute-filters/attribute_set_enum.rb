@@ -17,6 +17,7 @@ module ActiveModel
         if block_given?
           ActiveModel::AttributeSet.new.tap do |r|
             each { |e| r << e if yield(e) }
+            r.send(:copy_annotations, self) unless r.empty?
           end
         else
           AttributeSet::Enumerator.new(self, :select)
@@ -28,6 +29,7 @@ module ActiveModel
         if block_given?
           ActiveModel::AttributeSet.new.tap do |r|
             each { |e| r << e unless yield(e) }
+            r.send(:copy_annotations, self) unless r.empty?
           end
         else
           AttributeSet::Enumerator.new(self, :reject)
@@ -48,12 +50,16 @@ module ActiveModel
 
       # @private
       def sort
-        ActiveModel::AttributeSet.new(super)
+        r = ActiveModel::AttributeSet.new(super)
+        r.send(:copy_annotations, self) unless r.empty?
+        r
       end
 
       # @private
       def sort_by
-        ActiveModel::AttributeSet.new(super)
+        r = ActiveModel::AttributeSet.new(super)
+        r.send(:copy_annotations, self) unless r.empty?
+        r
       end
 
       # @private

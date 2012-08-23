@@ -172,7 +172,11 @@ module ActiveModel
       return nil if an_group.nil?
       case annotation_names.size
       when 0
-        an_group.dup
+        r = Hash.new
+        an_group.each_pair do |k, v|
+          r[k] = v.is_a?(Enumerable) ? v.dup : v
+        end
+        r
       when 1
         r = an_group[annotation_names.first.to_sym]
         r.is_a?(Enumerable) ? r.dup : r
@@ -217,18 +221,6 @@ module ActiveModel
 
     def annotations
       @annotations
-    end
-
-    def copy_annotations(o)
-      @annotations ||= Hash.new
-      o.each_pair do |atr, annotations_group|
-        if include?(atr)
-          current_group = (@annotations[atr] ||= Hash.new)
-          annotations_group.each_pair do |annotation_name, v|
-            current_group[annotation_name] ||= (v.is_a?(Enumerable) ? v.dup : v)
-          end
-        end
-      end
     end
 
     def copy_annotations(o)
