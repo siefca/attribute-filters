@@ -64,7 +64,6 @@ module ActiveModel
 
       require 'attribute-filters/common_filters/strip'
       require 'attribute-filters/common_filters/case'
-      require 'attribute-filters/common_filters/capitalize'
       require 'attribute-filters/common_filters/squeeze'
       require 'attribute-filters/common_filters/split'
       require 'attribute-filters/common_filters/join'

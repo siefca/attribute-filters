@@ -14,8 +14,7 @@ require 'active_record'
 
 class TestModel < SuperModel::Base
   include ActiveModel::AttributeFilters::Common::Strip
-  include ActiveModel::AttributeFilters::Common::Downcase
-  include ActiveModel::AttributeFilters::Common::Titleize
+  include ActiveModel::AttributeFilters::Common::Case
   include ActiveModel::AttributeFilters::Common::Squeeze
 
   attributes_that should_be_stripped:       [ :email, :real_name ]

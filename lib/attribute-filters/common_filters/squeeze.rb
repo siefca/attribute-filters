@@ -40,11 +40,7 @@ module ActiveModel
           end
           alias_method :squeeze_attribute, :squeeze_attributes
         end # module ClassMethods
-      end # module Squeeze
 
-      # Squeezes white characters in attributes, removes leading and trailing spaces and newlines.
-      module Squish
-        extend CommonFilter
         # Squeezes white characters in attributes, removes leading and trailing spaces and newlines.
         # 
         # The attrubutes to be squished are taken from the attribute set
@@ -70,10 +66,9 @@ module ActiveModel
           end
           alias_method :squish_attribute, :squish_attributes
         end # module ClassMethods
-      end # module Squish
+      end # module Squeeze
 
     include Squeeze
-    include Squish
 
     end # module Common
   end # module AttributeFilters
