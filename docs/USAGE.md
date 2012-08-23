@@ -837,6 +837,9 @@ Example:
 You can pass a set object (`AttributeSet` instance) instead of set name as an argument. The method
 will then work on that local data with one difference: the `set_name` passed to a block will be set to `nil`.
 
+If the block is not given then the method returns an enumerator which can be used to query method later
+(when the block is present).
+
 Instead of `filter_attrs_from_set` you may also use one of the aliases:
 
   * `attribute_filter_for_set`, `filter_attributes_which`,       
@@ -890,6 +893,9 @@ Example:
 
 You can pass a set object (`AttributeSet` instance) instead of set name as an argument. The method
 will then work on that local data with one difference: the `set_name` passed to a block will be set to `nil`.
+
+If the block is not given then the method returns an enumerator which can be used to query method later
+(when the block is present).
 
 Instead of `filter_attrs_from_set` you may also use one of the aliases:
 
@@ -1494,9 +1500,9 @@ See the
 [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
 for detailed descriptions.
 
-#### Capitalization ####
+#### Case ####
 
-* Submodule: [`Capitalize`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Capitalize.html)
+* Submodule: [`Case`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Case.html)
 
 ##### `capitalize_attributes` #####
 
@@ -1508,6 +1514,36 @@ Capitalizes attributes.
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
 
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  capitalize_attributes   :name
+  before_validation       :capitalize_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  attributes_that     :should_be_capitalized => [ :name ]
+  before_validation   :capitalize_attributes
+end
+```
+
+Then:
+
+> `"some name"`
+
+will become:
+
+> `"Some name"`
+
 ##### `fully_capitalize_attributes` #####
 
 Capitalizes attributes and squeezes spaces that separate strings.
@@ -1517,6 +1553,36 @@ Capitalizes attributes and squeezes spaces that separate strings.
 * Uses set: `:should_be_fully_capitalized` and `:should_be_titleized`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  fully_capitalize_attributes   :name
+  before_validation             :fully_capitalize_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  attributes_that     :should_be_fully_capitalized => [ :name ]
+  before_validation   :fully_capitalize_attributes
+end
+```
+
+Then:
+
+> `"some      name"`
+
+will become:
+
+> `"Some Name"`
 
 ##### `titleize_attributes` #####
 
@@ -1528,9 +1594,35 @@ Titleizes attributes.
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
 
-#### Case ####
+Example:
 
-* Submodule: [`Case`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Case.html)
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  titleize_attributes   :name
+  before_validation     :titleize_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  attributes_that     :should_be_titleized => [ :name ]
+  before_validation   :titleize_attributes
+end
+```
+
+Then:
+
+> `"some name"`
+
+will become:
+
+> `"Some Name"`
 
 ##### `upcase_attributes` #####
 
@@ -1542,6 +1634,36 @@ Upcases attributes.
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
 
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  upcase_attributes   :name
+  before_validation   :upcase_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  attributes_that     :should_be_upcased => [ :name ]
+  before_validation   :upcase_attributes
+end
+```
+
+Then:
+
+> `"some name"`
+
+will become:
+
+> `"SOME NAME"`
+
 ##### `downcase_attributes` #####
 
 Downcases attributes.
@@ -1551,6 +1673,36 @@ Downcases attributes.
 * Uses set: `:should_be_downcased`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  downcase_attributes :name
+  before_validation   :downcase_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Case
+
+  attributes_that     :should_be_downcased => [ :name ]
+  before_validation   :downcase_attributes
+end
+```
+
+Then:
+
+> `"SOME NAME"`
+
+will become:
+
+> `"some name"`
 
 #### Strip ####
 
@@ -1565,6 +1717,36 @@ Strips attributes of leading and trailing spaces.
 * Uses set: `:should_be_stripped`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Strip
+
+  strip_attributes    :name
+  before_validation   :strip_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Strip
+
+  attributes_that     :should_be_stripped => [ :name ]
+  before_validation   :strip_attributes
+end
+```
+
+Then:
+
+> `"    Some Name    "`
+
+will become:
+
+> `"Some Name"`
 
 #### Squeeze ####
 
@@ -1602,13 +1784,13 @@ class User < ActiveRecord::Base
 end
 ```
 
-Result:
+Then:
 
-> `Some    Name`
+> `"Some    Name"`
 
 will become:
 
-> `Some Name`
+> `"Some Name"`
 
 ##### `squish_attributes` #####
 
@@ -1619,6 +1801,36 @@ Squishes attributes (removes all whitespace characters on both ends of the strin
 * Uses set: `:should_be_squished`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+
+  squish_attributes   :name
+  before_validation   :squish_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Squeeze
+
+  attributes_that     :should_be_squished => [ :name ]
+  before_validation   :squish_attributes
+end
+```
+
+Then:
+
+> `"    Some    Name"`
+
+will become:
+
+> `"Some Name"`
 
 #### Split ####
 
@@ -1796,8 +2008,8 @@ Joins attributes and places the results into other attributes or into the same a
 
 * Callback method: `join_attributes`
 * Class-level helpers:
- * `join_attributes(attribute_name, parameters_hash)`
- * `join_attributes(attribute_name)`
+ * `join_attributes(attribute_name, parameters_hash)` (a.k.a `joint_attribute`)
+ * `join_attributes(attribute_name)` (a.k.a `joint_attribute`)
 * Uses set: `:should_be_joined`
 * Operates on: strings, arrays of strings
 * Uses annotations: yes
@@ -1805,16 +2017,39 @@ Joins attributes and places the results into other attributes or into the same a
  * `join_compact` - compact flag; if true then an array is compacted before it's joined (optional)
  * `join_from` - attribute names used as sources for joins
 
-The join filter uses `join` instance method of `Array` class to produce single string from multiple strings.
+The join filter uses `join` instance method of the `Array` class to produce single string from multiple strings.
 These strings may be values of other attributes (source attributes), values of an array stored in an attribute
 or mix of it. If the `:compact` (`:join_compact` in case of manually annotating a set) parameter is given
 and it's not `false` nor `nil` then results are compacted during processing. That means any slices equals to `nil` are 
 removed.
 
-The splitted source is a current attribute if the parameter `:from` (or annotation key `:join_from`) is not given.
-If the attribute content is a string
+If the parameter `:from` (or annotation key `:join_from`) was not given then a currently processed attribute
+is treated as a source (it should be an array).
 
+Examples:
 
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Join
+
+  attr_virtual            :first_name, :last_name
+  attr_accessible         :first_name, :last_name
+  join_attributes_into    :real_name, :from => [ :first_name, :last_name ]
+  before_validation       :join_attributes
+end
+```
+
+you can also switch source with destination:
+
+```ruby
+  join_attributes         [ :first_name, :last_name ] => :real_name
+```
+
+or add a descriptive keyword `:into`:
+
+```ruby
+  join_attributes         [ :first_name, :last_name ], :into => :real_name
+```
 
 Custom applications
 -------------------
