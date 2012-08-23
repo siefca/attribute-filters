@@ -226,6 +226,7 @@ module ActiveModel
 
     # Applies operations to elements from set.
     def operate_on_attrs_from_set(set_name, alter_mode, *args, &block)
+      block_given? or return enum_for(__method__, set_name, alter_mode, *args)
       flags             = AttributeFiltersHelpers.process_flags(args)
       process_all       = flags[:process_all]
       process_blank     = flags[:process_blank]
