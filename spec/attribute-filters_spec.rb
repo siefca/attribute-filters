@@ -321,7 +321,11 @@ describe ActiveModel::AttributeFilters do
     end
 
     shared_examples "joining" do |ev,rn,rns,rnt|
-      before { TestModel.class_eval{before_save :join_attributes} }
+      before do
+        TestModel.class_eval do
+          before_save :join_attributes
+        end
+      end
       it "should join attributes using syntax: #{ev}" do
         TestModel.class_eval(ev)
         # source attributes are strings:

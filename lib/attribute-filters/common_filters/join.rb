@@ -72,16 +72,24 @@ module ActiveModel
             end
             parameters = { :from => parameters } unless parameters.is_a?(Hash)
             the_attribute(atr_name, :should_be_joined)
-            separator = " " unless parameters.key?(:with) || parameters.key?(:separator) || parameters.key?(:join_separator)
-            separator ||= parameters[:with] || parameters[:separator] || parameters[:join_separator]
-            from        = parameters[:from] || parameters[:source] || parameters[:sources] || parameters[:join_from]
+            a = {}
+            if parameters.key?(:with)
+              a[:join_separator] = parameters[:with]
+            elsif parameters.key?(:separator)
+              a[:join_separator] = parameters[:separator]
+            elsif parameters.key?(:join_separator)
+              a[:join_separator] = parameters[:join_separator]
+            end
+            from    = parameters[:from] || parameters[:source] || parameters[:sources] || parameters[:join_from]
             compact = parameters.key?(:compact) ? !!parameters[:compact] : !!parameters[:join_compact]
-            annotate_attributes_that(:should_be_joined, atr_name =>
-                                     { :join_separator => separator,
-                                       :join_compact => compact,
-                                       :join_from => from })
+            a.merge!({ :join_compact => compact, :join_from => from })
+            annotate_attributes_that(:should_be_joined, atr_name => a)
           end
-          alias_method :join_attributes, :join_attribute
+          alias_method :join_attributes,      :join_attribute
+          alias_method :joint_attribute,      :join_attribute
+          alias_method :joint_attributes,     :join_attribute
+          alias_method :join_attributes_to,   :join_attribute
+          alias_method :join_attributes_into, :join_attribute
         end # module ClassMethods
       end # module Join
 
