@@ -74,35 +74,53 @@ module ActiveModel
       self.class.attribute_set(set_name).dup
     end
 
+    # Returns a set containing all known attributes
+    # without wrapping it in a proxy.
+    # 
+    # @return [AttributeSet] attribute set
+    def all_attributes_simple(no_presence_check = true)
+      (ActiveModel::AttributeSet.new(attributes.keys) +
+      all_accessible_attributes(true) +
+      all_protected_attributes(true)  +
+      __vatrf(no_presence_check)).delete("")
+    end
+
     # Returns a set containing all known attributes.
+    # 
     # @return [AttributeSet] attribute set
     def all_attributes
-      all_attrs = ActiveModel::AttributeSet::Query.new(attributes.keys, self)
-      all_attrs += self.class.accessible_attributes
-      all_attrs += self.class.protected_attributes
-      all_attrs += self.class.treat_as_real
-      all_attrs.delete("")
+      ActiveModel::AttributeSet::Query.new(all_attributes_simple, self)
     end
     alias_method :all_attributes_set, :all_attributes
 
     # Returns a set containing all accessible attributes.
+    # 
+    # @param simple [Boolean] optional parameter that disables
+    #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
-    def all_accessible_attributes
-      all_attributes & self.class.accessible_attributes
+    def all_accessible_attributes(simple = false)
+      c = self.class
+      c = c.respond_to?(:accessible_attributes) ? accessible_attributes : []
+      simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
     end
     alias_method :accessible_attributes_set, :all_accessible_attributes
 
     # Returns a set containing all protected attributes.
+    # 
+    # @param simple [Boolean] optional parameter that disables
+    #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
-    def all_protected_attributes
-      all_attributes & self.class.protected_attributes
+    def all_protected_attributes(simple = false)
+      c = self.class
+      c = c.respond_to?(:protected_attributes) ? protected_attributes : []
+      simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
     end
     alias_method :protected_attributes_set, :all_protected_attributes
 
     # Returns a set containing all attributes that are not accessible attributes.
     # @return [AttributeSet] attribute set
     def all_inaccessible_attributes
-      all_attributes - self.class.accessible_attributes
+      all_attributes - all_accessible_attributes(true)
     end
     alias_method :all_non_accessible_attributes,  :all_inaccessible_attributes
     alias_method :inaccessible_attributes_set,    :all_inaccessible_attributes
@@ -347,7 +365,17 @@ module ActiveModel
         __attribute_sets[set_name] ||= ActiveModel::AttributeSet.new
         __attribute_sets[set_name] << atrs.map{ |a| a.to_s }.freeze
       end
-
     end # module ClassMethods
+
+    private
+
+    # Helper that collects untracked virtual attributes that
+    # have setters and getters.
+    def __vatrf(no_presence_check = false)
+      tar = self.class.send(:__treat_as_real)
+      return tar if no_presence_check || tar.empty?
+      tar.select { |a| respond_to?(a) && respond_to?("#{a}=") }
+    end
+
   end # module AttributeMethods
 end # module ActiveModel

@@ -39,7 +39,7 @@ module ActiveModel
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
       atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set_simple(set_name)
       if process_all
-        no_presence_check ? atf : atf & (__vatrf(no_presence_check) + attributes.keys)
+        no_presence_check ? atf : atf & all_attributes_simple(no_presence_check)
       else
         if self.class.filter_virtual_attributes_that_changed?
           atf & changes.keys
@@ -275,16 +275,5 @@ module ActiveModel
         end
       end
     end
-
-    private
-
-    # Helper that collects untracked virtual attributes that
-    # have setters and getters.
-    def __vatrf(no_presence_check = false)
-      tar = self.class.send(:__treat_as_real)
-      return tar if no_presence_check || tar.empty?
-      tar.select { |a| respond_to?(a) && respond_to?("#{a}=") }
-    end
-
   end # module AttributeFilters
 end # module ActiveModel
