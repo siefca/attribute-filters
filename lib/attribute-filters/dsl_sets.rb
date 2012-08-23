@@ -99,8 +99,7 @@ module ActiveModel
     #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
     def all_accessible_attributes(simple = false)
-      c = self.class
-      c = c.respond_to?(:accessible_attributes) ? accessible_attributes : []
+      c = self.class.class_eval { respond_to?(:accessible_attributes) ? accessible_attributes : [] }
       simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
     end
     alias_method :accessible_attributes_set, :all_accessible_attributes
@@ -111,8 +110,7 @@ module ActiveModel
     #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
     def all_protected_attributes(simple = false)
-      c = self.class
-      c = c.respond_to?(:protected_attributes) ? protected_attributes : []
+      c = self.class.class_eval { respond_to?(:protected_attributes) ? protected_attributes : [] }
       simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
     end
     alias_method :protected_attributes_set, :all_protected_attributes
