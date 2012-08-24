@@ -43,8 +43,19 @@ module ActiveModel
       module CommonFilter
         # @private
         def included(base)
-          if base == ActiveModel::AttributeFilters::Common
-            base::ClassMethods.send(:include, self::ClassMethods)
+          if  base.const_defined?(:ClassMethods)  &&
+              base.instance_of?(::Module)         &&
+              base.const_get(:ClassMethods).instance_of?(::Module)
+            base.class_eval <<-EVAL
+              unless singleton_class.method_defined?(:included)
+                def self.included(base)
+                  base.extend ClassMethods
+                end
+              end
+              module ClassMethods
+                include #{self.name}::ClassMethods
+              end
+            EVAL
           else
             base.extend ClassMethods
           end
