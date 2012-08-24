@@ -1,5 +1,20 @@
-* add more rspec examples
+* add more rspec examples (+ nil and boolean attributes)
 
-* document changed behaviour of attribute_set instance method
+* add parameter support to squeeze common filter
 
+* add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
+  - they can use methods that internally are checking it
 
+* add stringify to common filters
+* add numerize to common filters
+* add booleanize to common filters
+* add nullify to common filters
+* add clear to common filters
+* add reverse to common filters
+* add sanitize to common filters (that calls needed)
+  -- sanitize_email
+  -- sanitize_url
+  -- sanitize_string
+  -- sanitize_name
+  -- sanitize_country
+  -- sanitize_iban (future, in a gem attribute-filters-common-iban)

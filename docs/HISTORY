@@ -1,3 +1,44 @@
+=== 1.4.0 / 2012-08-24
+
+* major enhancements
+
+  * Added annotations support
+  * Added Split and Join common filters
+  * Improved virtual attributes handling (added attr_virtual keyword)
+  * All common filters can now handle arrays and hashes
+  * API change: additional yeld params changed for DSL instance methods:
+    * `for_each_attr_from_set`
+    * `filter_attrs_from_set`
+    * `operate_on_attrs_from_set`
+  * API change: class methods return copies of sets, not originals
+
+* minor enhancements
+
+  * Added `values` and `values_hash` methods to `AttributeSet::Query` for reading values
+  * Added `value` method to `AttributeSet::AttrQuery` for reading value
+  * Added `each` iterator to custom enumerators
+  * Added `attribute_set_simple` instance DSL method for bypassing proxies
+  * Added `filter_attributes` instance DSL method for running all predefined filters
+  * Added calls forwarding in proxy classes for `instance_eval` and `instance_exec` methods
+  * `AttributeSetEnumerable` is now `AttributeSet::Enumerable`
+  * `AttirbuteSetEnumerator` is now `AttributeSet::Enumerator`
+  * Modified filtering methods so they return specialized enumerator when called whithout a block
+    * `for_each_attr_from_set`
+    * `filter_attrs_from_set`
+
+* major bugfixes
+
+  * In `AttributeSet::Query`: separated instance level data from class level by adding `dup` where needed
+  * In `AttributeSet`: separated instance level data from class level by adding `dup` where needed
+
+* minor bugfixes
+
+  * In `AttributeFilters::Common`: `Squish` submodule included in `Common` module
+  * In `AttributeSet::Query`: replaced calls to `send` by calls to `public_send`
+  * In `AttributeSet::Query`: replaced calls to `method` by calls to `public_method`
+  * In `AttributeSet::AttrQuery`: replaced call to `method` by call to `public_method`
+  * In `AttributeFilters::operate_on_attrs_from_set`: replaced calls to `send` by calls to `public_send`
+
 === 1.3.2 / 2012-08-05
 
 * minor bugfixes
@@ -8,8 +49,8 @@
 
 * major enhancements
 
-  * Added accessible?, inaccessible?, protected? attribute checks
-  * Added all_accessible_attributes, all_protected_attributes, all_inaccessible_attributes
+  * Added `accessible?`, `inaccessible?`, `protected?` attribute checks
+  * Added `all_accessible_attributes`, `all_protected_attributes`, `all_inaccessible_attributes`
 
 * minor enhancements
 
@@ -19,17 +60,12 @@
 
 * major bugfixes
 
-  * In AttributeSet::Query proxy class: proxy now uses send() to get attribute values
+  * In `AttributeSet::Query`: proxy now uses `send` to get attribute values
 
 * major enhancements
 
-  * Added valid? and invalid? DSL instance methods
-  * Added all_attributes instance method
-
-* minor enhancements
-
-  * Added is_a?() overrides in proxy classes
-  * Method attributes_to_filter now also takes attribute set as an argument
+  * Added `valid?` and `invalid?` DSL instance methods
+  * Added `all_attributes` instance method
 
 === 1.2.2 / 2012-08-03
 
@@ -39,8 +75,8 @@
 
 * minor enhancements
 
-  * Added is_a?() overrides in proxy classes
-  * Method attributes_to_filter now also takes attribute set as an argument
+  * Added `is_a?` overrides to proxy classes
+  * Method `attributes_to_filter` can now take attribute set as an argument
 
 === 1.2.1 / 2012-07-09
 
@@ -52,43 +88,43 @@
 
 * major bugfixes
 
-  * In AttributeSet::Query proxy class: removed typo that caused incorrect processing
+  * In `AttributeSet::Query`: removed typo that caused incorrect processing
 
 * minor bugfixes
 
-  * Added missing respond_to? definitions to proxy classes
+  * Added missing `respond_to?` definitions to proxy classes
 
 * major enhancements
 
-  * Added enumerators (AttributeSetEnumerable and AttributeSetEnumerator)
+  * Added enumerators (`AttributeSetEnumerable` and `AttributeSetEnumerator`)
   * Added predefined filtering methods
   * Added virtual attributes support in filters
   * Written the usage instructions
 
 * minor enhancements
 
-  * Removed the show DSL method from AttrQuery proxy class
+  * Removed the show DSL method from `AttrQuery` proxy class
   * Added checking of model methods that are needed for a proper operation
-  * Proxy class Query is now viral and tries to wrap the results in its own instances
-  * Added 'none' and 'one' presence selectors to AttributeSet::Query class
-  * Added from_attributes_that as the alias for attribute_set instance method
+  * Proxy class `AttributeSet::Query` is now viral and tries to wrap the results in its own instances
+  * Added `none` and `one` presence selectors to `AttributeSet::Query` class
+  * Added `from_attributes_that` as an alias for the `attribute_set` instance method
 
 === 1.1.2 / 2012-06-30
 
 * major bugfixes
 
-  * In operate_on_attrs_from_set: replaced self[attr] and method(attr) calls with send (to be ORM agnostic)
-  * In attributes_to_filter: inefficient respond_to? calls replaced by the attributes method call
+  * In `operate_on_attrs_from_set`: replaced `self[attr]` and `method(attr)` calls with `send` (to be ORM agnostic)
+  * In `attributes_to_filter`: inefficient `respond_to?` calls replaced by the attributes method call
 
 * major enhancements
 
-  * AttributeFilters module can be now used without full Rails stack, just with Active Model loaded
+  * `AttributeFilters` module can be now used without full Rails stack, just with Active Model loaded
 
 * minor enhancements
 
   * Documentation updated
-  * Added attribute-filters/helpers.rb containing AttributeFiltersHelpers module
-  * Flags parsing method attr_filter_process_flags moved to AttributeFiltersHelpers as process_flags
+  * Added `attribute-filters/helpers.rb` containing `AttributeFiltersHelpers` module
+  * Flags parsing method `attr_filter_process_flags` moved to `AttributeFiltersHelpers` as `process_flags`
   * Added SuperModel and ActiveRecord dependencies for testing purposes
   * Added first RSpec example
 
@@ -96,12 +132,12 @@
 
 * major enhancement
 
-  * API changed; call_attrs_from_set name changed to for_each_attr_from_set, caching removed
+  * API changed; `call_attrs_from_set` name changed to `for_each_attr_from_set`, caching removed
 
 * minor enhancements
 
   * Optimized code for attributes filtering
-  * Namespace organized (AttributeFilters completely moved under ActiveModel)
+  * Namespace organized (`AttributeFilters` moved completely under `ActiveModel` namespace)
   * Prepared for testing with RSpec
   * Added custom CSS file for YARD formatter
 
@@ -110,7 +146,7 @@
 * minor enhancements
 
   * Documentation updated
-  * Extended arguments parsing for DSL class method attribute_set
+  * Extended arguments parsing for DSL class method `attribute_set`
 
 === 1.0.1 / 2012-06-28
 

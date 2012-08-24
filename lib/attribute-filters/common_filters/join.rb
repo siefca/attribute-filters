@@ -23,8 +23,6 @@ module ActiveModel
         # 
         # The pattern used to join a string and the optional separator argument
         # should be set using the model's class method +join_attribute+.
-        # 
-        # @example TODO
         def join_attributes
           filter_attrs_from_set(:should_be_joined, :process_all, :process_blank) do |atr_val, atr_name, set_obj|
             from, compact = set_obj.annotation(atr_name, :join_from, :join_compact)

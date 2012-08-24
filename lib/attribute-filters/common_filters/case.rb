@@ -13,6 +13,7 @@ module ActiveModel
     # This module contains common, ready-to-use filtering methods.
     module Common   
 
+      # This module contains attribute filters responsible for changing the case of letters.
       module Case
         extend CommonFilter
         # Downcases attributes.

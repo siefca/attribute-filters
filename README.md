@@ -1,7 +1,7 @@
 Attribute Filters for Rails
 ===========================
 
-**attribute-filters version `1.3`** (**`Reliable Sausage`**)
+**attribute-filters version `1.4`** (**`Fried Meerkat`**)
 
 * https://rubygems.org/gems/attribute-filters
 * https://github.com/siefca/attribute-filters/tree
@@ -23,12 +23,13 @@ You may want to try it when your Rails application often modifies
 attribute values that changed recently and uses callbacks to do that.
 
 When the number of attributes that are altered in such a way increases,
-you can observe the same thing happening with your filtering
+you can observe that the same thing is happening with your filtering
 methods. That's because each one is tied to some attribute.
 
 To refine that process you may write more generic methods
 for altering attributes. They should be designed to handle
 common operations and not be tied to certain attributes.
+Attribute Filters helps you do that.
 
 Let's see that in action.
 

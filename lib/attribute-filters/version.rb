@@ -14,7 +14,7 @@ module ActiveModel
     # @private
     EMAIL       = 'pw@gnu.org'
     # @private
-    VERSION     = '1.3.2'
+    VERSION     = '1.4.0'
     # @private
     NAME        = 'attribute-filters'
     # @private
