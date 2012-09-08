@@ -262,6 +262,13 @@ Credits
 * [MrZYX (Jonne Haß)](https://github.com/MrZYX) contributed by giving me some hints and answering basic questions on IRC – THX!
 * [Robert Pankowecki](https://github.com/paneq/) contributed by suggesting selective inclusion of filtering helpers
 
+Like my work?
+-------------
+
+You can send me some bitcoins if you would like to support me:
+
+* `13wZbBjs6yQQuAb3zjfHubQSyer2cLAYzH`
+
 License
 -------
 
