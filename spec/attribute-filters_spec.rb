@@ -193,6 +193,23 @@ describe ActiveModel::AttributeFilters do
       @tm.attributes_that(:should_be_joined).annotation(:real_name).should == nil 
     end
 
+    it "should squeeze attributes" do
+      TestModel.class_eval{before_save :squeeze_attributes}
+      TestModel.class_eval do
+        attributes_that :should_be_squeezed, :sq_one
+        attributes_that :should_be_squeezed, :sq_six => { :squeeze_other_str => 'l' }
+        squeeze_attributes :sq_two => 'o'
+        squeeze_attributes :sq_three => { :with_character => 'o' }, :sq_four => 'o', :sq_five => nil
+      end
+      @tm.sq_one = @tm.sq_two = @tm.sq_three = @tm.sq_four = @tm.sq_five = @tm.sq_six = 'yellow  moon'
+      -> { @tm.save }.should_not raise_error
+      @tm.sq_one.should == 'yelow mon'
+      @tm.sq_two.should == 'yellow  mon'
+      @tm.sq_three.should == 'yellow  mon'
+      @tm.sq_four.should == 'yellow  mon'
+      @tm.sq_five.should == 'yelow mon'
+      @tm.sq_six.should == 'yelow  moon'
+    end
     shared_examples "splitting" do |ev|
       before { TestModel.class_eval{before_save :split_attributes} }
       it "should split attributes using syntax: #{ev}" do
