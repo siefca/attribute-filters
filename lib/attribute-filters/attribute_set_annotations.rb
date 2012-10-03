@@ -77,7 +77,23 @@ module ActiveModel
       alias_method :annotate_properties_that,     :annotate_attribute_set
       alias_method :annotate_attributes,          :annotate_attribute_set
       alias_method :attribute_set_annotate,       :annotate_attribute_set
-    
+
+      # Helps in storing parameters as annotations.
+      # 
+      # @param set_name [String,Symbol] set name
+      # @param atr_name [String,Symbol] attribute name
+      # @param values [Object,Hash] annotation value or annotation values hash
+      # @param key_name [String,Symbol] annotation key name
+      # @param parameter_names [Array] names of parameters that are stored in values hash
+      def annotate_attributes_with_params(set_name, atr_name, values, key_name, *parameter_names)
+        if values.is_a?(Hash)
+          dvk = parameter_names.find { |k| values.key?(k) }
+          annotate_attribute_set(set_name, atr_name, key_name, values[dvk]) unless dvk.nil?
+        else
+          annotate_attribute_set(set_name, atr_name, key_name, values)
+        end
+      end
+
       # Deletes annotaion from a given set
       # 
       # @param set_name [String,Symbol] set name  
