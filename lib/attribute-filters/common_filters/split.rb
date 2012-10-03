@@ -98,13 +98,24 @@ module ActiveModel
           # 
           # @param atr_name [String,Symbol] attribute name
           # @param parameters [Hash] parameters hash # fixme: add YARD parameters explained
+          # @option parameters :pattern [String] pattern passed to +split+ method call
+          # @option parameters :split_pattern [String] pattern passed to +split+ method call (alternative name)
+          # @option parameters :with [String] pattern passed to +split+ method call (alternative name)
+          # @option parameters :limit [Fixnum] limit parameter passed to +split+ method call
+          # @option parameters :split_limit [Fixnum] limit parameter passed to +split+ method call (alternative name)
+          # @option parameters :into [String,Symbol,Array<String,Symbol>] names of attributes that results should be written to
+          # @option parameters :to [String,Symbol,Array<String,Symbol>] names of attributes that results should be written to (alternative name)
+          # @option parameters :split_into [String,Symbol,Array<String,Symbol>] names of attributes that results should be written to (alternative name)
+          # @option parameters :destination [String,Symbol,Array<String,Symbol>] names of attributes that results should be written to (alternative name)
+          # @option parameters :flatten [Boolean] flag that causes the resulting, intermediate array to be flattened
+          # @option parameters :split_flatten [Boolean] flag that causes the resulting, intermediate array to be flattened (alternative name)
           # @return [void]
           def split_attribute(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| split_attribute(k, v) }
             parameters = { :into => parameters } unless parameters.is_a?(Hash)
             the_attribute(atr_name, :should_be_splitted)
             pattern = parameters[:with]   || parameters[:pattern] || parameters[:split_pattern]
-            into    = parameters[:into]   || parameters[:to]      || parameters[:split_into]
+            into    = parameters[:into]   || parameters[:to]      || parameters[:split_into] || parameters[:destination]
             limit   = parameters[:limit]  || parameters[:split_limit]
             limit   = limit.to_i unless limit.blank?
             flatten = parameters[:flatten] || parameters[:split_flatten]

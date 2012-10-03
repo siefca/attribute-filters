@@ -52,7 +52,16 @@ module ActiveModel
           # It uses attribute set annotations to register parameters used when joining.
           # 
           # @param atr_name [String,Symbol] attribute name
-          # @param parameters [Hash] parameters hash # fixme: add YARD parameters explained
+          # @param parameters [Hash] parameters hash
+          # @option parameters :separator [String] separator passed to +join+ method call
+          # @option parameters :join_separator [String] separator passed to +join+ method call (alternative name)
+          # @option parameters :with [String] separator passed to +join+ method call (alternative name)
+          # @option parameters :from [String,Array<String>] names of source attributes used to join
+          # @option parameters :join_from [String,Array<String>] names of source attributes used to join (alternative name)
+          # @option parameters :source [String,Array<String>] names of source attributes used to join (alternative name)
+          # @option parameters :sources [String,Array<String>] names of source attributes used to join (alternative name)
+          # @option parameters :compact [Boolean] flag that causes sources to be compacted before joining
+          # @option parameters :join_compact [Boolean] flag that causes sources to be compacted before joining (alternative name)
           # @return [void]
           def join_attribute(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| join_attribute(k, v) }
