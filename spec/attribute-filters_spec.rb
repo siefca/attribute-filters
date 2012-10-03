@@ -210,6 +210,37 @@ describe ActiveModel::AttributeFilters do
       @tm.sq_five.should == 'yelow mon'
       @tm.sq_six.should == 'yelow  moon'
     end
+
+    it "should convert attributes" do
+      TestModel.class_eval{before_save :convert_attributes}
+      TestModel.class_eval do
+        attributes_that :should_be_strings, :to_strings => { :base => 10 }
+        attributes_that :should_be_integers, :to_integers
+        convert_to_float  :to_floats
+        convert_to_string :to_strings_two
+        convert_to_string :to_strings_three => 2
+        convert_to_string :to_strings_four => { :base => 2, :default => "7" }
+        convert_to_fraction :to_fractions
+        convert_to_number :to_numbers
+      end
+      @tm.to_strings = 5
+      @tm.to_strings_two = @tm.to_strings_four = 0.5.to_r
+      @tm.to_strings_three = 123
+      @tm.to_integers = "12"
+      @tm.to_floats = "12.1234"
+      @tm.to_fractions = "1/2"
+      @tm.to_numbers = [ "1", 2, "3" ]
+      -> { @tm.save }.should_not raise_error
+      @tm.to_strings.should == "5"
+      @tm.to_strings_two.should == "1/2"
+      @tm.to_strings_four.should == "7"
+      @tm.to_strings_three.should == "1111011"
+      @tm.to_integers.should == 12
+      @tm.to_floats.should == 12.1234
+      @tm.to_fractions.should == "1/2".to_r
+      @tm.to_numbers.should == [ 1, 2, 3 ]
+    end
+
     shared_examples "splitting" do |ev|
       before { TestModel.class_eval{before_save :split_attributes} }
       it "should split attributes using syntax: #{ev}" do

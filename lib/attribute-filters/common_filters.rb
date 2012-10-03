@@ -27,6 +27,7 @@ module ActiveModel
     def filter_attributes
       respond_to?(:split_attributes)            and split_attributes
       respond_to?(:join_attributes)             and join_attributes
+      respond_to?(:convert_attributes)          and convert_attributes
       respond_to?(:squeeze_attributes)          and squeeze_attributes
       respond_to?(:strip_attributes)            and strip_attributes
       respond_to?(:upcase_attributes)           and upcase_attributes
@@ -76,6 +77,7 @@ module ActiveModel
       require 'attribute-filters/common_filters/strip'
       require 'attribute-filters/common_filters/case'
       require 'attribute-filters/common_filters/squeeze'
+      require 'attribute-filters/common_filters/convert'
       require 'attribute-filters/common_filters/split'
       require 'attribute-filters/common_filters/join'
 
