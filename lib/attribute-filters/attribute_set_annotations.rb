@@ -78,21 +78,52 @@ module ActiveModel
       alias_method :annotate_attributes,          :annotate_attribute_set
       alias_method :attribute_set_annotate,       :annotate_attribute_set
 
-      # Helps in storing parameters as annotations.
+      # Helps in adding attributes to sets with annotations used to store parameters.
       # 
-      # @param set_name [String,Symbol] set name
-      # @param atr_name [String,Symbol] attribute name
-      # @param values [Object,Hash] annotation value or annotation values hash
-      # @param key_name [String,Symbol] annotation key name
-      # @param parameter_names [Array] names of parameters that are stored in values hash
-      def annotate_attributes_with_params(set_name, atr_name, values, key_name, *parameter_names)
-        if values.is_a?(Hash)
-          dvk = parameter_names.find { |k| values.key?(k) }
-          annotate_attribute_set(set_name, atr_name, key_name, values[dvk]) unless dvk.nil?
+      # @param set_name [Symbol,String] name of a set
+      # @param param_defs [Hash{Symbol => Array<Symbol,String>}]
+      # @param default_param [Symbol,String,nil]
+      # @param attribute_defs [Hash{Symbol => Object}, Array<Symbol,String>]
+      # @example
+      #   setup_attributes_set(:should_be_filled,
+      #                         { :fill_value  => [ :with, :fill_with, :value, :content ] },
+      #                         :fill_value,
+      #                         { 'atr_name'    => { :with => 'x', :fill_any => true }, :other_atr => 'text' }
+      def setup_attributes_set(set_name, attribute_defs, param_defs = {}, default_param = nil)
+        # create parameter keys conversion hash
+        pdefs = {}
+        param_defs.each_pair do |k, v|
+          k = k.to_sym
+          if v.is_a?(Array)
+            v.each { |x| pdefs[x.to_sym] = k }
+          else
+            pdefs[v.to_sym] = k
+          end
+        end
+        # process attribute -> annotations pairs or other arguments given
+        if attribute_defs.is_a?(Array)
+          attribute_defs.each { |arg| setup_attributes_set(set_name, arg, param_defs, default_param) }
+        elsif attribute_defs.is_a?(Hash)
+          output_set = {}
+          attribute_defs.each_pair do |atr_name, atr_annotations|
+            atr_name = atr_name.to_s
+            output_set[atr_name] = {}
+            if atr_annotations.is_a?(Hash)
+              atr_annotations.each_pair do |an_key, an_val|
+                an_key = an_key.to_sym
+                an_key = pdefs[an_key] if pdefs.key?(an_key)
+                output_set[atr_name][an_key] = an_val
+              end
+            elsif !default_param.nil?
+              output_set[atr_name][default_param.to_sym] = atr_annotations
+            end
+          end
+          attributes_that(set_name, output_set)
         else
-          annotate_attribute_set(set_name, atr_name, key_name, values)
+          attributes_that(set_name, *attribute_defs)
         end
       end
+      alias_method :setup_attributes_that, :setup_attributes_set
 
       # Deletes annotaion from a given set
       # 

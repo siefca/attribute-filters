@@ -17,8 +17,9 @@ module ActiveModel
       module Convert
         extend CommonFilter
 
-        def attributes_convert(set_name, default_key, &block)
-          filter_attrs_from_set(set_name) do |atr_val, atr_name, set_obj|
+        # Helper that is used by all converting filters.
+        def attributes_convert(set_name, default_key, *params, &block)
+          filter_attrs_from_set(set_name, *params) do |atr_val, atr_name, set_obj|
             AttributeFiltersHelpers.each_element(atr_val) do |v|
               begin
                 yield(v, atr_name, set_obj)
@@ -30,26 +31,6 @@ module ActiveModel
           end
         end
         private :attributes_convert
-
-        # This submodule contains class methods used to easily define filter.
-        module ClassMethods
-          # Registers attributes.
-          def attributes_convert(set_name, keys_params, *args)
-            args.each do |arg|
-              if arg.is_a?(Hash)
-                arg.each_pair do |atr_name, v|
-                  attributes_that(set_name, atr_name)
-                  keys_params.each_pair do |annotation_key, param_names|
-                    annotate_attributes_with_params(set_name, atr_name, v, annotation_key, *param_names)
-                  end
-                end
-              else
-                attributes_that(set_name, args)
-              end
-            end
-          end
-          private :attributes_convert
-        end # module ClassMethods
 
         # Convert attributes to strings.
         # 
@@ -63,6 +44,7 @@ module ActiveModel
         def attributes_to_s
           attributes_convert(:should_be_strings, :to_s_default) do |v, atr_name, set_obj|
             if set_obj.has_annotation?(atr_name, :to_s_base)
+              v = 0 if v.nil?
               v.to_s(set_obj.annotation(atr_name, :to_s_base) || 10)
             else
               v.to_s
@@ -75,11 +57,11 @@ module ActiveModel
         module ClassMethods
           # Registers attributes that should be converted.
           def attributes_to_s(*args)
-            attributes_convert(:should_be_strings,
+            setup_attributes_that :should_be_strings, args,
               {
                 :to_s_default => [:default, :on_error, :to_s_default],
                 :to_s_base => [:base, :with_base, :to_s_base]
-              }, *args)
+              }, :to_s_base
           end
           alias_method :convert_to_string,      :attributes_to_s
           alias_method :convert_to_strings,     :attributes_to_s
@@ -98,7 +80,13 @@ module ActiveModel
         # 
         # @return [void]
         def attributes_to_i
-          attributes_convert(:should_be_integers, :to_i_default) { |v| v.to_i }
+          attributes_convert(:should_be_integers, :to_i_default) do |v, atr_name, set_obj|
+            if set_obj.has_annotation?(atr_name, :to_i_base)
+              v.to_i(set_obj.annotation(atr_name, :to_i_base) || 10)
+            else
+              v.to_i
+            end
+          end
         end
         alias_method :attributes_to_integers, :attributes_to_i
 
@@ -106,7 +94,11 @@ module ActiveModel
         module ClassMethods
           # Registers attributes that should be converted.
           def attributes_to_i(*args)
-            attributes_convert(:should_be_integers, {:to_i_default => [:default, :on_error, :to_i_default]}, *args)
+            setup_attributes_that :should_be_integers, args,
+              {
+                :to_i_default => [:default, :on_error, :to_i_default],
+                :to_i_base => [:base, :with_base, :to_i_base]
+              }, :to_i_base
           end
           alias_method :convert_to_integer,     :attributes_to_i
           alias_method :convert_to_integers,    :attributes_to_i
@@ -133,7 +125,9 @@ module ActiveModel
         module ClassMethods
           # Registers attributes that should be converted.
           def attributes_to_f(*args)
-            attributes_convert(:should_be_floats,  :to_f_default, [:default, :on_error, :to_f_default], *args)
+            setup_attributes_that :should_be_floats, args,
+              { :to_f_default => [:default, :on_error, :to_f_default] },
+              :to_f_default
           end
           alias_method :convert_to_float,      :attributes_to_f
           alias_method :convert_to_floats,     :attributes_to_f
@@ -161,8 +155,9 @@ module ActiveModel
         module ClassMethods
           # Registers attributes that should be converted.
           def attributes_to_numbers(*args)
-            attributes_convert(:should_be_numbers,  :to_f_default, [:default, :on_error, :to_number_default,
-                                                                   :to_num_default], *args)
+            setup_attributes_that :should_be_numbers, args,
+              { :to_num_default => [:default, :on_error, :to_number_default, :to_num_default] },
+              :to_num_default
           end
           alias_method :convert_to_number,     :attributes_to_numbers
           alias_method :convert_to_numbers,    :attributes_to_numbers
@@ -188,7 +183,9 @@ module ActiveModel
         module ClassMethods
           # Registers attributes that should be converted.
           def attributes_to_r(*args)
-            attributes_convert(:should_be_rationals, {:to_r_default => [:default, :on_error, :to_r_default]}, *args)
+            setup_attributes_that :should_be_rationals, args,
+              { :to_r_default => [:default, :on_error, :to_r_default] },
+              :to_r_default
           end
           alias_method :convert_to_rational,      :attributes_to_r
           alias_method :convert_to_rationals,     :attributes_to_r
@@ -199,6 +196,34 @@ module ActiveModel
           alias_method :attribute_to_fraction,    :attributes_to_r
         end # module ClassMethods
 
+        # Convert attributes to boolean values.
+        # 
+        # The attrubutes are taken from the attribute set
+        # called +should_be_boolean+.
+        # 
+        # @note If a value of currently processed attribute is an array
+        #  then each element of the array is changed.
+        # 
+        # @return [void]
+        def attributes_to_b
+          attributes_convert(:should_be_boolean, :to_b_default, :process_blank) { |v| !!v }
+        end
+        alias_method :attributes_to_boolean, :attributes_to_b
+
+        # This submodule contains class methods used to easily define filter.
+        module ClassMethods
+          # Registers attributes that should be converted.
+          def attributes_to_b(*args)
+            setup_attributes_that :should_be_boolean, args,
+              { :to_b_default => [:default, :on_error, :to_b_default] },
+              :to_b_default
+          end
+          alias_method :convert_to_boolean,      :attributes_to_b
+          alias_method :convert_to_booleans,     :attributes_to_b
+          alias_method :attributes_to_booleans,  :attributes_to_b
+          alias_method :attribute_to_booleans,   :attributes_to_b
+        end # module ClassMethods
+
         # Generic method for calling all the conversion methods.
         # @return [void]
         def convert_attributes
@@ -207,6 +232,7 @@ module ActiveModel
           attributes_to_numbers
           attributes_to_i
           attributes_to_s
+          attributes_to_b
         end
 
       end # module Convert

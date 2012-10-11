@@ -216,20 +216,24 @@ describe ActiveModel::AttributeFilters do
       TestModel.class_eval do
         attributes_that :should_be_strings, :to_strings => { :base => 10 }
         attributes_that :should_be_integers, :to_integers
-        convert_to_float  :to_floats
-        convert_to_string :to_strings_two
-        convert_to_string :to_strings_three => 2
-        convert_to_string :to_strings_four => { :base => 2, :default => "7" }
+        convert_to_float    :to_floats
+        convert_to_string   :to_strings_two
+        convert_to_string   :to_strings_three => 2
+        convert_to_string   :to_strings_four => { :base => 2, :default => "7" }
         convert_to_fraction :to_fractions
-        convert_to_number :to_numbers
+        convert_to_number   :to_numbers
+        convert_to_integer  :to_integers_two => 2
+        convert_to_boolean  :to_boolean
       end
       @tm.to_strings = 5
       @tm.to_strings_two = @tm.to_strings_four = 0.5.to_r
       @tm.to_strings_three = 123
       @tm.to_integers = "12"
+      @tm.to_integers_two = "10001"
       @tm.to_floats = "12.1234"
       @tm.to_fractions = "1/2"
       @tm.to_numbers = [ "1", 2, "3" ]
+      @tm.to_boolean = nil
       -> { @tm.save }.should_not raise_error
       @tm.to_strings.should == "5"
       @tm.to_strings_two.should == "1/2"
@@ -239,6 +243,8 @@ describe ActiveModel::AttributeFilters do
       @tm.to_floats.should == 12.1234
       @tm.to_fractions.should == "1/2".to_r
       @tm.to_numbers.should == [ 1, 2, 3 ]
+      @tm.to_integers_two.should == 17
+      @tm.to_boolean.should == false
     end
 
     shared_examples "splitting" do |ev|

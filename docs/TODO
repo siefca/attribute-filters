@@ -1,20 +1,34 @@
 * add more rspec examples (+ nil and boolean attributes)
 
-* add parameter support to squeeze common filter
-
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
 
-* add stringify to common filters
-* add numerize to common filters
-* add booleanize to common filters
-* add nullify to common filters
-* add clear to common filters
+* modify helper so it changes hash values if a hash is filtered
+* create methods for gathering parameters from annotations (annotation_get_parameter)
+
+group in Presence filter
+  * add nullify to common filters
+  * add clear to common filters
+  * move fill there
+
 * add reverse to common filters
-* add sanitize to common filters (that calls needed)
+
+* automagically include filters from common_filters subdirectory
+
+* add sanitize to common filters (that calls needed filtering methods depending on attribute name)
   -- sanitize_email
   -- sanitize_url
   -- sanitize_string
   -- sanitize_name
   -- sanitize_country
   -- sanitize_iban (future, in a gem attribute-filters-common-iban)
+
+  sanitize_the_attribute :name
+  sanitize_the_attribute :name => { :as => :name }
+  the_attribute :name, :should_be_sanitized
+  the_attribute :name, :should_be_sanitized => { :as => :name }
+
+add some sugar:
+
+  the_attribute :name, :shoud_be => { :downcased, :squeezed }
+
