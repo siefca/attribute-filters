@@ -97,7 +97,7 @@ module ActiveModel
           #   end
           # 
           # @param atr_name [String,Symbol] attribute name
-          # @param parameters [Hash] parameters hash # fixme: add YARD parameters explained
+          # @param parameters [Hash] parameters hash
           # @option parameters :pattern [String] pattern passed to +split+ method call
           # @option parameters :split_pattern [String] pattern passed to +split+ method call (alternative name)
           # @option parameters :with [String] pattern passed to +split+ method call (alternative name)
