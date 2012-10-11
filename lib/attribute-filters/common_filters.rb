@@ -35,6 +35,7 @@ module ActiveModel
       respond_to?(:capitalize_attributes)       and capitalize_attributes
       respond_to?(:fully_capitalize_attributes) and fully_capitalize_attributes
       respond_to?(:titleize_attributes)         and titleize_attributes
+      respond_to?(:fill_attributes)             and fill_attributes
     end
 
     # This module contains common, ready-to-use filtering methods.
@@ -80,6 +81,7 @@ module ActiveModel
       require 'attribute-filters/common_filters/convert'
       require 'attribute-filters/common_filters/split'
       require 'attribute-filters/common_filters/join'
+      require 'attribute-filters/common_filters/fill'
 
     end # module Common
   end # module AttributeFilters
