@@ -211,6 +211,28 @@ describe ActiveModel::AttributeFilters do
       @tm.sq_six.should == 'yelow  moon'
     end
 
+    it "should fill attributes with values" do
+      TestModel.class_eval{before_save :fill_attributes}
+      TestModel.class_eval do
+        attributes_that :should_be_filled, :fill_one
+        attributes_that :should_be_filled, :fill_two => { :fill_value => 'dupa' }
+        attributes_that :should_be_filled, :fill_three => { :fill_value => 'dupa', :fill_any => true }
+        fill_attributes :fill_four => 'dupa'
+        fill_attributes :fill_five => { :with => 'dupa', :fill_present => true }
+        fill_attributes :fill_six => { :with => 'dupa' }
+      end
+      @tm.fill_one = ''
+      @tm.fill_five = @tm.fill_three = 'something'
+      @tm.fill_two = @tm.fill_four = @tm.fill_six = nil
+      -> { @tm.save }.should_not raise_error
+      @tm.fill_one.should == nil
+      @tm.fill_two.should == 'dupa'
+      @tm.fill_three.should == 'dupa'
+      @tm.fill_four.should == 'dupa'
+      @tm.fill_five.should == 'dupa'
+      @tm.fill_six.should == 'dupa'
+    end
+
     it "should convert attributes" do
       TestModel.class_eval{before_save :convert_attributes}
       TestModel.class_eval do

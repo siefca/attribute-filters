@@ -81,7 +81,7 @@ module ActiveModel
       require 'attribute-filters/common_filters/convert'
       require 'attribute-filters/common_filters/split'
       require 'attribute-filters/common_filters/join'
-      require 'attribute-filters/common_filters/fill'
+      require 'attribute-filters/common_filters/presence'
 
     end # module Common
   end # module AttributeFilters

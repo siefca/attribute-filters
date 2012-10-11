@@ -9,11 +9,20 @@
 group in Presence filter
   * add nullify to common filters
   * add clear to common filters
-  * move fill there
 
-* add reverse to common filters
+add Order filter
+  * add reverse
+  * add random
+
+add Pick filter
+  * add step
+  * add head
+  * add tail
+  * add regex/slice
 
 * automagically include filters from common_filters subdirectory
+
+* improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
 
 * add sanitize to common filters (that calls needed filtering methods depending on attribute name)
   -- sanitize_email

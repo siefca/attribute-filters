@@ -4,7 +4,7 @@
 # Copyright:: (c) 2012 by Paweł Wilk
 # License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
-# This file contains ActiveModel::AttributeFilters::Common::Fill module
+# This file contains ActiveModel::AttributeFilters::Common::Presence module
 # containing ready-to-use filtering method.
 
 # @abstract This namespace is shared with ActveModel.
@@ -13,10 +13,10 @@ module ActiveModel
     # This module contains common, ready-to-use filtering methods.
     module Common   
 
-      # This module contains attribute filters responsible for changing the case of letters.
-      module Fill
+      # This module contains attribute filters responsible for manipulating presence of attribute values.
+      module Presence
         extend CommonFilter
-        # Fills-up attributes that are blank with +nil+ or the given values.
+        # Presences-up attributes that are blank with +nil+ or the given values.
         # 
         # The attrubutes are taken from the attribute set
         # called +should_be_filled+.
@@ -48,9 +48,9 @@ module ActiveModel
           end
           alias_method :fill_attribute, :fill_attributes
         end # module ClassMethods
-      end # module Fill
+      end # module Presence
 
-      include Fill
+      include Presence
 
     end # module Common
   end # module AttributeFilters

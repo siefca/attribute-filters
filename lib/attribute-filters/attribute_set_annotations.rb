@@ -85,10 +85,10 @@ module ActiveModel
       # @param default_param [Symbol,String,nil]
       # @param attribute_defs [Hash{Symbol => Object}, Array<Symbol,String>]
       # @example
-      #   setup_attributes_set(:should_be_filled,
-      #                         { :fill_value  => [ :with, :fill_with, :value, :content ] },
-      #                         :fill_value,
-      #                         { 'atr_name'    => { :with => 'x', :fill_any => true }, :other_atr => 'text' }
+      #   setup_attributes_set  :should_be_filled,
+      #                         { 'atr_name'  => { :with => 'x', :fill_any => true }, :other_atr => 'text' },
+      #                         { :fill_value => [ :with, :fill_with, :value, :content ] },
+      #                         :fill_value
       def setup_attributes_set(set_name, attribute_defs, param_defs = {}, default_param = nil)
         # create parameter keys conversion hash
         pdefs = {}
