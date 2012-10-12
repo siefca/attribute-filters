@@ -74,14 +74,9 @@ module ActiveModel
       # Include all default filters
       # that should be available
       # when Common module is included.
-
-      require 'attribute-filters/common_filters/strip'
-      require 'attribute-filters/common_filters/case'
-      require 'attribute-filters/common_filters/squeeze'
-      require 'attribute-filters/common_filters/convert'
-      require 'attribute-filters/common_filters/split'
-      require 'attribute-filters/common_filters/join'
-      require 'attribute-filters/common_filters/presence'
+      Dir[File.join(File.dirname(__FILE__), 'common_filters', '*.rb')].each do |f|
+        require f
+      end
 
     end # module Common
   end # module AttributeFilters

@@ -1,5 +1,3 @@
-* add more rspec examples (+ nil and boolean attributes)
-
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
 
@@ -12,8 +10,6 @@ add Pick filter
   * add head
   * add tail
   * add regex/slice
-
-* automagically include filters from common_filters subdirectory
 
 * improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
 
