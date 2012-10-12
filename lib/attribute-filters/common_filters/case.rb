@@ -23,7 +23,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def downcase_attributes
@@ -50,7 +50,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def upcase_attributes
@@ -77,7 +77,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def titleize_attributes
@@ -104,7 +104,7 @@ module ActiveModel
         # used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def capitalize_attributes
@@ -122,7 +122,7 @@ module ActiveModel
         # This method is safe to be used with multibyte strings (containing diacritics).
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def titleize_with_squeezed_spaces

@@ -21,7 +21,7 @@ module ActiveModel
         # +should_be_stripped+. It operates directly on attribute's contents.
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def strip_attributes

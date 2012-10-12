@@ -22,7 +22,7 @@ module ActiveModel
         # called +should_be_filled+.
         # 
         # @note If a value of currently processed attribute is an array
-        #  then any element of the array is changed.
+        #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
         def fill_attributes
@@ -42,7 +42,8 @@ module ActiveModel
           # Registers attributes that should be filled with some values.
           def fill_attributes(*args)
             setup_attributes_that :should_be_filled, args,
-                                 { :fill_value  => [:with, :fill_with, :fill_value, :fill, :value, :content, :default],
+                                 {
+                                   :fill_value  => [:with, :fill_with, :fill_value, :fill, :value, :content, :default],
                                    :fill_any    => [:fill_always, :always_fill, :always, :fill_any, :fill_present]
                                  }, :fill_value
           end
