@@ -1,9 +1,6 @@
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
 
-add Order filter
-  * add random
-
 add Pick filter
   * add step
   * add head

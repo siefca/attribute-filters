@@ -262,6 +262,23 @@ describe ActiveModel::AttributeFilters do
       @tm.reverse_four.should == ['1',2,:x,'apud']
     end
 
+    it "should randomize order of attribute values" do
+      TestModel.class_eval{before_save :shuffle_attributes}
+      TestModel.class_eval do
+        attributes_that :should_be_shuffled, :shuffle_one, :shuffle_two
+        shuffle_attributes :shuffle_three => { :enums => true }
+        shuffle_attributes :shuffle_four
+      end
+      @tm.shuffle_one = @tm.shuffle_two = 'dupa'
+      @tm.shuffle_three = @tm.shuffle_four = ['1',2,:x,2,'dupadupa']
+      -> { @tm.save }.should_not raise_error
+      @tm.shuffle_one.should_not == @tm.shuffle_two
+      @tm.shuffle_three.should_not == ['1',2,:x,2,'dupadupa']
+      @tm.shuffle_three.sort{ |a,b| a.to_s <=> b.to_s}.should == ['1',2,:x,2,'dupadupa'].sort{ |a,b| a.to_s <=> b.to_s}
+      @tm.shuffle_four.take(3).should == ['1',2,:x]
+      @tm.shuffle_four.last.should_not == 'dupadupa'
+    end
+
     it "should convert attributes" do
       TestModel.class_eval{before_save :convert_attributes}
       TestModel.class_eval do
