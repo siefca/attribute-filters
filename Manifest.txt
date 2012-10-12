@@ -29,6 +29,7 @@ lib/attribute-filters/common_filters.rb
 lib/attribute-filters/common_filters/case.rb
 lib/attribute-filters/common_filters/convert.rb
 lib/attribute-filters/common_filters/join.rb
+lib/attribute-filters/common_filters/order.rb
 lib/attribute-filters/common_filters/presence.rb
 lib/attribute-filters/common_filters/split.rb
 lib/attribute-filters/common_filters/squeeze.rb

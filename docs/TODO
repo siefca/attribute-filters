@@ -2,7 +2,6 @@
   - they can use methods that internally are checking it
 
 add Order filter
-  * add reverse
   * add random
 
 add Pick filter

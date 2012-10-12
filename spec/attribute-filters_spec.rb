@@ -245,6 +245,23 @@ describe ActiveModel::AttributeFilters do
       @tm.fill_ten.should == ['1',2,:x,'dupa','dupa']
     end
 
+    it "should reverse attribute values" do
+      TestModel.class_eval{before_save :reverse_attributes}
+      TestModel.class_eval do
+        attributes_that :should_be_reversed, :reverse_one
+        attributes_that :should_be_reversed, :reverse_two => { :reverse_enumerable => true }
+        reverse_attributes :reverse_three => { :enums => true }
+        reverse_attributes :reverse_four
+      end
+      @tm.reverse_one = @tm.reverse_two = 'dupa'
+      @tm.reverse_three = @tm.reverse_four = ['1',2,:x,'dupa']
+      -> { @tm.save }.should_not raise_error
+      @tm.reverse_one.should == 'apud'
+      @tm.reverse_two.should == 'apud'
+      @tm.reverse_three.should == ['dupa',:x,2,'1']
+      @tm.reverse_four.should == ['1',2,:x,'apud']
+    end
+
     it "should convert attributes" do
       TestModel.class_eval{before_save :convert_attributes}
       TestModel.class_eval do
