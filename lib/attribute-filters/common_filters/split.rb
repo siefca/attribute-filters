@@ -112,23 +112,21 @@ module ActiveModel
           # @return [void]
           def split_attribute(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| split_attribute(k, v) }
-            parameters = { :into => parameters } unless parameters.is_a?(Hash)
-            the_attribute(atr_name, :should_be_splitted)
-            pattern = parameters[:with]   || parameters[:pattern] || parameters[:split_pattern]
-            into    = parameters[:into]   || parameters[:to]      || parameters[:split_into] || parameters[:destination]
-            limit   = parameters[:limit]  || parameters[:split_limit]
-            limit   = limit.to_i unless limit.blank?
-            flatten = parameters[:flatten] || parameters[:split_flatten]
+            setup_attributes_that :should_be_splitted, { atr_name => parameters },
+              {
+                :split_pattern  => [ :with, :pattern, :split_pattern ],
+                :split_into     => [ :into, :to, :destination, :split_into ],
+                :split_limit    => [ :limit, :split_limit ],
+                :split_flatten  => [ :flatten, :split_flatten ]
+              }, :split_into
+            # write some defaults
+            limit, into = attribute_set(:should_be_splitted).get_annotations(atr_name, :split_limit, :split_into)
+            annotate_attribute_set(:should_be_splitted, atr_name, :split_limit, limit.to_i) unless limit.blank?
             if into.blank?
-              into = nil
+              annotate_attribute_set(:should_be_splitted, atr_name,:split_into, nil)
             elsif !into.is_a?(Array)
-              into = into.respond_to?(:to_a) ? into.to_a : [ into ]
+              annotate_attributes_that(:should_be_splitted, :split_into, into.respond_to?(:to_a) ? into.to_a : [ into ])
             end
-            annotate_attributes_that(:should_be_splitted, atr_name => {
-                                     :split_flatten => flatten,
-                                     :split_pattern => pattern,
-                                     :split_limit => limit,
-                                     :split_into => into})
           end
           alias_method :split_attributes, :split_attribute
         end # module ClassMethods

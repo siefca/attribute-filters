@@ -43,27 +43,11 @@ module ActiveModel
         module ClassMethods
           # Registers attributes that should be squeezed.
           def squeeze_attributes(*args)
-            args.each do |arg|
-              if arg.is_a?(Hash)
-                other_str = nil
-                arg.each_pair do |atr_name, v|
-                  attributes_that(:should_be_squeezed, atr_name)
-                  if v.is_a?(Hash)
-                    other_str = [:squeeze_other_str, :other_str, :string, :with_string,
-                                 :with_characters, :with_character, :characters].find { |k| v.key?(k) }
-                    other_str = v[other_str] unless other_str.nil?
-                  else
-                    other_str = v
-                  end
-                  unless other_str.nil?
-                    ''.squeeze(other_str) # test for any errors here
-                    annotate_attributes_that(:should_be_squeezed, atr_name, :squeeze_other_str, other_str)
-                  end
-                end
-              else
-                attributes_that(:should_be_squeezed, arg)
-              end
-            end
+            setup_attributes_that :should_be_squeezed, args,
+              {
+                :squeeze_other_str => [:squeeze_other_str, :other_str, :string, :with_string,
+                                       :with_characters, :with_character, :characters]
+              }, :squeeze_other_str
           end
           alias_method :squeeze_attribute, :squeeze_attributes
         end # module ClassMethods

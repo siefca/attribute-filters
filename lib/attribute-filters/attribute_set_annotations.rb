@@ -118,9 +118,9 @@ module ActiveModel
               output_set[atr_name][default_param.to_sym] = atr_annotations
             end
           end
-          attributes_that(set_name, output_set)
+          attribute_set(set_name, output_set)
         else
-          attributes_that(set_name, *attribute_defs)
+          attribute_set(set_name, *attribute_defs)
         end
       end
       alias_method :setup_attributes_that, :setup_attributes_set

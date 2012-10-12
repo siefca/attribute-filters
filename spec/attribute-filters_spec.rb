@@ -200,8 +200,9 @@ describe ActiveModel::AttributeFilters do
         attributes_that :should_be_squeezed, :sq_six => { :squeeze_other_str => 'l' }
         squeeze_attributes :sq_two => 'o'
         squeeze_attributes :sq_three => { :with_character => 'o' }, :sq_four => 'o', :sq_five => nil
+        squeeze_attributes :sq_eight, :sq_seven
       end
-      @tm.sq_one = @tm.sq_two = @tm.sq_three = @tm.sq_four = @tm.sq_five = @tm.sq_six = 'yellow  moon'
+      @tm.sq_one = @tm.sq_two = @tm.sq_three = @tm.sq_four = @tm.sq_five = @tm.sq_six = @tm.sq_seven = @tm.sq_eight = 'yellow  moon'
       -> { @tm.save }.should_not raise_error
       @tm.sq_one.should == 'yelow mon'
       @tm.sq_two.should == 'yellow  mon'
@@ -209,6 +210,8 @@ describe ActiveModel::AttributeFilters do
       @tm.sq_four.should == 'yellow  mon'
       @tm.sq_five.should == 'yelow mon'
       @tm.sq_six.should == 'yelow  moon'
+      @tm.sq_seven.should == 'yelow mon'
+      @tm.sq_eight.should == 'yelow mon'
     end
 
     it "should fill attributes with values" do
@@ -380,7 +383,12 @@ describe ActiveModel::AttributeFilters do
       @tm.last_name.should == nil
       @tm.real_name.should == ["Paweł", "Wilk", "Trzy", "Cztery"]
 
-      TestModel.class_eval{split_attribute :real_name => {:limit => 2}}
+      TestModel.class_eval{split_attribute :real_name => {:limit => 2, :flatten => true}}
+      @tm.real_name = ["Paweł", "Wilk Trzy Osiem Dziewiec", "Cztery"]
+      -> { @tm.save }.should_not raise_error
+      @tm.real_name.should == ["Paweł", "Wilk", "Trzy Osiem Dziewiec", "Cztery"]
+
+      TestModel.class_eval{split_attribute :real_name => {:limit => 2, :flatten => false}}
       @tm.real_name = ["Paweł", "Wilk Trzy Osiem Dziewiec", "Cztery"]
       -> { @tm.save }.should_not raise_error
       @tm.real_name.should == [["Paweł"], ["Wilk", "Trzy Osiem Dziewiec"], ["Cztery"]]

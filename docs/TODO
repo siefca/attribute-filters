@@ -3,9 +3,6 @@
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
 
-* modify helper so it changes hash values if a hash is filtered
-* create methods for gathering parameters from annotations (annotation_get_parameter)
-
 group in Presence filter
   * add nullify to common filters
   * add clear to common filters

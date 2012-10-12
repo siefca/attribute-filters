@@ -65,32 +65,26 @@ module ActiveModel
           # @return [void]
           def join_attribute(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| join_attribute(k, v) }
+            # process reversed notation
+            p = parameters
             if atr_name.is_a?(Array)
-              if parameters.is_a?(Symbol) || parameters.is_a?(String)
-                return join_attribute(parameters, atr_name)
-              elsif parameters.is_a?(Hash)
-                dst = parameters.delete(:into) || parameters.delete(:in) || parameters.delete(:destination)
-                if dst.nil?
-                  raise ArgumentError, "you have to specify destination attribute using :into => 'attribute_name'"
-                end
-                parameters[:from] = atr_name
-                return join_attribute(dst, parameters)
+              if p.is_a?(Hash)
+                p = p.dup
+                dst = [:into, :in, :destination, :join_into].find { |k| p.key?(k) }
+                dst.nil? and raise ArgumentError, "you must specify destination attribute using :into => 'attribute_name'"
+                p[:from] = atr_name
+                return join_attribute(p.delete(dst), p)
+              else
+                return join_attribute(p, atr_name)
               end
             end
-            parameters = { :from => parameters } unless parameters.is_a?(Hash)
-            the_attribute(atr_name, :should_be_joined)
-            a = {}
-            if parameters.key?(:with)
-              a[:join_separator] = parameters[:with]
-            elsif parameters.key?(:separator)
-              a[:join_separator] = parameters[:separator]
-            elsif parameters.key?(:join_separator)
-              a[:join_separator] = parameters[:join_separator]
-            end
-            from    = parameters[:from] || parameters[:source] || parameters[:sources] || parameters[:join_from]
-            compact = parameters.key?(:compact) ? !!parameters[:compact] : !!parameters[:join_compact]
-            a.merge!({ :join_compact => compact, :join_from => from })
-            annotate_attributes_that(:should_be_joined, atr_name => a)
+            # setup attribute set
+            setup_attributes_that :should_be_joined, { atr_name => p },
+              {
+                :join_separator   => [ :with, :separator, :join_separator ],
+                :join_from        => [ :from, :source, :sources, :join_from ],
+                :join_compact     => [ :compact, :join_compact ]
+              }, :join_from
           end
           alias_method :join_attributes,      :join_attribute
           alias_method :joint_attribute,      :join_attribute
