@@ -223,10 +223,15 @@ describe ActiveModel::AttributeFilters do
         fill_attributes :fill_four => 'dupa'
         fill_attributes :fill_five => { :with => 'dupa', :fill_present => true }
         fill_attributes :fill_six => { :with => 'dupa' }
+        fill_attributes :fill_seven => { :with => 'dupa', :always => true }
+        fill_attributes :fill_eight => { :with => 'dupa', :enums => true }
+        fill_attributes :fill_nine => { :with => 'dupa', :always => true, :enums => true }
+        fill_attributes :fill_ten => { :with => 'dupa' }
       end
       @tm.fill_one = ''
       @tm.fill_five = @tm.fill_three = 'something'
       @tm.fill_two = @tm.fill_four = @tm.fill_six = nil
+      @tm.fill_seven = @tm.fill_eight = @tm.fill_nine =  @tm.fill_ten = ['1',2,:x,nil,'']
       -> { @tm.save }.should_not raise_error
       @tm.fill_one.should == nil
       @tm.fill_two.should == 'dupa'
@@ -234,6 +239,10 @@ describe ActiveModel::AttributeFilters do
       @tm.fill_four.should == 'dupa'
       @tm.fill_five.should == 'dupa'
       @tm.fill_six.should == 'dupa'
+      @tm.fill_seven.should == ['dupa','dupa','dupa','dupa','dupa']
+      @tm.fill_eight.should == ['1',2,:x,nil,'']
+      @tm.fill_nine.should == 'dupa'
+      @tm.fill_ten.should == ['1',2,:x,'dupa','dupa']
     end
 
     it "should convert attributes" do

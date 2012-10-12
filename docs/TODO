@@ -3,10 +3,6 @@
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
 
-group in Presence filter
-  * add nullify to common filters
-  * add clear to common filters
-
 add Order filter
   * add reverse
   * add random

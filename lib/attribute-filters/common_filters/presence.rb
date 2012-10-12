@@ -27,11 +27,19 @@ module ActiveModel
         # @return [void]
         def fill_attributes
           filter_attrs_from_set(:should_be_filled, :process_blank) do |atr_val, atr_name, set_obj|
-            AttributeFiltersHelpers.each_element(atr_val) do |v|
-              if v.blank? || set_obj.annotation(atr_name, :fill_any)
+            if set_obj.annotation(atr_name, :fill_enumerable)
+              if atr_val.blank? || set_obj.annotation(atr_name, :fill_any)
                 set_obj.annotation(atr_name, :fill_value)
               else
-                v
+                atr_val
+              end
+            else
+              AttributeFiltersHelpers.each_element(atr_val) do |v|
+                if v.blank? || set_obj.annotation(atr_name, :fill_any)
+                  set_obj.annotation(atr_name, :fill_value)
+                else
+                  v
+                end
               end
             end
           end
@@ -42,10 +50,11 @@ module ActiveModel
           # Registers attributes that should be filled with some values.
           def fill_attributes(*args)
             setup_attributes_that :should_be_filled, args,
-                                 {
-                                   :fill_value  => [:with, :fill_with, :fill_value, :fill, :value, :content, :default],
-                                   :fill_any    => [:fill_always, :always_fill, :always, :fill_any, :fill_present]
-                                 }, :fill_value
+              {
+                :fill_value      => [:with, :fill_with, :fill_value, :fill, :value, :content, :default],
+                :fill_any        => [:all, :any, :fill_always, :always_fill, :always, :fill_present, :fill_all, :fill_any],
+                :fill_enumerable => [:replace_enumerable, :replace_enums, :enums, :whole_enums, :fill_enums, :fill_enumerable]
+              }, :fill_value
           end
           alias_method :fill_attribute, :fill_attributes
         end # module ClassMethods
