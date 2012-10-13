@@ -214,6 +214,42 @@ describe ActiveModel::AttributeFilters do
       @tm.sq_eight.should == 'yelow mon'
     end
 
+    it "should pick attributes" do
+      TestModel.class_eval{before_save :pick_attributes}
+      TestModel.class_eval do
+        attributes_that :should_be_picked, :p_a
+        attributes_that :should_be_picked, :p_b => { :pick_separator => " " }
+        pick_attributes :p_c, :p_d
+        pick_attributes :p_e => / /
+        pick_attributes :p_f => { :separator => " ", :from => 1 }
+        pick_attributes :p_g => { :from => 2, :to => 3 }
+        pick_attributes :p_h => { :range => 2..3 }
+        pick_attributes :p_i => { :step => 2, :from => 2, :separator => " " }
+        pick_attributes :p_j => { :step => 2, :tail => 2, :separator => " " }
+        pick_attributes :p_k => { :joiner => "x", :separator => " ", :head => 1 }
+        pick_attributes :p_l => { :head => 2, :step => 2 }
+        pick_attributes :p_m => { :enum => true, :head => 2, :step => 2 }
+      end
+      @tm.p_a = @tm.p_b = @tm.p_c = @tm.p_d = @tm.p_e = @tm.p_f = @tm.p_g = @tm.p_h = 
+      @tm.p_i = @tm.p_j = @tm.p_k = "one two three four five"
+      @tm.p_l = @tm.p_m = @tm.p_a.split(" ")
+      @tm.save
+      # }.should_not raise_error
+      @tm.p_a.should == "one two three four five"
+      @tm.p_b.should == "one two three four five"
+      @tm.p_c.should == "one two three four five"
+      @tm.p_d.should == "one two three four five"
+      @tm.p_e.should == "onetwothreefourfive"
+      @tm.p_f.should == "two three four five"
+      @tm.p_g.should == "e "
+      @tm.p_h.should == "e "
+      @tm.p_i.should == "three five"
+      @tm.p_j.should == "one three"
+      @tm.p_k.should == "twoxthreexfourxfive"
+      @tm.p_l.should == ["e", "o", "re", "u", "v"]
+      @tm.p_m.should == ["three", "five"]
+    end
+
     it "should fill attributes with values" do
       TestModel.class_eval{before_save :fill_attributes}
       TestModel.class_eval do
@@ -272,8 +308,7 @@ describe ActiveModel::AttributeFilters do
       @tm.shuffle_one = @tm.shuffle_two = 'dupa'
       @tm.shuffle_three = @tm.shuffle_four = ['1',2,:x,2,'dupadupa']
       -> { @tm.save }.should_not raise_error
-      @tm.shuffle_one.should_not == @tm.shuffle_two
-      @tm.shuffle_three.should_not == ['1',2,:x,2,'dupadupa']
+      @tm.shuffle_one.split("").sort.should == @tm.shuffle_two.split("").sort
       @tm.shuffle_three.sort{ |a,b| a.to_s <=> b.to_s}.should == ['1',2,:x,2,'dupadupa'].sort{ |a,b| a.to_s <=> b.to_s}
       @tm.shuffle_four.take(3).should == ['1',2,:x]
       @tm.shuffle_four.last.should_not == 'dupadupa'
