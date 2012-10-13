@@ -39,7 +39,6 @@ module ActiveModel
             pick_enum, step, from, to, range, sep, jnt = set_obj.annotation(atr_name, :pick_enumerable, :pick_step,
                                                                                       :pick_from, :pick_to, :pick_range,
                                                                                       :pick_separator, :pick_join)
-            #next atr_val if from.nil? & to.nil? & step.nil? & range.nil? & sep.nil? & jnt.nil? 
             if pick_enum
               if atr_val.is_a?(String)
                 sep ||= ""
@@ -54,7 +53,7 @@ module ActiveModel
               end
             else
               sep ||= ""
-              jnt ||= sep.is_a?(String) ? sep : nil              
+              jnt ||= sep.is_a?(String) ? sep : nil
               AttributeFiltersHelpers.each_element(atr_val, String) do |v|
                 pick_attributes_core(v.mb_chars.split(sep), from, to, range, step).join(jnt)
               end

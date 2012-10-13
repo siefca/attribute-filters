@@ -229,12 +229,14 @@ describe ActiveModel::AttributeFilters do
         pick_attributes :p_k => { :joiner => "x", :separator => " ", :head => 1 }
         pick_attributes :p_l => { :head => 2, :step => 2 }
         pick_attributes :p_m => { :enum => true, :head => 2, :step => 2 }
+        pick_attributes :p_n => { :enum => true, :head => 2, :step => 2 }
+        pick_attributes :p_o => { :head => 2, :step => 2 }
       end
       @tm.p_a = @tm.p_b = @tm.p_c = @tm.p_d = @tm.p_e = @tm.p_f = @tm.p_g = @tm.p_h = 
       @tm.p_i = @tm.p_j = @tm.p_k = "one two three four five"
       @tm.p_l = @tm.p_m = @tm.p_a.split(" ")
-      @tm.save
-      # }.should_not raise_error
+      @tm.p_n = @tm.p_o = { :a => 'one', :b => 'two', :c => 'three', :d => 'four', :e => 'five' }
+      -> { @tm.save }.should_not raise_error
       @tm.p_a.should == "one two three four five"
       @tm.p_b.should == "one two three four five"
       @tm.p_c.should == "one two three four five"
@@ -248,6 +250,8 @@ describe ActiveModel::AttributeFilters do
       @tm.p_k.should == "twoxthreexfourxfive"
       @tm.p_l.should == ["e", "o", "re", "u", "v"]
       @tm.p_m.should == ["three", "five"]
+      @tm.p_n.should == { 'c' => 'three', 'e' => 'five' }
+      @tm.p_o.should == { 'a' => 'e', 'b' => 'o', 'c' => 're', 'd' => 'u', 'e' => 'v' }
     end
 
     it "should fill attributes with values" do

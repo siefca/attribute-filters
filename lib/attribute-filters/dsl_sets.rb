@@ -132,8 +132,8 @@ module ActiveModel
     # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
     def attribute_sets
       s = self.class.attribute_sets
-      s.merge!(s) do |set_name, set_object|
-        ActiveModel::AttributeSet::Query.new(set_object, self)
+      s.each_pair do |set_name, set_object|
+        s[set_name] = ActiveModel::AttributeSet::Query.new(set_object, self)
       end
       s.default = ActiveModel::AttributeSet::Query.new(ActiveModel::AttributeSet.new.freeze, self)
       s
