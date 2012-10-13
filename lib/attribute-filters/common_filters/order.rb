@@ -42,7 +42,7 @@ module ActiveModel
           # Registers attributes that should be filled with some values.
           def reverse_attributes(*args)
             setup_attributes_that :should_be_reversed, args,
-              :reverse_enumerable => [:enums, :whole_enums, :reverse_enums, :reverse_enumerable]
+              :reverse_enumerable => [:enum, :enums, :whole_enums, :reverse_enums, :reverse_enumerable]
           end
           alias_method :reverse_attribute, :reverse_attributes
         end # module ClassMethods
@@ -58,7 +58,7 @@ module ActiveModel
       # 
       # @return [void]
       def shuffle_attributes
-        filter_attrs_from_set(:should_be_shuffled, :process_blank) do |atr_val, atr_name, set_obj|
+        filter_attrs_from_set(:should_be_shuffled) do |atr_val, atr_name, set_obj|
           shuffle_enum, rng = set_obj.annotation(atr_name, :shuffle_enumerable, :shuffle_generator)
           rng = { :random => rng }
           if shuffle_enum
@@ -85,7 +85,7 @@ module ActiveModel
         def shuffle_attributes(*args)
           setup_attributes_that :should_be_shuffled, args,
             {
-              :shuffle_enumerable => [:enums, :whole_enums, :shuffle_enums, :shuffle_enumerable],
+              :shuffle_enumerable => [:enum, :enums, :whole_enums, :shuffle_enums, :shuffle_enumerable],
               :shuffle_generator  => [:random_generator, :generator, :rnd, :shuffle_generator]
             }, :shuffle_generator
         end
