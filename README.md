@@ -258,9 +258,9 @@ Common rake tasks
 Credits
 -------
 
-* [iConsulting](http://www.iconsulting.pl/) supports Free Software and has contributed to this library by paying for me to eat when I've been coding.
+* [iConsulting](http://www.iconsulting.pl/) supports Free Software and has contributed to this library by paying for my food during the coding.
 * [MrZYX (Jonne Haß)](https://github.com/MrZYX) contributed by giving me some hints and answering basic questions on IRC – THX!
-* [Robert Pankowecki](https://github.com/paneq/) contributed by suggesting selective inclusion of filtering helpers
+* [Robert Pankowecki](https://github.com/paneq/) contributed by suggesting selective inclusion of filtering helpers.
 
 Like my work?
 -------------
@@ -268,6 +268,10 @@ Like my work?
 You can send me some bitcoins if you would like to support me:
 
 * `13wZbBjs6yQQuAb3zjfHubQSyer2cLAYzH`
+
+Or you can endorse my skills on LinkedIn:
+
+* [pl.linkedin.com/in/pwilk](http://www.linkedin.com/profile/view?id=4251568#profile-skills)
 
 License
 -------
