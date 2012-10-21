@@ -40,7 +40,7 @@ module ActiveModel
         if value.is_a?(Array)
           value.map { |v| each_element(v, must_be, &block) }
         elsif value.is_a?(Hash)
-          value.each_with_object({}) { |(k,v),n| n[k] = each_element(v, must_be, &block) }
+          value.each_with_object(value.class.new) { |(k,v),n| n[k] = each_element(v, must_be, &block) }
         elsif must_be.nil? || value.is_a?(must_be)
           yield(value)
         else
