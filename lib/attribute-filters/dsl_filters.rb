@@ -24,16 +24,16 @@ module ActiveModel
     # @overload attributes_to_filter(set_name, process_all, no_presence_check)
     #   @param set_name [String,Symbol] name of a set of attributes used to get attributes
     #   @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
-    #     not just attributes that have changed (defaults to +false+)
-    #   @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
+    #     not just the attributes that have changed (defaults to +false+)
+    #   @param no_presence_check [Boolean] if set then the checking whether each attribute exists will be
     #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
     #   @return [AttributeSet] set of attributes (attribute name => previous_value)
     # 
     # @overload attributes_to_filter(attribute_set, process_all, no_presence_check)
     #   @param attribute_set [AttributeSet] set of attributes used to get attributes
     #   @param process_all [Boolean] if set then all the attributes from the attribute set are selected,
-    #     not just attributes that has changed (defaults to +false+)
-    #   @param no_presence_check [Boolean] if set then the checking whether attribute exists will be
+    #     not just the attributes that has changed (defaults to +false+)
+    #   @param no_presence_check [Boolean] if set then the checking whether each attribute exists will be
     #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
     #   @return [AttributeSet] set of attributes (attribute name => previous_value)
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
@@ -41,11 +41,7 @@ module ActiveModel
       if process_all
         no_presence_check ? atf : atf & all_attributes_simple(no_presence_check)
       else
-        if self.class.filter_virtual_attributes_that_changed?
-          atf & changes.keys
-        else
-          atf & (__vatrf(no_presence_check)  + changes.keys)
-        end
+        atf & (all_semi_real_attributes(true, no_presence_check)  + changes.keys)
       end
     end
 
@@ -141,7 +137,7 @@ module ActiveModel
     #     * +:no_presence_check+ – tells not to check for existence of each processed attribute when processing
     #       all attributes; increases performance but you must care about putting into set only the existing attributes
     #     * +:include_missing+ – includes attributes that does not exist in a resulting iteration (their values are
-    #       always +nil+); has effect only when +process_blank+ and +no_presence_check+ are set to +true+
+    #       always +nil+); has the effect only when +process_blank+ and +no_presence_check+ are set
     #   @yield [attribute_value, set_name, attribute_name, *args] block that will be called for each attribute
     #   @yieldparam attribute_value [Object] current attribute value that should be altered
     #   @yieldparam attribute_name [String] a name of currently processed attribute
@@ -179,7 +175,9 @@ module ActiveModel
       #   Informs Attribute Filters that the given attributes
       #   should be treated as present, even they are not in
       #   attributes hash provided by ORM or ActiveModel.
-      #   Useful when operating on virtual attributes.
+      #   Useful when operating on semi-virtual attributes.
+      # 
+      #   @note To operate on virtual attributes use +attr_virtual+ instead.
       #   
       #   @param attributes [Array] list of attribute names
       #   @return [void]
@@ -197,27 +195,14 @@ module ActiveModel
       alias_method :treat_attribute_as_real,  :treat_as_real
       alias_method :treat_attributes_as_real, :treat_as_real
 
-      # Sets the internal flag that causes to check virtual attributes
-      # for changes when selecting attributes for filtering.
-      # @return [void]
-      def filter_virtual_attributes_that_have_changed
-        @filter_virtual_attributes_that_changed = true
-      end
-      alias_method :filter_virtual_attributes_that_changed, :filter_virtual_attributes_that_have_changed
-      alias_method :filter_changed_virtual_attributes,      :filter_virtual_attributes_that_have_changed
-      alias_method :virtual_attributes_are_tracked,         :filter_virtual_attributes_that_have_changed
-
-      # Gets the internal flag that causes to check virtual attributes
-      # for changes when selecting attributes for filtering.
-      # @return [Boolean] +true+ if the virtual attributes should be checked for a change, +false+ otherwise
-      def filter_virtual_attributes_that_changed?
-        !!@filter_virtual_attributes_that_changed
-      end
-
       private
 
       def __treat_as_real
         @__treat_as_real ||= ActiveModel::AttributeSet.new
+      end
+
+      def __attribute_filters_virtual
+        @__attribute_filters_virtual ||= ActiveModel::AttributeSet.new
       end
 
     end # module ClassMethods

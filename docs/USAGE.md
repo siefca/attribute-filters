@@ -813,6 +813,10 @@ You can change that behavior by adding a flags as the first arguments:
   * `:no_presence_check` – tells not to check for existence of each processed attribute when processing
     all attributes; increases performance but you must care about putting only the existing attributes into sets
 
+The checking mentioned in `:no_presence_check` flag description is done by querying internal Rails hashes
+containing known attributes and internal sets containing virtual attributes added by `attr_virtual` or
+`treat_as_real` keywords (described later).
+
 Example:
 
 ```ruby
@@ -869,6 +873,12 @@ You can change that behavior by adding a flags as the first arguments:
   * `:process_all` - tells to process all attributes, not just the ones that has changed
   * `:no_presence_check` – tells not to check for existence of each processed attribute when processing
     all attributes; increases performance but you must care about putting only the existing attributes into sets
+  * `:include_missing` – includes attributes that does not exist in a resulting iteration (their values are
+    always `nil`); has the effect only when `:process_blank` and `:no_presence_check` are present
+
+The checking mentioned in `:no_presence_check` flag description is done by querying internal Rails hashes
+containing known attributes and internal sets containing virtual attributes added by `attr_virtual` or
+`treat_as_real` keywords (described later).
 
 Example:
 
@@ -936,14 +946,95 @@ if the filtering operation occured.
 
 There are cases that virtual attributes (the ones that does not really exist in a database)
 are to be filtered. By default it won't happen since all the filtering methods assume
-the presence of any processed attribute as 'a real' attribute. There are three ways
-to overcome that problem.
+the presence of any processed attribute as 'a real' attribute. There are different ways
+to overcome that problem. First two methods described below are recommended.
+
+#### Marking as virtual ####
+
+Since version 1.4.0 of Attribute Filters the **recommended way of dealing with
+virtual attributes** is to make use of Active Model's changes tracking.
+To do that look at your ORM's documentation and see 
+[`ActiveModel::Dirty`](http://api.rubyonrails.org/classes/ActiveModel/Dirty.html)
+and a method `attribute_will_change` that it contains. Just call that method from within
+your setter and you're done.
+
+This approach can be easily used with predefined filters. The benefit of it,
+contrary to other methods, is that a filter will never be called redundantly.
+
+You should use the built-in DSL keyword **`attr_virtual`** that will create
+setter and getter for you.
+
+```ruby
+class User < ActiveRecord::Base
+
+  # declare a virtual attribute
+  attr_virtual :real_name
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]
+      self.last_name  = names[1]
+    end
+  end
+
+end
+```
+
+Note that for Rails version 3 you may need to declare attribute as accessible using `attr_accessible`
+if you want controllers to be able to update its value through assignment passed to model.
+
+You may change the setter and getter for vitrtual attribute on you own, but it should be done
+somewhere in the code **before** the `attr_virtual` clause. That will allow `attr_virtual`
+to wrap you methods and enable tracking of changes for the attribute.
+
+```ruby
+class User < ActiveRecord::Base
+
+  # define a set
+  attributes_that :should_be_splitted => [ :real_name ]
+
+  # register a callback method
+  before_validation :split_attributes
+
+  # create a filtering method
+  def split_attributes
+    for_attributes_that(:should_be_splitted) do |value|
+      names = value.split(' ')
+      self.first_name = names[0]
+      self.last_name  = names[1]
+    end
+  end
+
+  # own setter
+  def real_name=(val)
+    # do somehing specific here (or not)
+    @real_name = val
+  end
+  
+  # own getter
+  def real_name
+    # do somehing specific here (or not)
+    @real_name
+  end
+
+  attr_virtual :real_name
+
+end
+```
 
 #### Unconditional filtering ####
 
-The first way is to pass the `:no_presence_check` and `:process_all` flags to the filtering method.
-That causes filter to be executed for each attribute from a set without any conditions (no checking
-for presence of setter/getter method and no checking for changes).
+The next way to filter virtual attribute is to pass the `:no_presence_check` and `:process_all` flags
+to the filtering method. That causes filter to be executed for each attribute from a set without
+any conditions (no checking for presence of setter/getter method and no checking for changes).
 
 Be aware that by doing that you take full responsibility for attribute set names added to your set.
 If you put a name of nonexistent attribute then you may get ugly error later.
@@ -956,9 +1047,6 @@ Example:
 
 ```ruby
 class User
-
-  # declare a virtual attribute
-  attr_accessor :real_name
 
   # define a set
   attributes_that :should_be_splitted => [ :real_name ]
@@ -980,27 +1068,24 @@ end
 
 #### Marking as semi-real ####
 
-The second way is to use `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
+There is also a way that bases on using `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
 (available from version 1.2.0 of Attribute Filters). That approach may be applied to attributes
 that aren't (may not or should not be) tracked for changes and aren't (may not or should not be) accessible
-(to a controller) nor marked as protected.
+(to a controller) nor marked as protected (if using Rails version <= 3).
 
 There are two main differences from the unconditional filtering. First is that marking attribute
 as real causes it to be added to the list of all known attributes that is returned by `all_attributes_set`
 (a.k.a `all_attributes`). The second is that nothing ugly will happen if there will be non-existent
 attributes in a set when filtering method kicks in. That's because the filtering method doesn't require
-`:no_presence_check` flag to pick up such attributes. Attributes that could not be handled are simply ignored.
+`:no_presence_check` flag to pick up such attributes. Attributes that cannot be handled are simply ignored.
 
-The `:process_all` flag is also not needed since all virtual attributes marked as real are by default
+The `:process_all` flag is also not needed since all attributes marked as semi-real are by default
 not checked for changes.
 
 Example:
 
 ```ruby
 class User
-
-  # declare a virtual attribute
-  attr_accessor :real_name
 
   # mark the attribute as real
   treat_as_real :real_name
@@ -1017,139 +1102,6 @@ class User
       names = value.split(' ')
       self.first_name = names[0]  # assuming first_name exists in a database
       self.last_name  = names[1]  # assuming last_name exists in a database
-    end
-  end
-
-end
-```
-
-Be aware that the virtual attributes declared that way will always be filtered
-since there is no way to know whether they have changed or not.
-That may lead to strange results under some circumstances, e.g. in case of
-cutting some part of a string stored in a virtual attribute by using a filter
-registered with `before_save`; if such operation will be performed
-more than once then the filtering will be performed more than once too.
-
-The presence of virtual attributes is tested by checking if both, a setter and a getter,
-methods exist, unless the `no_presence_check` flag is passed to a filtering method.
-If both accessors don't exist then the attribute is not processed.
-
-This approach can be easily used with predefined filters.
-
-#### Marking as trackable ####
-
-Since version 1.4.0 of Attribute Filters the **recommended way of dealing with
-virtual attributes** is to make use of changes tracking available in Active Model.
-To do that look at your ORM's documentation and see 
-[`ActiveModel::Dirty`](http://api.rubyonrails.org/classes/ActiveModel/Dirty.html)
-and a method `attribute_will_change` that it contains. Just call that method from within
-your setter and you're done.
-
-This approach can be easily used with predefined filters.
-
-Conditions:
-
-* Use `attr_accessible` or `attr_protected` to mark the attribute as known
-* Use your own setter for notifying that attribute value has changed or `attr_virtual`
-
-The benefit of that approach is that a filter will never be called redundantly contrary
-to previous methods.
-
-Example:
-
-```ruby
-class User < ActiveRecord::Base
-
-  # declare a virtual attribute
-  attr_reader       :real_name
-  attr_accessible   :real_name
-
-  # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
-
-  # register a callback method
-  before_validation :split_attributes
-
-  # create writer that notifies Active Model about changes
-  def real_name=(val)
-    attribute_will_change!('real_name') if val != real_name
-    @real_name = val
-  end
-
-  # create a filtering method
-  def split_attributes
-    for_attributes_that(:should_be_splitted) do |value|
-      names = value.split(' ')
-      self.first_name = names[0]  # assuming first_name exists in a database
-      self.last_name  = names[1]  # assuming last_name exists in a database
-    end
-  end
-
-end
-```
-
-You can also use built-in DSL keyword **`attr_virtual`** that will create setter and getter
-for you:
-
-```ruby
-class User < ActiveRecord::Base
-
-  # declare a virtual attribute
-  attr_virtual      :real_name
-  attr_accessible   :real_name
-
-  # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
-
-  # register a callback method
-  before_validation :split_attributes
-
-  # create a filtering method
-  def split_attributes
-    for_attributes_that(:should_be_splitted) do |value|
-      names = value.split(' ')
-      self.first_name = names[0]
-      self.last_name  = names[1]
-    end
-  end
-
-end
-```
-
-#### Marking as trackable and semi-real ####
-
-That's a variant of the recommended way of dealing with virtual attributes. It may be useful
-if you don't want to (or cannot) add virtual attributes to access lists using `attr_accessible`
-or `attr_protected`.
-
-Example:
-
-```ruby
-class User < ActiveRecord::Base
-
-  # declare a virtual attribute
-  attr_virtual    :real_name
-
-  # mark the attribute as real
-  treat_as_real   :real_name
-
-  # tell the engine that all virtual attributes
-  # are tracked for changes and it should pick from changed
-  # not from all
-  virtual_attributes_are_tracked
-
-  # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
-
-  # register a callback method
-  before_validation :split_attributes
-
-  # create a filtering method
-  def split_attributes
-    for_attributes_that(:should_be_splitted) do |value|
-      names = value.split(' ')
-      self.first_name = names[0]
-      self.last_name  = names[1]
     end
   end
 

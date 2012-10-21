@@ -79,10 +79,17 @@ module ActiveModel
     # 
     # @return [AttributeSet] attribute set
     def all_attributes_simple(no_presence_check = true)
-      (ActiveModel::AttributeSet.new(attributes.keys) +
-      all_accessible_attributes(true) +
-      all_protected_attributes(true)  +
-      __vatrf(no_presence_check)).delete("")
+      if self.class.respond_to?(:accessible_attributes)
+        (ActiveModel::AttributeSet.new(attributes.keys) +
+        all_accessible_attributes(true) +
+        all_protected_attributes(true)  +
+        all_virtual_attributes(true)    +
+        all_semi_real_attributes(true, no_presence_check)).delete("")
+      else
+        (ActiveModel::AttributeSet.new(attributes.keys) +
+        all_virtual_attributes(true) +
+        all_semi_real_attributes(true, no_presence_check)).delete("")
+      end
     end
 
     # Returns a set containing all known attributes.
@@ -112,6 +119,34 @@ module ActiveModel
     def all_protected_attributes(simple = false)
       c = self.class.class_eval { respond_to?(:protected_attributes) ? protected_attributes : [] }
       simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
+    end
+    alias_method :protected_attributes_set, :all_protected_attributes
+
+    # Returns a set containing attributes declared as virtual with +attr_virtual+.
+    # 
+    # @param simple [Boolean] optional parameter that disables
+    #   wrapping a resulting set in a proxy (defaults to +false+)
+    # @return [AttributeSet] attribute set
+    def all_virtual_attributes(simple = false)
+      c = self.class.send(:__attribute_filters_virtual)
+      simple ? c : AttributeSet::Query.new(c)
+    end
+    alias_method :protected_attributes_set, :all_protected_attributes
+
+    # Returns a set containing attributes declared as semi-real.
+    # 
+    # @param simple [Boolean] optional parameter that disables
+    #   wrapping a resulting set in a proxy (defaults to +false+)
+    # @param no_presence_check [Boolean] optional parameter that
+    #  disables checking for presence of setters and getters for each
+    #  attribute (defaults to +true+)
+    # @return [AttributeSet] attribute set
+    def all_semi_real_attributes(simple = false, no_presence_check = true)
+      c = self.class.send(:__treat_as_real)
+      unless no_presence_check || c.empty? 
+        c = c.select { |a| respond_to?(a) && respond_to?("#{a}=") }
+      end
+      simple ? c : AttributeSet::Query.new(c)
     end
     alias_method :protected_attributes_set, :all_protected_attributes
 
@@ -364,16 +399,5 @@ module ActiveModel
         __attribute_sets[set_name] << atrs.map{ |a| a.to_s }.freeze
       end
     end # module ClassMethods
-
-    private
-
-    # Helper that collects untracked virtual attributes that
-    # have setters and getters.
-    def __vatrf(no_presence_check = false)
-      tar = self.class.send(:__treat_as_real)
-      return tar if no_presence_check || tar.empty?
-      tar.select { |a| respond_to?(a) && respond_to?("#{a}=") }
-    end
-
   end # module AttributeMethods
 end # module ActiveModel
