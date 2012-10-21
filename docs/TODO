@@ -1,10 +1,12 @@
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
 
-* improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
+* replace Set by Hash and add a deep copy
 
-* add sanitize to common filters (that calls needed filtering methods depending on attribute name)
-  -- sanitize_email
+* improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
+  -- user has to use helpers instead of hand-added sets
+
+* add sanitize to common filters
   -- sanitize_url
   -- sanitize_string
   -- sanitize_name
@@ -15,8 +17,37 @@
   sanitize_the_attribute :name => { :as => :name }
   the_attribute :name, :should_be_sanitized
   the_attribute :name, :should_be_sanitized => { :as => :name }
+  
+  before_save :sanitize_attributes
 
-add some sugar:
+* update docs (common filters)
 
-  the_attribute :name, :shoud_be => { :downcased, :squeezed }
+* one module for sanitizing - AttributeFilters::Sanitize
+* possible submodules that enable certain/additional sanitizing methods
 
+
+class User
+
+  sanitize_attributes :name, :email, :home => { :as => :address }
+
+end
+
+-> uses :should_be_sanitized same as filters do.
+
+-> sanitization often uses each_element helper
+
+-> sanitization methods taken from: Sanitize.instance_methods(false) [and aliases]
+
+-> uses one main method for sanitization called sanitize_attributes
+    - for each attribute from a set the method checks the :as annotation (sanitize_attributes should add it)
+    - if there is no annotation it tries to guess it by the name (uses global dictionary)
+      - 
+      
+      1. take :first_name
+      1.1 search for exact match in global array
+      1.2 transform :first_name to array of possible tokens (first, name) by splitting by special characters
+      1.3 count distance for :first_name and any possible method
+      1.4 
+      2. search for any of the tokens taken from global array (find first matching)
+      
+      :firstname

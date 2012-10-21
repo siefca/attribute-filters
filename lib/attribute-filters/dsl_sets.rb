@@ -87,7 +87,9 @@ module ActiveModel
         all_semi_real_attributes(true, no_presence_check)).delete("")
       else
         (ActiveModel::AttributeSet.new(attributes.keys) +
-        all_virtual_attributes(true) +
+        all_accessible_attributes(true) +
+        all_protected_attributes(true)  +
+        all_virtual_attributes(true)    +
         all_semi_real_attributes(true, no_presence_check)).delete("")
       end
     end
