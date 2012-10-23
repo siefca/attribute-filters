@@ -33,7 +33,7 @@ module ActiveModel
           set_object = ::ActiveModel::AttributeSet.new
         end
         if set_object.is_a?(::Symbol) || set_object.is_a?(::String)
-          set_object = am_object.class.attribute_set(set_object).dup
+          set_object = am_object.class.attribute_set(set_object).deep_dup
         elsif !set_object.is_a?(::ActiveModel::AttributeSet)
           set_object = ::ActiveModel::AttributeSet.new(set_object)
         end

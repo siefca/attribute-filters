@@ -71,7 +71,7 @@ module ActiveModel
     # @param set_name [Symbol] name of attribute set
     # @return [AttributeSet] attribute set
     def attribute_set_simple(set_name)
-      self.class.attribute_set(set_name).dup
+      self.class.attribute_set(set_name).deep_dup
     end
 
     # Returns a set containing all known attributes
@@ -347,7 +347,7 @@ module ActiveModel
       def attribute_sets
         d = Hash.new(ActiveModel::AttributeSet.new.freeze)
         __attribute_sets.each_pair do |set_name, set_object|
-          d[set_name] = set_object.dup
+          d[set_name] = set_object.deep_dup
         end
         d
       end
@@ -364,7 +364,7 @@ module ActiveModel
       def attributes_to_sets
         d = Hash.new(ActiveModel::AttributeSet.new.freeze)
         __attributes_to_sets_map.each_pair do |set_name, set_object|
-          d[set_name] = set_object.dup
+          d[set_name] = set_object.deep_dup
         end
         d
       end

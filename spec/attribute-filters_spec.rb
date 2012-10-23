@@ -20,7 +20,7 @@ describe ActiveModel::AttributeFilters do
       @tm.username          = " UPCASEĄĘŚĆ      "
       @tm.email             = " Some@EXAMPLE.com   "
       @tm.real_name         = "       sir    rails "
-      -> { @tm.save }.should_not raise_error
+      @tm.save
       @tm.username.should   == "upcaseąęść"
       @tm.email.should      == "Some@EXAMPLE.com"
       @tm.real_name.should  == "Sir Rails"
@@ -69,8 +69,8 @@ describe ActiveModel::AttributeFilters do
       s.annotate(:email,     :operation, :e_value)
       c.annotate(:real_name, :operation, :some_value)
       c.annotate(:real_name, :operation, :other_value)
-      s.instance_eval{annotations}.should ==  { 'real_name' => { :operation => :first_value }, 'email' => { :operation => :e_value } }
-      c.instance_eval{annotations}.should ==  { 'real_name' => { :operation => :other_value } }
+      s.should be_eql( { 'real_name' => { :operation => :first_value }, 'email' => { :operation => :e_value }, 'username' => true } )
+      c.should be_eql( { 'real_name' => { :operation => :other_value } } )
       -> {TestModel.class_eval do
         attributes_that should_be_sth: [ :abc, :atr_one => {:ak => "av"}, :atr_two => {:sk => "sv"} ]
         attributes_that should_be_sth: [:atr_three, :atr_two, :yy]
@@ -103,7 +103,7 @@ describe ActiveModel::AttributeFilters do
       @tm.attributes_that(:should_be_sth).annotation(:atr_three, :hh).should == nil
       dupx = TestModel.attributes_that(:should_be_sth)
       dupy = @tm.attributes_that(:should_be_sth)
-      dupx.send(:annotations).should == dupy.send(:annotations) 
+      dupx.send(:annotations).should be_eql( dupy.send(:annotations) )
       dupx.object_id.should_not == dupy.object_id
       -> {TestModel.class_eval do
         annotate_attributes_that :should_be_sth => { :atr_three => { :cc => "ee" } }
@@ -133,45 +133,45 @@ describe ActiveModel::AttributeFilters do
     it "should be able to relatively complement sets" do
       r = @s - @c
       r.to_a.sort.should == [ "email", "username" ]
-      r.instance_eval{annotations}.should == { 'email' => { :operation => :e_value } }
+      r.should be_eql( { 'email' => { :operation => :e_value }, 'username' => true } )
     end
   
     it "should be able to join sets (union)" do
       r = @s + @c
       r.to_a.sort.should == [ "email", "real_name", "username" ]
-      r.instance_eval{annotations}.should == { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value } }
+      r.should be_eql(  { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value }, 'username' => true } )
     end
   
     it "should be able to intersect sets" do
       r = @s & @c
       r.to_a.sort.should == [ "real_name" ]
-      r.instance_eval{annotations}.should == { 'real_name' => { :operation => :first_value } }
+      r.should be_eql( { 'real_name' => { :operation => :first_value } } )
     end
   
     it "should be able to exclusively disjunct sets" do
       r = @s ^ @c
       r.to_a.sort.should == [ "email", "username" ]
-      r.instance_eval{annotations}.should == { 'email' => { :operation => :e_value } }
+      r.should be_eql( { "email" => {:operation=>:e_value}, "username" => true } )
       sp = @s.dup
       sp.annotate(:username, 'k', 'v')
       r = sp ^ @c
       r.to_a.sort.should == [ "email", "username" ]
-      r.instance_eval{annotations}.should == { 'email' => { :operation => :e_value }, 'username' => { :k => "v" } }
+      r.should be_eql( { 'email' => { :operation => :e_value }, 'username' => { :k => "v" } } )
     end
   
     it "should be able to delete elements from a set" do
       @s.annotate(:username, :some_key, 'string_val')
-      @s.instance_eval{annotations}.should == { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value },
-                                 'username' => { :some_key => 'string_val' } }
+      @s.should be_eql( { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value },
+                                 'username' => { :some_key => 'string_val' } })
       @s.delete_if { |o| o == 'username' }
       @s.include?('username').should == false
-      @s.instance_eval{annotations}.should == { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value } }
+      @s.should be_eql( { 'email' => { :operation => :e_value }, 'real_name' => { :operation => :first_value } })
     end
   
     it "should be able to keep elements in a set using keep_if" do
       @s.keep_if { |o| o == 'email' }
       @s.include?('email').should == true
-      @s.instance_eval{annotations}.should == { 'email' => { :operation => :e_value } }
+      @s.should be_eql( { 'email' => { :operation => :e_value } } )
     end
   end
 
@@ -341,7 +341,7 @@ describe ActiveModel::AttributeFilters do
       @tm.to_fractions = "1/2"
       @tm.to_numbers = [ "1", 2, "3" ]
       @tm.to_boolean = nil
-      -> { @tm.save }.should_not raise_error
+      @tm.save
       @tm.to_strings.should == "5"
       @tm.to_strings_two.should == "1/2"
       @tm.to_strings_four.should == "7"
@@ -498,7 +498,14 @@ describe ActiveModel::AttributeFilters do
         @tm.real_name = rn
         @tm.first_name = "Paweł"
         @tm.last_name = "Wilk"
-        -> { @tm.save }.should_not raise_error
+        p @tm.attributes_that(:should_be_joined)
+        puts "first_name: #{@tm.first_name}"
+        puts "last_name: #{@tm.last_name}"
+        puts "real_name: #{@tm.real_name}"
+        @tm.save
+        puts "first_name: #{@tm.first_name}"
+        puts "last_name: #{@tm.last_name}"
+        puts "real_name: #{@tm.real_name}"
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == 'Wilk'
         @tm.real_name.should == 'Paweł Wilk'

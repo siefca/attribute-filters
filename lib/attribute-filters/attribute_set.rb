@@ -7,15 +7,31 @@
 # This file contains ActiveModel::AttributeSet class
 # used to interact with attribute sets.
 
-require 'set'
-
 # @abstract This namespace is shared with ActveModel.
 module ActiveModel
   # This class is a data structure used to store
   # set of attributes.
-  class AttributeSet < ::Set
+  class AttributeSet <  Hash
     include ActiveModel::AttributeSet::Enumerable
     include ActiveModel::AttributeSet::Annotations
+
+    # Creates a new instance of attribute set.
+    # 
+    # @return [AttributeSet] an AttributeSet object
+    def initialize(*args)
+      return super if args.count == 0
+      r = super()
+      args.flatten.each do |a|
+        if a.is_a?(Hash)
+          r.deep_merge!(a)
+        elsif a.is_a?(Enumerable)
+          a.each { |e| r[e] = true }
+        else
+          r[a] = true
+        end
+      end
+      r
+    end
 
     # Adds the given object to the set and returns self.
     # If the object is already in the set, returns nil.
@@ -30,100 +46,119 @@ module ActiveModel
     # @return [AttributeSet,nil]
     def add(o)
       if o.is_a?(Array)
-        o.map{ |e| super(e) }.compact
+        o.map{ |e| add(e) }.compact
       else
-        super
+        self[o] = true
       end
     end
     alias_method :<<, :add
 
-    # Merges the elements of the given enumerable
-    # object to the attribute set and returns self.
-    # 
-    # @param o [Enumerable] object to be merged
-    # @return [AttributeSet] current object
-    def merge(o)
-      r = super
-      copy_annotations(o)
-      r
+    def to_a
+      keys
     end
 
-    # Copies internal structures.
+    # Adds two sets by deeply merging their contents.
+    # If any value stored in one set under conflicting key
+    # is +true+, +false+ or +nil+ then value is taken from other set.
+    # If one of the conflicting values is a kind of Hash and
+    # the other is not the it's converted to a hash which is merged in.
+    # Otherwise the left value wins.
     # 
-    # @param o [AttributeSet] other set to copy from
-    # @return [AttributeSet] current attribute set
-    def initialize_copy(o)
-      r = super
-      remove_annotations
-      copy_annotations(o)
-      r
+    # @return [AttributeSet] resulting set
+    def +(o)
+      my_class = self.class
+      o = my_class.new(o) unless o.is_a?(Hash)
+      r = my_class.new
+      (keys + o.keys).uniq.each do |k|
+        if self.key?(k) && o.key?(k)
+          r[k] = merge_set(self[k], o[k]) { |a, b| a + b }
+        else
+          r[k] = self[k] || o[k]
+        end
+      end
+      r.deep_dup
+    end
+
+    # Subtracts the given set from the current one
+    # by removing all the elements that have the same keys.
+    # 
+    # @return [AttributeSet] resulting set
+    def -(o)
+      o = self.class.new(o) unless o.is_a?(Hash)
+      reject { |k, v| o.include?(k) }
     end
 
     # Returns a new attribute set containing elements
     # common to the attribute set and the given enumerable object.
+    # Annotations from other set that aren't in this set are copied.
     # 
     # @param o [Enumerable] object to intersect with
     # @return [AttributeSet] intersection of objects
     def &(o)
-      r = super
-      if r.is_a?(self.class)
-        r.send(:copy_annotations, self)
-        r.send(:copy_annotations, o)
+      my_class = self.class
+      o = my_class.new(o) unless o.is_a?(Hash)
+      r = my_class.new
+      each_pair do |k, my_v|
+        if o.include?(k)
+          r[k] = merge_set(my_v, o[k]) { |a, b| a & b }
+        end
       end
       r
     end
     alias_method :intersection, :&
-
-    # Deletes the given attribute name from the attribute set
-    # and returns self.
-    # 
-    # @note Use subtract to delete many items at once.
-    # @param o [Symbol,String] attribute name to delete from set
-    # @return [AttributeSet] current attribute set
-    def delete(o)
-      o = o.to_s
-      r = super
-      r.nil? or delete_annotation(o)
-      r
-    end
-
-    # Deletes every attribute of the attribute set
-    # for which the given block evaluates to +true+,
-    # and returns self.
-    # 
-    # @yield [o] block that controlls if an element should be deleted
-    # @yieldparam o [String] current attribute
-    # @return [AttributeSet] current attribute set
-    def delete_if
-      block_given? or return enum_for(__method__)
-      super { |o| r = yield(o) and delete_annotation(o) ; r }
-    end
-
-    # Deletes every attribute of the attribute set
-    # for which the given block evaluates to +false+,
-    # and returns self.
-    # 
-    # @yield [o] block that controlls if an element should be kept
-    # @yieldparam o [String] current attribute
-    # @return [AttributeSet] current attribute set
-    def keep_if
-      block_given? or return enum_for(__method__)
-      super { |o| r = yield(o) or delete_annotation(o) ; r }
-    end
+    alias_method :intersect, :&
 
     # Returns a new attribute set containing elements
     # exclusive between the set and the given enumerable object
-    # (exlusive disjuction).
+    # (exclusive disjuction).
     # 
     # @param o [Enumerable] object to exclusively disjunct with
     # @return [AttributeSet] resulting set
     def ^(o)
-      n = self.class.new(o)
-      n.remove_annotations
-      each { |ob| if n.include?(ob) then n.delete(ob) else n.add(ob) end }
-      n.send(:copy_annotations, self)
-      n.send(:copy_annotations, o)
-      n
+      my_class = self.class
+      o = my_class.new(o) unless o.is_a?(Hash)
+      r = my_class.new
+      (o.keys + keys).uniq.each do |k|
+        if key?(k)
+          if !o.key?(k)
+            src = self[k]
+          else
+            next
+          end
+        elsif o.key?(k)
+          src = o[k]
+        end
+        r[k] = src
+      end
+      r.deep_dup
     end
-  end
-end
+
+    private
+
+    # Internal method for merging sets.
+    def merge_set(my_v, ov, my_class = self.class)
+      if my_v.is_a?(Hash)
+        if ov.is_a?(Hash)
+          my_v = my_class.new(my_v) unless my_v.is_a?(my_class)
+          ov = my_class.new(ov) unless ov.is_a?(my_class)
+          return yield(my_v, ov)
+        else
+          a_hash = my_v
+          a_other = ov
+        end
+      else
+        if ov.is_a?(Hash)
+          a_hash = ov
+          a_other = my_v
+        else
+          return my_v === true ? ov : my_v
+        end
+      end
+      if a_other === true || a_other === false || a_other.nil?
+        a_hash
+      else
+        a_hash.deep_merge(my_class.new(ov))
+      end
+    end
+  end # module AttributeSet
+end # module ActiveModel

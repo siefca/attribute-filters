@@ -169,9 +169,8 @@ module ActiveModel
       unless include?(atr_name)
         raise ArgumentError, "attribute '#{atr_name}' must exist in order to annotate it"
       end
-      @annotations ||= Hash.new
-      @annotations[atr_name] ||= Hash.new
-      @annotations[atr_name][name.to_sym] = value
+      self[atr_name] = Hash.new unless self[atr_name].is_a?(Hash)
+      self[atr_name][name.to_sym] = value
     end
     alias_method :add_op,   :annotate
     alias_method :bind_op,  :annotate
@@ -194,11 +193,11 @@ module ActiveModel
     #   @return [Boolean] +true+ if the current set has at least one of the given +annotation_keys+ for +attribute_name+,
     #    +false+ otherwise
     def has_annotation?(*args)
-      return false if annotations.nil? || annotations.empty?
+      return false if empty?
       return true if args.size == 0
       atr_name = args.shift.to_s
-      a_group = annotations[atr_name]
-      a_group.blank? and return false
+      a_group = self[atr_name]
+      return false if a_group.blank? || !a_group.is_a?(Hash)
       args.empty? and return true
       args.any? { |a_name| a_group.key?(a_name.to_sym) }
     end
@@ -215,22 +214,22 @@ module ActiveModel
     def annotation(atr_name, *annotation_names)
       atr_name.present? or return nil
       has_annotations? or return nil
-      an_group = annotations[atr_name.to_s]
-      return nil if an_group.nil?
+      an_group = self[atr_name.to_s]
+      return nil if an_group.nil? || !an_group.is_a?(Hash)
       case annotation_names.size
       when 0
         r = Hash.new
         an_group.each_pair do |k, v|
-          r[k] = v.is_a?(Enumerable) ? v.dup : v
+          r[k] = v.is_a?(Hash) ? v.deep_dup : (v.is_a?(Enumerable) ? v.dup : v)
         end
         r
       when 1
         r = an_group[annotation_names.first.to_sym]
-        r.is_a?(Enumerable) ? r.dup : r
+        r.is_a?(Hash) ? r.deep_dup : (r.is_a?(Enumerable) ? r.dup : r)
       else
         annotation_names.map do |a|
           r = an_group[a.to_sym]
-          r.is_a?(Enumerable) ? r.dup : r
+          r.is_a?(Hash) ? r.deep_dup : (r.is_a?(Enumerable) ? r.dup : r)
         end
       end
     end
@@ -246,12 +245,13 @@ module ActiveModel
     # @return [Hash,Object,nil] deleted annotations (hash),
     #  deleted annotation value or +nil+ if there wasn't anything to delete
     def delete_annotation(atr_name, annotation = nil)
-      return nil if @annotations.nil? || atr_name.blank?
+      return nil if atr_name.blank?
       atr_name = atr_name.to_s
+      return nil if self[atr_name].blank?
       if annotation.nil?
-        @annotations.delete(atr_name)
-      elsif @annotations.has_key?(atr_name)
-        @annotations[atr_name].delete(annotation.to_sym)
+        delete(atr_name)
+      elsif key?(atr_name) && self[atr_name].is_a?(Hash)
+        self[atr_name].delete(annotation.to_sym)
       else
         nil
       end
@@ -261,46 +261,14 @@ module ActiveModel
     # Removes all annotations.
     # @return [void]
     def remove_annotations
-      @annotations = nil
+      each_pair { |k, v| self[k] = true }
     end
 
-    private
-
+    # Returns all annotations.
+    # Practically it returns the contents of a set.
     def annotations
-      @annotations
+      self.deep_dup
     end
 
-    def copy_annotations(o)
-      return unless o.is_a?(self.class) && o.has_annotations?
-      @annotations ||= Hash.new
-      o.send(:annotations).each_pair do |atr, annotations_group|
-        if include?(atr)
-          current_group = (@annotations[atr] ||= Hash.new)
-          annotations_group.each_pair do |annotation_name, v|
-            current_group[annotation_name] ||= (v.is_a?(Enumerable) ? v.dup : v)
-          end
-        end
-      end
-    end
-
-    def copy_missing_annotations(from, other)
-      @annotations ||= Hash.new
-      from.each_pair do |atr, annotations_group|
-        if include?(atr) && (other.nil? || !other.has_key?(atr))
-          current_group = (@annotations[atr] ||= Hash.new)
-          annotations_group.each_pair do |annotation_name, v|
-            current_group[annotation_name] ||= (v.is_a?(Enumerable) ? v.dup : v)
-          end
-        end
-      end
-    end
-
-    def remove_different_annotations(other)
-      return unless other.is_a?(self.class) && other.has_annotations?
-      @annotations ||= Hash.new
-      other.send(:annotations).each_pair do |atr, annotations_group|
-        include?(atr) and delete_annotation(atr)
-      end
-    end
   end # module AttributeSet::Annotations
 end # module ActiveModel

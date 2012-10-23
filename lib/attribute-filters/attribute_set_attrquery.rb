@@ -72,7 +72,7 @@ module ActiveModel
           @am_object.all_protected_attributes.include?(@attribute_name)
 
         else
-          set_name_str = method_sym.to_s.dup
+          set_name_str = method_sym.to_s
           if !@set_object.respond_to?(method_sym) && set_name_str.slice!(/\?\z/) == '?'
             @set_object.include?(set_name_str.to_sym, &block)
           else

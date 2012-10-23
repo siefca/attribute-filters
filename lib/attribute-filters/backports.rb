@@ -11,7 +11,6 @@
 class Object
 
   unless method_defined?(:public_send)
-
     # @private
     def public_send(name, *args)
       unless public_methods.include?(name.to_s)
@@ -19,11 +18,9 @@ class Object
       end
       send(name, *args)
     end
-
   end
 
   unless method_defined?(:public_method)
-
     # @private
     def public_method(name)
       unless public_methods.include?(name.to_s)
@@ -31,7 +28,42 @@ class Object
       end
       method(name)
     end
-
   end
 
 end # class Object
+
+# @private
+# @abstract This class is here for compatibility reasons.
+class Hash
+
+  # @private
+  unless method_defined?(:deep_merge)
+    def deep_merge(o)
+      dup.deep_merge!(o)
+    end
+  end
+
+  # @private
+  unless method_defined?(:deep_merge!)
+    def deep_merge!(other_hash)
+      other_hash.each_pair do |k, ov|
+        my_v = self[k]
+        self[k] = my_v.is_a?(Hash) && ov.is_a?(Hash) ? my_v.deep_merge(ov) : ov
+      end
+      self
+    end
+  end
+
+  # @private
+  unless method_defined?(:deep_dup)
+    def deep_dup
+      duplicate = self.dup
+      duplicate.each_pair do |k, ov|
+        my_v = duplicate[k]
+        duplicate[k] = my_v.is_a?(Hash) && ov.is_a?(Hash) ? my_v.deep_dup : ov
+      end
+      duplicate
+    end
+  end
+
+end # class Hash
