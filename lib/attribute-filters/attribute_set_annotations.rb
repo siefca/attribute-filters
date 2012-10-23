@@ -247,13 +247,16 @@ module ActiveModel
     def delete_annotation(atr_name, annotation = nil)
       return nil if atr_name.blank?
       atr_name = atr_name.to_s
-      return nil if self[atr_name].blank?
-      if annotation.nil?
-        delete(atr_name)
-      elsif key?(atr_name) && self[atr_name].is_a?(Hash)
-        self[atr_name].delete(annotation.to_sym)
+      return nil unless key?(atr_name)
+      ag = self[atr_name]
+      return nil if ag === true
+      if annotation.nil? || !ag.is_a?(Hash)
+        self[atr_name] = true
+        return ag
       else
-        nil
+        r = ag.delete(annotation.to_sym)
+        self[atr_name] = true if ag.empty?
+        r
       end
     end
     alias_method :delete_annotations, :delete_annotation

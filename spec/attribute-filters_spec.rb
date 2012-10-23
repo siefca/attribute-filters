@@ -498,14 +498,7 @@ describe ActiveModel::AttributeFilters do
         @tm.real_name = rn
         @tm.first_name = "Paweł"
         @tm.last_name = "Wilk"
-        p @tm.attributes_that(:should_be_joined)
-        puts "first_name: #{@tm.first_name}"
-        puts "last_name: #{@tm.last_name}"
-        puts "real_name: #{@tm.real_name}"
         @tm.save
-        puts "first_name: #{@tm.first_name}"
-        puts "last_name: #{@tm.last_name}"
-        puts "real_name: #{@tm.real_name}"
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == 'Wilk'
         @tm.real_name.should == 'Paweł Wilk'

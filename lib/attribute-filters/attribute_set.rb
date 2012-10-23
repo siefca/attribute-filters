@@ -24,8 +24,8 @@ module ActiveModel
       args.flatten.each do |a|
         if a.is_a?(Hash)
           r.deep_merge!(a)
-        elsif a.is_a?(Enumerable)
-          a.each { |e| r[e] = true }
+        elsif a.is_a?(::Enumerable)
+          a.each { |e| r[e] = true unless e.blank? }
         else
           r[a] = true
         end
@@ -73,10 +73,10 @@ module ActiveModel
         if self.key?(k) && o.key?(k)
           r[k] = merge_set(self[k], o[k]) { |a, b| a + b }
         else
-          r[k] = self[k] || o[k]
+          r[k] = safe_dup(self[k] || o[k])
         end
       end
-      r.deep_dup
+      r
     end
 
     # Subtracts the given set from the current one
@@ -128,12 +128,16 @@ module ActiveModel
         elsif o.key?(k)
           src = o[k]
         end
-        r[k] = src
+        r[k] = safe_dup(src)
       end
-      r.deep_dup
+      r
     end
 
     private
+
+    def safe_dup(src)
+      src.respond_to?(:deep_dup) ? src.deep_dup : (src.is_a?(Enumerable) ? src.dup : src)
+    end
 
     # Internal method for merging sets.
     def merge_set(my_v, ov, my_class = self.class)

@@ -75,20 +75,20 @@ module ActiveModel
     end
 
     # Returns a set containing all known attributes
-    # without wrapping it in a proxy.
+    # without wrapping the result in a proxy.
     # 
     # @return [AttributeSet] attribute set
     def all_attributes_simple(no_presence_check = true)
       if self.class.respond_to?(:accessible_attributes)
-        (ActiveModel::AttributeSet.new(attributes.keys) +
+        ActiveModel::AttributeSet.new(attributes.keys) +
         all_accessible_attributes(true) +
         all_protected_attributes(true)  +
         all_virtual_attributes(true)    +
-        all_semi_real_attributes(true, no_presence_check)).delete("")
+        all_semi_real_attributes(true, no_presence_check)
       else
-        (ActiveModel::AttributeSet.new(attributes.keys) +
+        ActiveModel::AttributeSet.new(attributes.keys) +
         all_virtual_attributes(true) +
-        all_semi_real_attributes(true, no_presence_check)).delete("")
+        all_semi_real_attributes(true, no_presence_check)
       end
     end
 
@@ -106,7 +106,8 @@ module ActiveModel
     #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
     def all_accessible_attributes(simple = false)
-      c = self.class.class_eval { respond_to?(:accessible_attributes) ? accessible_attributes : [] }
+      my_class = self.class
+      c = my_class.respond_to?(:accessible_attributes) ? my_class.accessible_attributes : []
       simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
     end
     alias_method :accessible_attributes_set, :all_accessible_attributes
@@ -117,7 +118,8 @@ module ActiveModel
     #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
     def all_protected_attributes(simple = false)
-      c = self.class.class_eval { respond_to?(:protected_attributes) ? protected_attributes : [] }
+      my_class = self.class
+      c = my_class.respond_to?(:protected_attributes) ? my_class.protected_attributes : []
       simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
     end
     alias_method :protected_attributes_set, :all_protected_attributes
