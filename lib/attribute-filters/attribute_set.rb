@@ -21,15 +21,7 @@ module ActiveModel
     def initialize(*args)
       return super if args.count == 0
       r = super()
-      args.flatten.each do |a|
-        if a.is_a?(Hash)
-          r.deep_merge!(a)
-        elsif a.is_a?(::Enumerable)
-          a.each { |e| r[e] = true unless e.blank? }
-        else
-          r[a] = true
-        end
-      end
+      add(args)
       r
     end
 
@@ -42,17 +34,22 @@ module ActiveModel
     # which contains elements that were successfuly added to set
     # and didn't existed there before.
     # 
-    # @param o [Object,Array] object to be added to set or array of objects
+    # @param args [Array<Object,Hash,Array,Enumerable>] object(s) to be added to set
     # @return [AttributeSet,nil]
-    def add(o)
-      if o.is_a?(Array)
-        o.map{ |e| add(e) }.compact
-      else
-        self[o] = true
+    def add(*args)
+      args.flatten.each do |a|
+        if a.is_a?(Hash)
+          deep_merge!(a)
+        elsif a.is_a?(::Enumerable)
+          a.each { |e| self[e] = true unless e.blank? }
+        else
+          self[a] = true
+        end
       end
     end
     alias_method :<<, :add
 
+    # @private
     def to_a
       keys
     end
