@@ -39,9 +39,9 @@ module ActiveModel
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
       atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set_simple(set_name)
       if process_all
-        no_presence_check ? atf : atf & all_attributes_simple(no_presence_check)
+        no_presence_check ? atf : atf & all_attributes(true, no_presence_check)
       else
-        atf & (all_semi_real_attributes(true, no_presence_check)  + changes.keys)
+        atf & (all_semi_real_attributes(true, no_presence_check) + changes.keys)
       end
     end
 
@@ -186,19 +186,42 @@ module ActiveModel
       #   Gets the memorized attribute names that should be
       #   treated as existing.
       #   
-      #   @return [AttributeSet] set of attribute name
+      #   @return [AttributeSet] set of attribute names
       def treat_as_real(*args)
-        return __treat_as_real.dup if args.blank?
-        __treat_as_real << args.flatten.compact.map { |atr| atr.to_s }
+        return __attribute_filters_semi_real.deep_dup if args.blank?
+        __attribute_filters_semi_real << args.flatten.compact.map { |atr| atr.to_s }
         nil
       end
-      alias_method :treat_attribute_as_real,  :treat_as_real
-      alias_method :treat_attributes_as_real, :treat_as_real
+      alias_method :attribute_filters_semi_real,  :treat_as_real
+      alias_method :treat_attribute_as_real,      :treat_as_real
+      alias_method :treat_attributes_as_real,     :treat_as_real
+
+      # @overload attribute_filters_virtual(*attributes)
+      #   Informs Attribute Filters that the given attributes
+      #   should be treated as virtual (even not present in the
+      #   attributes hash provided by ORM or ActiveModel).
+      # 
+      #   @param attributes [Array] list of attribute names
+      #   @return [void]
+      # 
+      # @overload attribute_filters_virtual()
+      #   Gets the memorized attribute names that should be
+      #   treated as virtual.
+      #   
+      #   @return [AttributeSet] set of attribute names
+      def treat_as_virtual(*args)
+        return __attribute_filters_virtual.deep_dup if args.blank?
+        __attribute_filters_virtual << args.flatten.compact.map { |atr| atr.to_s }
+        nil
+      end
+      alias_method :attribute_filters_virtual, :treat_as_virtual
+      alias_method :treat_attribute_as_virtual, :treat_as_virtual
+      alias_method :treat_attributes_as_virtual, :treat_as_virtual
 
       private
 
-      def __treat_as_real
-        @__treat_as_real ||= ActiveModel::AttributeSet.new
+      def __attribute_filters_semi_real
+        @__attribute_filters_semi_real ||= ActiveModel::AttributeSet.new
       end
 
       def __attribute_filters_virtual

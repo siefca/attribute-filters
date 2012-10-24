@@ -40,7 +40,7 @@ module ActiveModel
     # 
     # @param set_name [Symbol] name of attribute set, attribute object or any object that can initialize a set
     # @return [AttributeSet] attribute set
-    def attribute_set(set_name=nil)
+    def attribute_set(set_name = nil)
       if set_name.nil?
         all_attributes
       else
@@ -130,10 +130,11 @@ module ActiveModel
     #   wrapping a resulting set in a proxy (defaults to +false+)
     # @return [AttributeSet] attribute set
     def all_virtual_attributes(simple = false)
-      c = self.class.send(:__attribute_filters_virtual)
+      c = self.class.attribute_filters_virtual
       simple ? c : AttributeSet::Query.new(c)
     end
-    alias_method :protected_attributes_set, :all_protected_attributes
+    alias_method :virtual_attributes_set, :all_virtual_attributes
+    alias_method :attribute_filters_virtual, :all_virtual_attributes
 
     # Returns a set containing attributes declared as semi-real.
     # 
@@ -144,13 +145,14 @@ module ActiveModel
     #  attribute (defaults to +true+)
     # @return [AttributeSet] attribute set
     def all_semi_real_attributes(simple = false, no_presence_check = true)
-      c = self.class.send(:__treat_as_real)
+      c = self.class.treat_as_real
       unless no_presence_check || c.empty? 
         c = c.select { |a| respond_to?(a) && respond_to?("#{a}=") }
       end
       simple ? c : AttributeSet::Query.new(c)
     end
-    alias_method :protected_attributes_set, :all_protected_attributes
+    alias_method :semi_real_attributes_set, :all_semi_real_attributes
+    alias_method :treat_as_real, :all_semi_real_attributes
 
     # Returns a set containing all attributes that are not accessible attributes.
     # @return [AttributeSet] attribute set
