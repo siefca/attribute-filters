@@ -78,27 +78,20 @@ module ActiveModel
     # without wrapping the result in a proxy.
     # 
     # @return [AttributeSet] attribute set
-    def all_attributes_simple(no_presence_check = true)
-      if self.class.respond_to?(:accessible_attributes)
-        ActiveModel::AttributeSet.new(attributes.keys) +
-        all_accessible_attributes(true) +
-        all_protected_attributes(true)  +
-        all_virtual_attributes(true)    +
-        all_semi_real_attributes(true, no_presence_check)
-      else
-        ActiveModel::AttributeSet.new(attributes.keys) +
-        all_virtual_attributes(true) +
-        all_semi_real_attributes(true, no_presence_check)
+    def all_attributes(simple = false, no_presence_check = true)
+      my_class = self.class
+      c = my_class.send(:__attribute_filters_semi_real)
+      c = c.select_accessible(self) unless no_presence_check || c.empty?
+      r = ActiveModel::AttributeSet.new(c)
+      r.merge!(my_class.send(:__attribute_filters_virtual))
+      r << attributes.keys
+      if respond_to?(:accessible_attributes)
+        r << accessible_attribute
+        r << protected_attributes
       end
+      r = r.deep_dup
+      simple ? r : ActiveModel::AttributeSet::Query.new(r, self)
     end
-
-    # Returns a set containing all known attributes.
-    # 
-    # @return [AttributeSet] attribute set
-    def all_attributes
-      ActiveModel::AttributeSet::Query.new(all_attributes_simple, self)
-    end
-    alias_method :all_attributes_set, :all_attributes
 
     # Returns a set containing all accessible attributes.
     # 
