@@ -41,7 +41,7 @@ module ActiveModel
       #   @param annotations [Hash{Symbol => Hash{Symbol => Object}}] annotation key => value pairs for attributes
       def annotate_attribute_set(*args)
         first_arg = args.shift
-        if first_arg.is_a?(Hash) # multiple sets defined
+        if first_arg.is_a?(Hash)                  # multiple sets defined
           first_arg.each_pair do |k, v|
             annotate_attribute_set(k, v, *args)
           end
@@ -166,7 +166,7 @@ module ActiveModel
     # @return [void]
     def annotate(atr_name, name, value)
       atr_name = atr_name.to_s unless atr_name.blank?
-      unless include?(atr_name)
+      unless key?(atr_name)
         raise ArgumentError, "attribute '#{atr_name}' must exist in order to annotate it"
       end
       self[atr_name] = Hash.new unless self[atr_name].is_a?(Hash)
@@ -216,21 +216,16 @@ module ActiveModel
       has_annotations? or return nil
       an_group = self[atr_name.to_s]
       return nil if an_group.nil? || !an_group.is_a?(Hash)
+      h = ActiveModel::AttributeFilters::AttributeFiltersHelpers
       case annotation_names.size
       when 0
         r = Hash.new
-        an_group.each_pair do |k, v|
-          r[k] = v.is_a?(Hash) ? v.deep_dup : (v.is_a?(Enumerable) ? v.dup : v)
-        end
+        an_group.each_pair { |k, v| r[k] = h.safe_dup(v) }
         r
       when 1
-        r = an_group[annotation_names.first.to_sym]
-        r.is_a?(Hash) ? r.deep_dup : (r.is_a?(Enumerable) ? r.dup : r)
+        h.safe_dup(an_group[annotation_names.first.to_sym])
       else
-        annotation_names.map do |a|
-          r = an_group[a.to_sym]
-          r.is_a?(Hash) ? r.deep_dup : (r.is_a?(Enumerable) ? r.dup : r)
-        end
+        annotation_names.map { |a| h.safe_dup(an_group[a.to_sym]) }
       end
     end
     alias_method :get_annotation,   :annotation

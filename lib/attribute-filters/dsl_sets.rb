@@ -71,12 +71,17 @@ module ActiveModel
     # @param set_name [Symbol] name of attribute set
     # @return [AttributeSet] attribute set
     def attribute_set_simple(set_name)
-      self.class.attribute_set(set_name).deep_dup
+      self.class.attribute_set(set_name)
     end
 
     # Returns a set containing all known attributes
     # without wrapping the result in a proxy.
     # 
+    # @param simple [Boolean] optional parameter that disables
+    #   wrapping a resulting set in a proxy (defaults to +false+)
+    # @param no_presence_check [Boolean] optional parameter that
+    #  disables checking for presence of setters and getters for each
+    #  virtual and semi-real attribute (defaults to +true+)
     # @return [AttributeSet] attribute set
     def all_attributes(simple = false, no_presence_check = true)
       my_class = self.class
@@ -145,11 +150,16 @@ module ActiveModel
     alias_method :semi_real_attributes_set, :all_semi_real_attributes
     alias_method :treat_as_real, :all_semi_real_attributes
 
-
     # Returns a set containing all attributes that are not accessible attributes.
+    # 
+    # @param simple [Boolean] optional parameter that disables
+    #   wrapping a resulting set in a proxy (defaults to +false+)
+    # @param no_presence_check [Boolean] optional parameter that
+    #  disables checking for presence of setters and getters for each
+    #  virtual and semi-real attribute (defaults to +true+)
     # @return [AttributeSet] attribute set
-    def all_inaccessible_attributes
-      all_attributes - all_accessible_attributes(true)
+    def all_inaccessible_attributes(simple = false, no_presence_check = true)
+      all_attributes(simple, no_presence_check) - all_accessible_attributes(simple)
     end
     alias_method :all_non_accessible_attributes,  :all_inaccessible_attributes
     alias_method :inaccessible_attributes_set,    :all_inaccessible_attributes
@@ -166,7 +176,7 @@ module ActiveModel
       s.each_pair do |set_name, set_object|
         s[set_name] = ActiveModel::AttributeSet::Query.new(set_object, self)
       end
-      s.default = ActiveModel::AttributeSet::Query.new(ActiveModel::AttributeSet.new.freeze, self)
+      #s.default = ActiveModel::AttributeSet::Query.new(ActiveModel::AttributeSet.new.freeze, self)
       s
     end
     alias_method :attributes_sets, :attribute_sets
@@ -238,19 +248,20 @@ module ActiveModel
           attribute_sets
         when 1
           first_arg = args.first
-          if first_arg.is_a?(Hash) # multiple sets defined
+          if first_arg.is_a?(Hash)                              # [write] multiple sets defined
             first_arg.each_pair { |k, v| attribute_set(k, v) }
             nil
-          else
-            attribute_sets[first_arg.to_sym]
+          else                                                  # [read] single set to read
+            r = __attribute_sets[first_arg.to_sym]
+            r.frozen? ? r : r.deep_dup
           end
         else
           first_arg = args.shift
-          if first_arg.is_a?(Hash) # multiple sets defined
+          if first_arg.is_a?(Hash)                              # [write] multiple sets defined
             first_arg.each_pair do |k, v|
               attribute_set(k, v, args)
             end
-          else                      # sinle set and optional attrs given
+          else                                                  # [write core] sinle set and optional attrs given
             AttributeFiltersHelpers.check_wanted_methods(self)
             add_atrs_to_set(first_arg.to_sym, *args)
           end
@@ -341,11 +352,7 @@ module ActiveModel
       # 
       # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
       def attribute_sets
-        d = Hash.new(ActiveModel::AttributeSet.new.freeze)
-        __attribute_sets.each_pair do |set_name, set_object|
-          d[set_name] = set_object.deep_dup
-        end
-        d
+        __attribute_sets.deep_dup
       end
       alias_method :attributes_sets, :attribute_sets
       alias_method :properties_sets, :attribute_sets
@@ -354,15 +361,12 @@ module ActiveModel
       # 
       # @note Use +key+ method explicitly to check if the given attribute is assigned to any set. The hash
       #  returned by this method will always return {AttributeSet} object. If the attribute is not assigned
-      #  to any set then the returned, matching set will be empty.
+      #  to any set then the returned, matching set will be empty. This method returns a duplicate of each
+      #  reverse mapped set.
       # 
       # @return [Hash{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
       def attributes_to_sets
-        d = Hash.new(ActiveModel::AttributeSet.new.freeze)
-        __attributes_to_sets_map.each_pair do |set_name, set_object|
-          d[set_name] = set_object.deep_dup
-        end
-        d
+        __attributes_to_sets_map.deep_dup
       end
       alias_method :attribute_sets_map, :attributes_to_sets
 
@@ -424,11 +428,11 @@ module ActiveModel
       end
 
       def __attributes_to_sets_map
-        @__attributes_to_sets_map ||= Hash.new
+        @__attributes_to_sets_map ||= Hash.new(ActiveModel::AttributeSet.new.freeze)
       end
 
       def __attribute_sets
-        @__attribute_sets ||= Hash.new
+        @__attribute_sets ||= Hash.new(ActiveModel::AttributeSet.new.freeze)
       end
 
       def add_atrs_to_set(set_name, *atrs)
@@ -437,18 +441,28 @@ module ActiveModel
           if atr_name.is_a?(Hash) # annotation
             atr_name.each_pair do |atr_name_b, a_defs|
               add_atrs_to_set(set_name, atr_name_b)
-              s = __attribute_sets[set_name] and a_defs.nil? or a_defs.each_pair { |n, v| s.annotate(atr_name_b, n, v) }
+              if __attribute_sets.key?(set_name) && a_defs.is_a?(Hash)
+                a_defs.each_pair do |n, v|
+                  __attribute_sets[set_name].annotate(atr_name_b, n, v)
+                end
+              end
             end
             return
           else
             atr_name = atr_name.to_s
-            __attributes_to_sets_map[atr_name] ||= ActiveModel::AttributeSet.new
-            __attributes_to_sets_map[atr_name] << set_name
+            unless __attributes_to_sets_map.key?(atr_name)
+              __attributes_to_sets_map[atr_name] = ActiveModel::AttributeSet.new(set_name)
+            else
+              __attributes_to_sets_map[atr_name] << set_name
+            end
           end
         end
-
-        __attribute_sets[set_name] ||= ActiveModel::AttributeSet.new
-        __attribute_sets[set_name] << atrs.map{ |a| a.to_s }.freeze
+        sanitized_atrs = atrs.map{ |a| a.to_s.dup }
+        unless __attribute_sets.key?(set_name)
+          __attribute_sets[set_name] = ActiveModel::AttributeSet.new(sanitized_atrs)
+        else
+          __attribute_sets[set_name] << sanitized_atrs
+        end
       end
     end # module ClassMethods
   end # module AttributeMethods

@@ -33,11 +33,11 @@ module ActiveModel
           set_object = ::ActiveModel::AttributeSet.new
         end
         if set_object.is_a?(::Symbol) || set_object.is_a?(::String)
-          set_object = am_object.class.attribute_set(set_object).deep_dup
+          set_object = am_object.attribute_set_simple(set_object)     # duplicated in class method that gets a set
         elsif !set_object.is_a?(::ActiveModel::AttributeSet)
-          set_object = ::ActiveModel::AttributeSet.new(set_object)
+          set_object = ::ActiveModel::AttributeSet.new(set_object)    # duplicated in AttributeSet initializer
         end
-        @set_object = set_object
+        @set_object = set_object                                      # requires external duplication if needed
         @am_object = am_object
         @next_method = nil
       end
