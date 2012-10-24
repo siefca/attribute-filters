@@ -25,7 +25,7 @@ module ActiveModel
             writer_name = "#{atr_name}="
             atr_name = atr_name.to_sym
             attr_reader(atr_name) unless method_defined?(atr_name)
-            __attribute_filters_virtual << atr_name.to_s
+            treat_as_virtual(atr_name)
             if method_defined?(writer_name)
               self.class_eval <<-EVAL
                 alias_method :#{atr_name}_without_change_tracking=, :#{writer_name}

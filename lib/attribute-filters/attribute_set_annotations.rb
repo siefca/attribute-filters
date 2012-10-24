@@ -41,7 +41,7 @@ module ActiveModel
       #   @param annotations [Hash{Symbol => Hash{Symbol => Object}}] annotation key => value pairs for attributes
       def annotate_attribute_set(*args)
         first_arg = args.shift
-        if first_arg.is_a?(Hash) # multiple sets defined
+        if first_arg.is_a?(Hash)                  # multiple sets defined
           first_arg.each_pair do |k, v|
             annotate_attribute_set(k, v, *args)
           end
@@ -60,7 +60,7 @@ module ActiveModel
           else
             unless an_key.nil? || atr_name.nil?
               first_arg = first_arg.to_sym
-              unless __attribute_sets.include?(first_arg)
+              unless __attribute_sets.key?(first_arg)
                 raise ArgumentError, "trying to annotate non-existent set '#{first_arg}'"
               end
               __attribute_sets[first_arg].annotate(atr_name, an_key, an_val)
@@ -146,7 +146,7 @@ module ActiveModel
           end
         else
           set_name = set_name.to_sym
-          return unless __attribute_sets.include?(set_name) && atr_name.present?
+          return unless __attribute_sets.key?(set_name) && atr_name.present?
           atr_name = atr_name.to_sym
           __attribute_sets[set_name].delete_annotation(atr_name, *annotations)
         end
@@ -166,12 +166,11 @@ module ActiveModel
     # @return [void]
     def annotate(atr_name, name, value)
       atr_name = atr_name.to_s unless atr_name.blank?
-      unless include?(atr_name)
+      unless key?(atr_name)
         raise ArgumentError, "attribute '#{atr_name}' must exist in order to annotate it"
       end
-      @annotations ||= Hash.new
-      @annotations[atr_name] ||= Hash.new
-      @annotations[atr_name][name.to_sym] = value
+      self[atr_name] = Hash.new unless self[atr_name].is_a?(Hash)
+      self[atr_name][name.to_sym] = value
     end
     alias_method :add_op,   :annotate
     alias_method :bind_op,  :annotate
@@ -194,11 +193,11 @@ module ActiveModel
     #   @return [Boolean] +true+ if the current set has at least one of the given +annotation_keys+ for +attribute_name+,
     #    +false+ otherwise
     def has_annotation?(*args)
-      return false if annotations.nil? || annotations.empty?
+      return false if empty?
       return true if args.size == 0
       atr_name = args.shift.to_s
-      a_group = annotations[atr_name]
-      a_group.blank? and return false
+      a_group = self[atr_name]
+      return false if a_group.blank? || !a_group.is_a?(Hash)
       args.empty? and return true
       args.any? { |a_name| a_group.key?(a_name.to_sym) }
     end
@@ -215,23 +214,18 @@ module ActiveModel
     def annotation(atr_name, *annotation_names)
       atr_name.present? or return nil
       has_annotations? or return nil
-      an_group = annotations[atr_name.to_s]
-      return nil if an_group.nil?
+      an_group = self[atr_name.to_s]
+      return nil if an_group.nil? || !an_group.is_a?(Hash)
+      h = ActiveModel::AttributeFilters::AttributeFiltersHelpers
       case annotation_names.size
       when 0
         r = Hash.new
-        an_group.each_pair do |k, v|
-          r[k] = v.is_a?(Enumerable) ? v.dup : v
-        end
+        an_group.each_pair { |k, v| r[k] = h.safe_dup(v) }
         r
       when 1
-        r = an_group[annotation_names.first.to_sym]
-        r.is_a?(Enumerable) ? r.dup : r
+        h.safe_dup(an_group[annotation_names.first.to_sym])
       else
-        annotation_names.map do |a|
-          r = an_group[a.to_sym]
-          r.is_a?(Enumerable) ? r.dup : r
-        end
+        annotation_names.map { |a| h.safe_dup(an_group[a.to_sym]) }
       end
     end
     alias_method :get_annotation,   :annotation
@@ -246,14 +240,18 @@ module ActiveModel
     # @return [Hash,Object,nil] deleted annotations (hash),
     #  deleted annotation value or +nil+ if there wasn't anything to delete
     def delete_annotation(atr_name, annotation = nil)
-      return nil if @annotations.nil? || atr_name.blank?
+      return nil if atr_name.blank?
       atr_name = atr_name.to_s
-      if annotation.nil?
-        @annotations.delete(atr_name)
-      elsif @annotations.has_key?(atr_name)
-        @annotations[atr_name].delete(annotation.to_sym)
+      return nil unless key?(atr_name)
+      ag = self[atr_name]
+      return nil if ag === true
+      if annotation.nil? || !ag.is_a?(Hash)
+        self[atr_name] = true
+        return ag
       else
-        nil
+        r = ag.delete(annotation.to_sym)
+        self[atr_name] = true if ag.empty?
+        r
       end
     end
     alias_method :delete_annotations, :delete_annotation
@@ -261,46 +259,14 @@ module ActiveModel
     # Removes all annotations.
     # @return [void]
     def remove_annotations
-      @annotations = nil
+      each_pair { |k, v| self[k] = true }
     end
 
-    private
-
+    # Returns all annotations.
+    # Practically it returns the contents of a set.
     def annotations
-      @annotations
+      self.deep_dup
     end
 
-    def copy_annotations(o)
-      return unless o.is_a?(self.class) && o.has_annotations?
-      @annotations ||= Hash.new
-      o.send(:annotations).each_pair do |atr, annotations_group|
-        if include?(atr)
-          current_group = (@annotations[atr] ||= Hash.new)
-          annotations_group.each_pair do |annotation_name, v|
-            current_group[annotation_name] ||= (v.is_a?(Enumerable) ? v.dup : v)
-          end
-        end
-      end
-    end
-
-    def copy_missing_annotations(from, other)
-      @annotations ||= Hash.new
-      from.each_pair do |atr, annotations_group|
-        if include?(atr) && (other.nil? || !other.has_key?(atr))
-          current_group = (@annotations[atr] ||= Hash.new)
-          annotations_group.each_pair do |annotation_name, v|
-            current_group[annotation_name] ||= (v.is_a?(Enumerable) ? v.dup : v)
-          end
-        end
-      end
-    end
-
-    def remove_different_annotations(other)
-      return unless other.is_a?(self.class) && other.has_annotations?
-      @annotations ||= Hash.new
-      other.send(:annotations).each_pair do |atr, annotations_group|
-        include?(atr) and delete_annotation(atr)
-      end
-    end
   end # module AttributeSet::Annotations
 end # module ActiveModel

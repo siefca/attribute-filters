@@ -21,3 +21,4 @@ if defined? ::Rails
 else
   require 'attribute-filters/active_model_insert'
 end
+

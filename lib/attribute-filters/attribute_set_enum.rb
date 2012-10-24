@@ -6,42 +6,36 @@
 # 
 # This file contains AttributeSet::Enumerable module and AttributeSet::Enumerator class.
 
-require 'set'
-
 # This module adds some enumerable properties to AttributeSet objects.
 module ActiveModel
-  class AttributeSet < ::Set
+  class AttributeSet < Hash
     module Enumerable
       # @private
       def select
-        if block_given?
-          ActiveModel::AttributeSet.new.tap do |r|
-            each { |e| r << e if yield(e) }
-            r.send(:copy_annotations, self) unless r.empty?
-          end
+        block_given? ? super : AttributeSet::Enumerator.new(self, :select)
+      end
+
+      # Selects attributes that have setters and getters.
+      # @param binding [Object] optional object which should have setters and getters (default: the calling context)
+      # @return [AttributeSet::Enumerator, AttributeSet] resulting set or an enumerator if block is not given
+      def select_accessible(binding = nil)
+        return AttributeSet::Enumerator.new(self, :accessible) unless block_given?
+        if binding.nil?
+          select { |a| respond_to?(a) && respond_to?("#{a}=") }
         else
-          AttributeSet::Enumerator.new(self, :select)
+          select { |a| binding.respond_to?(a) && binding.respond_to?("#{a}=") }
         end
       end
 
       # @private
       def reject
-        if block_given?
-          ActiveModel::AttributeSet.new.tap do |r|
-            each { |e| r << e unless yield(e) }
-            r.send(:copy_annotations, self) unless r.empty?
-          end
-        else
-          AttributeSet::Enumerator.new(self, :reject)
-        end
+        block_given? ? super : AttributeSet::Enumerator.new(self, :reject)
       end
 
       # @private
       def collect
         if block_given?
-          ActiveModel::AttributeSet.new.tap do |r|
-            each { |e| r << yield(e) }
-          end
+          super { |k, v| yield(k) }
         else
           AttributeSet::Enumerator.new(self, :map)
         end
@@ -49,23 +43,9 @@ module ActiveModel
       alias_method :map, :collect
 
       # @private
-      def sort
-        r = ActiveModel::AttributeSet.new(super)
-        r.send(:copy_annotations, self) unless r.empty?
-        r
-      end
-
-      # @private
-      def sort_by
-        r = ActiveModel::AttributeSet.new(super)
-        r.send(:copy_annotations, self) unless r.empty?
-        r
-      end
-
-      # @private
       def each
         if block_given?
-          super
+          super { |k, v| yield(k) }
         else
           AttributeSet::Enumerator.new(self, :each)
         end

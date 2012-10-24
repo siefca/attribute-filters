@@ -49,6 +49,12 @@ module ActiveModel
       end
       module_function :each_element
 
+      # @private
+      def safe_dup(src)
+        src.respond_to?(:deep_dup) ? src.deep_dup : (src.is_a?(Enumerable) ? src.dup : src)
+      end
+      module_function :safe_dup
+
     end # module AttributeFiltersHelpers
   end # module AttributeFilters
 end # module ActiveModel

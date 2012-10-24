@@ -39,9 +39,9 @@ module ActiveModel
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
       atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set_simple(set_name)
       if process_all
-        no_presence_check ? atf : atf & all_attributes_simple(no_presence_check)
+        no_presence_check ? atf : atf & all_attributes(true, no_presence_check)
       else
-        atf & (all_semi_real_attributes(true, no_presence_check)  + changes.keys)
+        atf & (all_semi_real_attributes(true, no_presence_check) + changes.keys)
       end
     end
 
@@ -169,43 +169,6 @@ module ActiveModel
     alias_method :for_attributes_that,      :for_each_attr_from_set
     alias_method :for_attributes_that_are,  :for_each_attr_from_set
     alias_method :for_attributes_which_are, :for_each_attr_from_set
-
-    module ClassMethods
-      # @overload treat_as_real(*attributes)
-      #   Informs Attribute Filters that the given attributes
-      #   should be treated as present, even they are not in
-      #   attributes hash provided by ORM or ActiveModel.
-      #   Useful when operating on semi-virtual attributes.
-      # 
-      #   @note To operate on virtual attributes use +attr_virtual+ instead.
-      #   
-      #   @param attributes [Array] list of attribute names
-      #   @return [void]
-      # 
-      # @overload treat_as_real()
-      #   Gets the memorized attribute names that should be
-      #   treated as existing.
-      #   
-      #   @return [AttributeSet] set of attribute name
-      def treat_as_real(*args)
-        return __treat_as_real.dup if args.blank?
-        __treat_as_real << args.flatten.compact.map { |atr| atr.to_s }
-        nil
-      end
-      alias_method :treat_attribute_as_real,  :treat_as_real
-      alias_method :treat_attributes_as_real, :treat_as_real
-
-      private
-
-      def __treat_as_real
-        @__treat_as_real ||= ActiveModel::AttributeSet.new
-      end
-
-      def __attribute_filters_virtual
-        @__attribute_filters_virtual ||= ActiveModel::AttributeSet.new
-      end
-
-    end # module ClassMethods
 
     private
 
