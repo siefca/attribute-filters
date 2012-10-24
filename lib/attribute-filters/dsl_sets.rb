@@ -146,13 +146,12 @@ module ActiveModel
     # @return [AttributeSet] attribute set
     def all_semi_real_attributes(simple = false, no_presence_check = true)
       c = self.class.treat_as_real
-      unless no_presence_check || c.empty? 
-        c = c.select { |a| respond_to?(a) && respond_to?("#{a}=") }
-      end
+      c = c.select_accessible(self) unless no_presence_check || c.empty? 
       simple ? c : AttributeSet::Query.new(c)
     end
     alias_method :semi_real_attributes_set, :all_semi_real_attributes
     alias_method :treat_as_real, :all_semi_real_attributes
+
 
     # Returns a set containing all attributes that are not accessible attributes.
     # @return [AttributeSet] attribute set
