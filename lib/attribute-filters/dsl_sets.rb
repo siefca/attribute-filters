@@ -258,7 +258,7 @@ module ActiveModel
             first_arg.each_pair do |k, v|
               attribute_set(k, v, args)
             end
-          else
+          else                      # sinle set and optional attrs given
             AttributeFiltersHelpers.check_wanted_methods(self)
             add_atrs_to_set(first_arg.to_sym, *args)
           end
@@ -374,7 +374,62 @@ module ActiveModel
       end
       alias_method :attribute_sets_map, :attributes_to_sets
 
+      # @overload treat_as_real(*attributes)
+      #   Informs Attribute Filters that the given attributes
+      #   should be treated as present, even they are not in
+      #   attributes hash provided by ORM or ActiveModel.
+      #   Useful when operating on semi-virtual attributes.
+      # 
+      #   @note To operate on virtual attributes use +attr_virtual+ instead.
+      #   
+      #   @param attributes [Array] list of attribute names
+      #   @return [void]
+      # 
+      # @overload treat_as_real()
+      #   Gets the memorized attribute names that should be
+      #   treated as existing.
+      #   
+      #   @return [AttributeSet] set of attribute names
+      def treat_as_real(*args)
+        return __attribute_filters_semi_real.deep_dup if args.blank?
+        __attribute_filters_semi_real << args.flatten.compact.map { |atr| atr.to_s }
+        nil
+      end
+      alias_method :attribute_filters_semi_real,  :treat_as_real
+      alias_method :treat_attribute_as_real,      :treat_as_real
+      alias_method :treat_attributes_as_real,     :treat_as_real
+
+      # @overload attribute_filters_virtual(*attributes)
+      #   Informs Attribute Filters that the given attributes
+      #   should be treated as virtual (even not present in the
+      #   attributes hash provided by ORM or ActiveModel).
+      # 
+      #   @param attributes [Array] list of attribute names
+      #   @return [void]
+      # 
+      # @overload attribute_filters_virtual()
+      #   Gets the memorized attribute names that should be
+      #   treated as virtual.
+      #   
+      #   @return [AttributeSet] set of attribute names
+      def treat_as_virtual(*args)
+        return __attribute_filters_virtual.deep_dup if args.blank?
+        __attribute_filters_virtual << args.flatten.compact.map { |atr| atr.to_s }
+        nil
+      end
+      alias_method :attribute_filters_virtual, :treat_as_virtual
+      alias_method :treat_attribute_as_virtual, :treat_as_virtual
+      alias_method :treat_attributes_as_virtual, :treat_as_virtual
+
       private
+
+      def __attribute_filters_semi_real
+        @__attribute_filters_semi_real ||= ActiveModel::AttributeSet.new
+      end
+
+      def __attribute_filters_virtual
+        @__attribute_filters_virtual ||= ActiveModel::AttributeSet.new
+      end
 
       def __attributes_to_sets_map
         @__attributes_to_sets_map ||= Hash.new
@@ -399,6 +454,7 @@ module ActiveModel
             __attributes_to_sets_map[atr_name] << set_name
           end
         end
+
         __attribute_sets[set_name] ||= ActiveModel::AttributeSet.new
         __attribute_sets[set_name] << atrs.map{ |a| a.to_s }.freeze
       end
