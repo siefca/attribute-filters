@@ -60,7 +60,7 @@ module ActiveModel
           else
             unless an_key.nil? || atr_name.nil?
               first_arg = first_arg.to_sym
-              unless __attribute_sets.include?(first_arg)
+              unless __attribute_sets.key?(first_arg)
                 raise ArgumentError, "trying to annotate non-existent set '#{first_arg}'"
               end
               __attribute_sets[first_arg].annotate(atr_name, an_key, an_val)
@@ -146,7 +146,7 @@ module ActiveModel
           end
         else
           set_name = set_name.to_sym
-          return unless __attribute_sets.include?(set_name) && atr_name.present?
+          return unless __attribute_sets.key?(set_name) && atr_name.present?
           atr_name = atr_name.to_sym
           __attribute_sets[set_name].delete_annotation(atr_name, *annotations)
         end
