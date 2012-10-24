@@ -15,6 +15,18 @@ module ActiveModel
         block_given? ? super : AttributeSet::Enumerator.new(self, :select)
       end
 
+      # Selects attributes that have setters and getters.
+      # @param binding [Object] optional object which should have setters and getters (default: the calling context)
+      # @return [AttributeSet::Enumerator, AttributeSet] resulting set or an enumerator if block is not given
+      def select_accessible(binding = nil)
+        return AttributeSet::Enumerator.new(self, :accessible) unless block_given?
+        if binding.nil?
+          select { |a| respond_to?(a) && respond_to?("#{a}=") }
+        else
+          select { |a| binding.respond_to?(a) && binding.respond_to?("#{a}=") }
+        end
+      end
+
       # @private
       def reject
         block_given? ? super : AttributeSet::Enumerator.new(self, :reject)
