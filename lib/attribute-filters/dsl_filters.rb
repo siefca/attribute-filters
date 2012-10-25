@@ -37,11 +37,13 @@ module ActiveModel
     #     disabled (matters only when +process_all+ is also set) (defaults to +false+)
     #   @return [AttributeSet] set of attributes (attribute name => previous_value)
     def attributes_to_filter(set_name, process_all = false, no_presence_check = false)
-      atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : attribute_set_simple(set_name)
+      set_name.blank? and return ::ActiveModel::AttributeSet.new
+      atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : self.class.send(:__attribute_sets)[set_name.to_sym]
       if process_all
-        no_presence_check ? atf : atf & all_attributes(true, no_presence_check)
+        no_presence_check ? atf : atf & __all_attributes(false)
       else
-        atf & (all_semi_real_attributes(true, no_presence_check) + changes.keys)
+        sr = self.class.send(:__attribute_filters_semi_real)
+        atf & ((no_presence_check ? sr : sr.select_accessible(self)) + changes.keys)
       end
     end
 

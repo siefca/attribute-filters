@@ -84,17 +84,7 @@ module ActiveModel
     #  virtual and semi-real attribute (defaults to +true+)
     # @return [AttributeSet] attribute set
     def all_attributes(simple = false, no_presence_check = true)
-      my_class = self.class
-      c = my_class.send(:__attribute_filters_semi_real)
-      c = c.select_accessible(self) unless no_presence_check || c.empty?
-      r = ActiveModel::AttributeSet.new(c)
-      r.merge!(my_class.send(:__attribute_filters_virtual))
-      r << attributes.keys
-      if respond_to?(:accessible_attributes)
-        r << accessible_attribute
-        r << protected_attributes
-      end
-      r = r.deep_dup
+      r = __all_attributes(no_presence_check).deep_dup
       simple ? r : ActiveModel::AttributeSet::Query.new(r, self)
     end
 
@@ -176,7 +166,6 @@ module ActiveModel
       s.each_pair do |set_name, set_object|
         s[set_name] = ActiveModel::AttributeSet::Query.new(set_object, self)
       end
-      #s.default = ActiveModel::AttributeSet::Query.new(ActiveModel::AttributeSet.new.freeze, self)
       s
     end
     alias_method :attributes_sets, :attribute_sets
@@ -211,6 +200,28 @@ module ActiveModel
       self.class.attributes_to_sets
     end
     alias_method :attribute_sets_map, :attributes_to_sets
+
+    # Returns a set containing all known attributes
+    # without wrapping the result in a proxy.
+    # 
+    # @param no_presence_check [Boolean] optional parameter that
+    #  disables checking for presence of setters and getters for each
+    #  virtual and semi-real attribute (defaults to +true+)
+    # @return [AttributeSet] attribute set
+    def __all_attributes(no_presence_check = true)
+      my_class = self.class
+      c = my_class.send(:__attribute_filters_semi_real)
+      c = c.select_accessible(self) unless no_presence_check || c.empty?
+      r = ActiveModel::AttributeSet.new(c)
+      r.merge!(my_class.send(:__attribute_filters_virtual))
+      r << attributes.keys
+      if respond_to?(:accessible_attributes)
+        r << accessible_attribute
+        r << protected_attributes
+      end
+      r
+    end
+    private :__all_attributes
 
     # This module contains class methods
     # that create DSL for managing attribute sets.
