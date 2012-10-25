@@ -54,7 +54,7 @@ module ActiveModel
             else
               sep ||= ""
               jnt ||= sep.is_a?(String) ? sep : nil
-              AttributeFiltersHelpers.each_element(atr_val, String) do |v|
+              AFHelpers.each_element(atr_val, String) do |v|
                 pick_attributes_core(v.mb_chars.split(sep), from, to, range, step).join(jnt)
               end
             end

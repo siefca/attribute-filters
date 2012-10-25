@@ -29,11 +29,11 @@ module ActiveModel
             pattern, limit, flatten, into = set_obj.annotation(atr_name,  :split_pattern, :split_limit,
                                                                           :split_flatten, :split_into)
             if limit.nil?
-              r = AttributeFiltersHelpers.each_element(atr_val, String) do |v|
+              r = AFHelpers.each_element(atr_val, String) do |v|
                 v.mb_chars.split(pattern)
               end
             else
-              r = AttributeFiltersHelpers.each_element(atr_val, String) do |v|
+              r = AFHelpers.each_element(atr_val, String) do |v|
                 v.mb_chars.split(pattern, limit)
               end
             end

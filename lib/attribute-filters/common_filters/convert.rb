@@ -20,7 +20,7 @@ module ActiveModel
         # Helper that is used by all converting filters.
         def attributes_convert(set_name, default_key, *params, &block)
           filter_attrs_from_set(set_name, *params) do |atr_val, atr_name, set_obj|
-            AttributeFiltersHelpers.each_element(atr_val) do |v|
+            AFHelpers.each_element(atr_val) do |v|
               begin
                 yield(v, atr_name, set_obj)
               rescue NoMethodError, ArgumentError

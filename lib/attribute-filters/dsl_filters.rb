@@ -17,6 +17,9 @@ module ActiveModel
       :include_missing    => false
     }.freeze
 
+    # Helpers module shortcut.
+    AFHelpers = AttributeFiltersHelpers
+
     # Gets names of attributes for which filters should be applied by
     # selecting attributes that are meeting certain criteria and belong
     # to the given attribute set.
@@ -40,7 +43,7 @@ module ActiveModel
       set_name.blank? and return ::ActiveModel::AttributeSet.new
       atf = set_name.is_a?(::ActiveModel::AttributeSet) ? set_name : self.class.send(:__attribute_sets)[set_name.to_sym]
       if process_all
-        no_presence_check ? atf : atf & __all_attributes(false)
+        no_presence_check ? atf.deep_dup : atf & __all_attributes(false)
       else
         sr = self.class.send(:__attribute_filters_semi_real)
         atf & ((no_presence_check ? sr : sr.select_accessible(self)) + changes.keys)
@@ -177,7 +180,7 @@ module ActiveModel
     # Applies operations to elements from set.
     def operate_on_attrs_from_set(set_name, alter_mode, *args, &block)
       block_given? or return enum_for(__method__, set_name, alter_mode, *args)
-      flags             = AttributeFiltersHelpers.process_flags(args)
+      flags             = AFHelpers.process_flags(args)
       process_all       = flags[:process_all]
       process_blank     = flags[:process_blank]
       no_presence_check = flags[:no_presence_check]

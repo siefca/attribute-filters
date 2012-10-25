@@ -26,7 +26,7 @@ module ActiveModel
         # @return [void]
         def strip_attributes
           filter_attrs_from_set(:should_be_stripped) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) { |v| v.strip }
+            AFHelpers.each_element(atr, String) { |v| v.strip }
           end
         end
         # This submodule contains class methods used to easily define filter.

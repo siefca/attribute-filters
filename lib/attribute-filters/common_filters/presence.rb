@@ -34,7 +34,7 @@ module ActiveModel
                 atr_val
               end
             else
-              AttributeFiltersHelpers.each_element(atr_val) do |v|
+              AFHelpers.each_element(atr_val) do |v|
                 if v.blank? || set_obj.annotation(atr_name, :fill_any)
                   set_obj.annotation(atr_name, :fill_value)
                 else

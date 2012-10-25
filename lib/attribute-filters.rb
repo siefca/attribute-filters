@@ -3,14 +3,14 @@
 require 'attribute-filters'
 require 'attribute-filters/version'
 require 'attribute-filters/backports'
+require 'attribute-filters/helpers'
 
 require 'attribute-filters/attribute_set_enum'
-require 'attribute-filters/attribute_set_annotations'
 require 'attribute-filters/attribute_set'
+require 'attribute-filters/attribute_set_annotations'
 require 'attribute-filters/attribute_set_query'
 require 'attribute-filters/attribute_set_attrquery'
 
-require 'attribute-filters/helpers'
 require 'attribute-filters/dsl_sets'
 require 'attribute-filters/dsl_filters'
 require 'attribute-filters/dsl_attr_virtual'

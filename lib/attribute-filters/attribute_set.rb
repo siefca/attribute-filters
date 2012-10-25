@@ -13,7 +13,9 @@ module ActiveModel
   # set of attributes.
   class AttributeSet <  Hash
     include ActiveModel::AttributeSet::Enumerable
-    include ActiveModel::AttributeSet::Annotations
+
+    # Helpers module shortcut
+    AFHelpers = ActiveModel::AttributeFilters::AttributeFiltersHelpers
 
     # Creates a new instance of attribute set.
     # 
@@ -70,7 +72,7 @@ module ActiveModel
         if self.key?(k) && o.key?(k)
           r[k] = merge_set(self[k], o[k]) { |a, b| a + b }
         else
-          r[k] = safe_dup(self[k] || o[k])
+          r[k] = AFHelpers.safe_dup(self[k] || o[k])
         end
       end
       r
@@ -117,24 +119,17 @@ module ActiveModel
       r = my_class.new
       (o.keys + keys).uniq.each do |k|
         if key?(k)
-          if !o.key?(k)
-            src = self[k]
-          else
-            next
-          end
+          next if o.key?(k)
+          src = self[k]
         elsif o.key?(k)
           src = o[k]
         end
-        r[k] = safe_dup(src)
+        r[k] = AFHelpers.safe_dup(src)
       end
       r
     end
 
     private
-
-    def safe_dup(src)
-      src.respond_to?(:deep_dup) ? src.deep_dup : (src.is_a?(Enumerable) ? src.dup : src)
-    end
 
     # Internal method for merging sets.
     def merge_set(my_v, ov, my_class = self.class)

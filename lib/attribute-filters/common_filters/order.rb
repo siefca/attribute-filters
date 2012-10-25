@@ -30,7 +30,7 @@ module ActiveModel
             if set_obj.annotation(atr_name, :reverse_enumerable)
               atr_val.respond_to?(:reverse) ? atr_val.reverse : atr_val
             else
-              AttributeFiltersHelpers.each_element(atr_val) do |v|
+              AFHelpers.each_element(atr_val) do |v|
                 v.respond_to?(:reverse) ? v.reverse : v
               end
             end
@@ -68,7 +68,7 @@ module ActiveModel
               atr_val.respond_to?(:shuffle) ? atr_val.shuffle(rng) : atr_val
             end
           else
-            AttributeFiltersHelpers.each_element(atr_val) do |v|
+            AFHelpers.each_element(atr_val) do |v|
               if v.is_a?(String)
                 v.mb_chars.split("").shuffle(rng).join
               else

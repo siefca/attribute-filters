@@ -273,7 +273,7 @@ module ActiveModel
               attribute_set(k, v, args)
             end
           else                                                  # [write core] sinle set and optional attrs given
-            AttributeFiltersHelpers.check_wanted_methods(self)
+            AFHelpers.check_wanted_methods(self)
             add_atrs_to_set(first_arg.to_sym, *args)
           end
           nil
@@ -315,7 +315,7 @@ module ActiveModel
       #   @param set_names [Array<Symbol,String>] names of additional sets to assign attributes to
       #   @return [nil]
       def filter_attribute(*args)
-        AttributeFiltersHelpers.check_wanted_methods(self)
+        AFHelpers.check_wanted_methods(self)
         case args.size
         when 0
           attributes_to_sets

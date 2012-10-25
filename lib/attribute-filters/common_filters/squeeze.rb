@@ -29,11 +29,11 @@ module ActiveModel
           filter_attrs_from_set(:should_be_squeezed) do |atr_val, atr_name, set_obj|
             other_str = set_obj.annotation(atr_name, :squeeze_other_str)
             if other_str.nil?
-              AttributeFiltersHelpers.each_element(atr_val, String) do |v|
+              AFHelpers.each_element(atr_val, String) do |v|
                 v.mb_chars.squeeze.to_s
               end
             else
-              AttributeFiltersHelpers.each_element(atr_val, String) do |v|
+              AFHelpers.each_element(atr_val, String) do |v|
                 v.mb_chars.squeeze(other_str).to_s
               end
             end
@@ -64,7 +64,7 @@ module ActiveModel
         # @return [void]
         def squish_attributes
           filter_attrs_from_set(:should_be_squished) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) do |v|
+            AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.squish.to_s
             end
           end

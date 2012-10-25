@@ -28,7 +28,7 @@ module ActiveModel
         # @return [void]
         def downcase_attributes
           filter_attrs_from_set(:should_be_downcased) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) do |v|
+            AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.downcase.to_s
             end
           end
@@ -55,7 +55,7 @@ module ActiveModel
         # @return [void]
         def upcase_attributes
           filter_attrs_from_set(:should_be_upcased) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) do |v|
+            AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.upcase.to_s
             end
           end
@@ -82,7 +82,7 @@ module ActiveModel
         # @return [void]
         def titleize_attributes
           filter_attrs_from_set(:should_be_titleized) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) do |v|
+            AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.titleize.to_s
             end
           end
@@ -109,7 +109,7 @@ module ActiveModel
         # @return [void]
         def capitalize_attributes
           filter_attrs_from_set(:should_be_capitalized) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) do |v|
+            AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.capitalize.to_s
             end
           end
@@ -128,7 +128,7 @@ module ActiveModel
         def titleize_with_squeezed_spaces
           s = attribute_set_simple(:should_be_fully_capitalized) + attribute_set_simple(:should_be_titleized)
           filter_attrs_from_set(s) do |atr|
-            AttributeFiltersHelpers.each_element(atr, String) do |v|
+            AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.split(' ').map { |n| n.capitalize }.join(' ')
             end
           end          

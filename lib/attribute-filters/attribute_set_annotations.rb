@@ -156,7 +156,7 @@ module ActiveModel
     end # module ClassMethods
   end # module AttributeFilters
 
-  module AttributeSet::Annotations
+  class AttributeSet
     # Adds an annotation to the given attribute.
     # 
     # @param atr_name [String,Symbol] attribute name
@@ -216,16 +216,15 @@ module ActiveModel
       has_annotations? or return nil
       an_group = self[atr_name.to_s]
       return nil if an_group.nil? || !an_group.is_a?(Hash)
-      h = ActiveModel::AttributeFilters::AttributeFiltersHelpers
       case annotation_names.size
       when 0
         r = Hash.new
-        an_group.each_pair { |k, v| r[k] = h.safe_dup(v) }
+        an_group.each_pair { |k, v| r[k] = AFHelpers.safe_dup(v) }
         r
       when 1
-        h.safe_dup(an_group[annotation_names.first.to_sym])
+        AFHelpers.safe_dup(an_group[annotation_names.first.to_sym])
       else
-        annotation_names.map { |a| h.safe_dup(an_group[a.to_sym]) }
+        annotation_names.map { |a| AFHelpers.safe_dup(an_group[a.to_sym]) }
       end
     end
     alias_method :get_annotation,   :annotation
@@ -268,5 +267,5 @@ module ActiveModel
       self.deep_dup
     end
 
-  end # module AttributeSet::Annotations
+  end # class AttributeSet
 end # module ActiveModel
