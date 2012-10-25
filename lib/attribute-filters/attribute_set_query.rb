@@ -30,14 +30,17 @@ module ActiveModel
       def initialize(set_object, am_object = nil)
         if am_object.nil?
           am_object = set_object
+          unless am_object.included_modules.include?(::ActiveModel::AttributeFilters)
+            raise ::ArgumentError, "incompatible object passed to AttributeSet::Query (not a model class?)"
+          end
           set_object = ::ActiveModel::AttributeSet.new
         end
-        if set_object.is_a?(::Symbol) || set_object.is_a?(::String)
-          set_object = am_object.attribute_set_simple(set_object)     # duplicated in class method that gets a set
-        elsif !set_object.is_a?(::ActiveModel::AttributeSet)
-          set_object = ::ActiveModel::AttributeSet.new(set_object)    # duplicated in AttributeSet initializer
+        if set_object.is_a?(::Symbol) || set_object.is_a?(::String)   # global set assigned to model class
+          set_object = am_object.attribute_set_simple(set_object)     #  - duplicated in class method that gets a set
+        elsif !set_object.is_a?(::ActiveModel::AttributeSet)          # any other object
+          set_object = ::ActiveModel::AttributeSet.new(set_object)    #  - duplicated in AttributeSet initializer
         end
-        @set_object = set_object                                      # requires external duplication if needed
+        @set_object = set_object                                      # AttributeSet (assuming it's duplicated if needed)
         @am_object = am_object
         @next_method = nil
       end

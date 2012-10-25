@@ -96,7 +96,7 @@ module ActiveModel
     def all_accessible_attributes(simple = false)
       my_class = self.class
       c = my_class.respond_to?(:accessible_attributes) ? my_class.accessible_attributes : []
-      simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
+      simple ? AttributeSet.new(c) : AttributeSet::Query.new(c, self)
     end
     alias_method :accessible_attributes_set, :all_accessible_attributes
 
@@ -108,7 +108,7 @@ module ActiveModel
     def all_protected_attributes(simple = false)
       my_class = self.class
       c = my_class.respond_to?(:protected_attributes) ? my_class.protected_attributes : []
-      simple ? AttributeSet.new(c) : AttributeSet::Query.new(c)
+      simple ? AttributeSet.new(c) : AttributeSet::Query.new(c, self)
     end
     alias_method :protected_attributes_set, :all_protected_attributes
 
@@ -119,7 +119,7 @@ module ActiveModel
     # @return [AttributeSet] attribute set
     def all_virtual_attributes(simple = false)
       c = self.class.attribute_filters_virtual
-      simple ? c : AttributeSet::Query.new(c)
+      simple ? c : AttributeSet::Query.new(c, self)
     end
     alias_method :virtual_attributes_set, :all_virtual_attributes
     alias_method :attribute_filters_virtual, :all_virtual_attributes
@@ -135,7 +135,7 @@ module ActiveModel
     def all_semi_real_attributes(simple = false, no_presence_check = true)
       c = self.class.treat_as_real
       c = c.select_accessible(self) unless no_presence_check || c.empty? 
-      simple ? c : AttributeSet::Query.new(c)
+      simple ? c : AttributeSet::Query.new(c, self)
     end
     alias_method :semi_real_attributes_set, :all_semi_real_attributes
     alias_method :treat_as_real, :all_semi_real_attributes

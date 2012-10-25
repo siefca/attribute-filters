@@ -4,6 +4,8 @@
 
 * add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
   - they can use methods that internally are checking it
+  
+* valid? and invalid? for the_attribute() - calls valid for a model and checks if name is in valid or invalid list..
 
 * replace Set by Hash and add a deep copy
 
