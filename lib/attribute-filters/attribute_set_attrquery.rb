@@ -71,6 +71,12 @@ module ActiveModel
         when :protected?, :is_protected?
           @am_object.class.protected_attributes.include?(@attribute_name)
 
+        when :virtual?, :is_virtual?
+          @am_object.class.attribute_filters_virtual.include?(@attribute_name)
+
+        when :semi_real?, :is_semi_real?
+          @am_object.class.treat_as_real.include?(@attribute_name)
+
         when :valid?, :is_valid?
           return false unless @am_object.send(:__all_attributes).include?(@attribute_name)
           return true if @am_object.valid?
@@ -85,7 +91,7 @@ module ActiveModel
           return false unless @am_object.changed? && @am_object.send(:__all_attributes).include?(@attribute_name)
           @am_object.changes.key?(@attribute_name)
 
-        when :unchanged?, :is_unchanged?, :hasnt_changed?
+        when :unchanged?, :is_unchanged?, :hasnt_changed?, :not_changed?
           return true unless @am_object.changed?
           @am_object.changes.key?(@attribute_name)
 
@@ -115,7 +121,8 @@ module ActiveModel
              :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to,
              :protected?, :is_protected?, :inaccessible?, :is_inaccessible?,
              :accessible?, :is_accessible?, :valid?, :is_valid?, :invalid?, :is_invalid?,
-             :changed?, :has_changed?, :is_changed?, :unchanged?, :hasnt_changed?, :is_unchanged?
+             :virtual?, :is_virtual?, :semi_real?, :is_semi_real?,
+             :changed?, :has_changed?, :is_changed?, :unchanged?, :hasnt_changed?, :is_unchanged?, :not_changed?
           true
         else
           @set_object.respond_to?(name) || name.to_s.slice(-1,1) == '?'
