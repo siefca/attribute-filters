@@ -56,6 +56,11 @@ module ActiveModel
       keys
     end
 
+    # @private
+    def to_set
+      keys.to_set
+    end
+
     # Adds two sets by deeply merging their contents.
     # If any value stored in one set under conflicting key
     # is +true+, +false+ or +nil+ then value is taken from other set.
