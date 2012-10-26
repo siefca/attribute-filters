@@ -79,35 +79,61 @@ module ActiveModel
         # Special selectors
         if @next_method.nil?
           case method_sym.to_sym
+
           when :all, :any, :none, :one
             ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).   # new obj. == thread-safe
               next_step(method_sym.to_s << "?", args, block)
+
           when :list, :show
             ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).
               next_step(:select, args, block)
+
           when :valid?, :is_valid?, :are_valid?, :all_valid?, :are_all_valid?
             self.all.valid?
+
           when :invalid?, :is_not_valid?, :any_invalid?, :are_not_valid?, :not_valid?, :is_any_invalid?
             self.any.invalid?
+
+          when :changed?, :any_changed?, :have_changed?, :have_any_changed?, :is_any_changed?, :has_any_changed?, :has_changed?
+            self.any.changed?
+
+          when :unchanged?, :none_changed?, :nothing_changed?, :is_unchanged?, :are_all_unchanged?,
+               :all_unchanged?, :havent_changed?, :arent_changed?, :are_not_changed?, :none_changed?, :not_changed?
+            self.all.unchanged?
+
           else
             r = @set_object.public_method(method_sym).call(*args, &block)
             return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
             ::ActiveModel::AttributeSet::Query.new(r, @am_object)
           end
         else
-          m, args, block = @next_method
+          n_m, n_args, n_block = @next_method
           @next_method = nil
           # m contains a method that we should call on a set of names (e.g. all? or any?)
           # method_sym contains a method to be called on each attribute from a set (e.g. present?)
           r = case method_sym
+
           when :valid?
             @am_object.valid?
-            @set_object.public_method(m).call(*args) { |atr| not @am_object.errors.has_key?(atr.to_sym) }
+            method_for_each_attr(n_m, *args) { |atr| not @am_object.errors.key?(atr.to_sym) }
+
           when :invalid?
             @am_object.valid?
-            @set_object.public_method(m).call(*args) { |atr| @am_object.errors.has_key?(atr.to_sym) }
+            method_for_each_attr(n_m, *args) { |atr| @am_object.errors.key?(atr.to_sym) }
+
+          when :changed?
+            return false unless @am_object.changed?
+            method_for_each_attr(n_m, *args) { |atr| @am_object.changes.key?(atr) }
+
+          when :unchanged?
+            return true unless @am_object.changed?
+            method_for_each_attr(n_m, *args) { |atr| not @am_object.changes.key?(atr) }
+
           else
-            @set_object.public_method(m).call { |atr| @am_object.public_send(atr).public_method(method_sym).call(*args, &block) }
+            @set_object.public_method(n_m).call(*n_args) do |atr|
+              @am_object.public_send(atr).public_method(method_sym).call(*args, &block)
+            end
+
           end
           return r if r.respond_to?(:__in_as_proxy) || !r.is_a?(::ActiveModel::AttributeSet)
           ::ActiveModel::AttributeSet::Query.new(r, @am_object)
@@ -122,6 +148,11 @@ module ActiveModel
         when :invalid?, :is_not_valid?, :any_invalid?, :are_not_valid?, :not_valid?, :is_any_invalid?
           true
         when :valid?, :is_valid?, :are_valid?, :all_valid?, :are_all_valid?
+          true
+        when :changed?, :any_changed?, :have_changed?, :have_any_changed?, :is_any_changed?, :has_any_changed?, :has_changed?
+          true
+        when :unchanged?, :none_changed?, :nothing_changed?, :is_unchanged?, :are_all_unchanged?,
+             :all_unchanged?, :havent_changed?, :arent_changed?, :are_not_changed?, :none_changed?, :not_changed?
           true
         else
           @set_object.respond_to?(name)
@@ -187,6 +218,12 @@ module ActiveModel
       def next_step(method_name, args, block)
         @next_method = [method_name, args, block]
         return self
+      end
+
+      private
+
+      def method_for_each_attr(m, *args, &block)
+        @set_object.public_method(m).call(*args, &block)
       end
     end # class Query
   end # class AttributeSet
