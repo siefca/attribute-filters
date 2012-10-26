@@ -129,6 +129,20 @@ module ActiveModel
       r
     end
 
+    # @private
+    def inspect
+      ids = (Thread.current[:attributefilters] ||= [])
+      ids.include?(object_id) and return sprintf('#<%s: {...}>', self.class.name)
+      begin
+        ids << object_id
+        r = []
+        each_pair { |k, v| r << (v.is_a?(Hash) ? "#{k}+" : k) }
+        return sprintf('#<%s: {%s}>', self.class, r.inspect[1..-2])
+      ensure
+        ids.pop
+      end
+    end
+
     private
 
     # Internal method for merging sets.
