@@ -5,13 +5,13 @@ Attribute sets
 --------------
 
 Attribute set is a set of attribute names and optional annotations.
-It's like a hash and internally it is a kind of Hash, but differs in
+It's like a hash and internally it is a kind of Hash, but different in
 many places.
 
 Attribute sets have simple function; **they group attribute names**. What can
 you do with that? For example you can use it to perform some tasks
-on all attributes that are listed in a set. You can also combine sets,
-intersect, exclusively disjuct them, merge with other data, query their elements,
+on all attribute names that are stored in a set (or their values). You can also
+combine sets, intersect, exclusively disjuct them, merge with other data, query them,
 iterate through them, and so on.
 
 ### Data structures ###
@@ -20,41 +20,41 @@ Attribute sets are instances of
 [`ActiveModel::AttributeSet`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeSet)
 class. You can create and update sets freely and store in them wherever you want.
 
-For your convenience there are also globally created `AttributeSet` instances bound to your models
-(at the class-level). The binding is materialized using the global hash of these sets. The attribute sets
+For your convenience Attribute Filters also provides globally created attribute sets that are bound to your models
+(at the class-level). The binding is realized simply by using the hash of all these sets. The attribute sets
 assigned to models are stored as
 [class instance variable](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
 
-**You cannot and should not interact with that storage directly** but by using dedicated class methods
-that are available in your models. These methods will allow you to read or write some data from/to
-global attribute sets.
+**You should interact with the global sets using dedicated DSL keywords** that are available in your models.
+These methods will allow you to read or write some data from/to global attribute sets.
 
-Attribute Filters are using `AttributeSet` instances
-not just to store internal data but also to interact
-with other parts of a program. So whenever there is
-a method that returns a set of attributes or even
-a set of set names, the returned value will probably
-be an instance of the class `AttributeSet`.
+Attribute Filters are using `AttributeSet` instances not just to store internal data
+but also to interact with other parts of a program. So whenever there is a method
+that returns a set of attributes or even a set of set names, the returned value
+will probably be an instance of the `AttributeSet` class.
 
 Note that when sets are returned the convention is that:
 
   * **attribute names are strings**
   * **set names are symbols**
+  * **annotations are hashes** attached to attribute names (strings)
+  * **annotation keys are symbols**
 
-Also note that once you create a set that is bound to your model you cannot
-remove elements from it and any query returning its contents will give you
-a copy. That's because **model-bound attribute sets should be considered
-a part of the interface** that does not change runtime.
+Once you create some set that is bound to your model (there is a class method `attribute_set` for it)
+you cannot remove elements from it. Moreover, any query returning its contents will always
+give you the deep copy. Such a separation is a consequence of the idea that **the model-bound attribute
+sets should be a part of the interface**, which shouldn't change at runtime. This approach
+enforces the declarative design (which is very concise and clear as you read the code).
 
-### Defining the attribute sets ###
+### Defining the model-level attribute sets ###
 
 First thing that should be done when using the Attribute Filters
 is defining the sets of attributes in models.
 
 You can also create local sets (using `ActiveModel::AttributeSet.new`)
-or a local sets with extra syntactic sugar (using `ActiveModel::AttributeSet.new`)
-but in real-life scenarios you should first create some model-bound sets that
-can be later used by filters and by your own methods.
+or a local sets with extra syntactic sugar (using `ActiveModel::AttributeSet::Query.new`)
+but in real-life scenarios you will use model-bound sets that can be later used
+by common filters and by your own methods.
  
 #### `attribute_set(set_name => attr_names)` ####
 
@@ -238,7 +238,8 @@ To do that you may use instance methods that are designed for that purpose.
 #### `attribute_set` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_set)
-instance method called withount an argument **returns the attribute set object containing all attributes known in a current object**.
+instance method called withount an argument **returns the attribute set object containing all attributes known
+in a current model**.
 
 Example:
 
@@ -288,6 +289,13 @@ Instead of `attribute_set` you may also use one of the aliases:
     `within_attributes_that_are`, `attributes_that`, `attributes_are`,      
     `attributes_for`, `are_attributes`, `are_attributes_for`, `attributes_set`,            
     `properties_that`
+    
+Instead of `attribute_set` you may also use:
+
+  * `attribute_set_simple(set_name)`
+
+It works same way as `attribute_set(set_name)` but doesn't wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
 
 #### `attribute_sets` ####
 
@@ -307,7 +315,7 @@ Example:
 ```
 
 Note that the returned hash will have a default value set to instance of the `AttributeSet`.
-If you'll try to get the value of an element that doesn't exist **the empty set will be returned**.
+If you'll try to get the value of an element that doesn't exist **the empty, frozen set will be returned**.
 
 Instead of `attribute_sets` you may also use one of the aliases:
 
@@ -316,7 +324,10 @@ Instead of `attribute_sets` you may also use one of the aliases:
 #### `all_attributes` ####
 
 The [`all_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_attributes)
-method **returns the attribute set containing all known attributes**.
+method **returns the attribute set containing all known attributes**. It combines many other sets,
+including the sets containing attributes marked as semi-real and virtual (explained later)
+and temporary sets obtained by calling various Rails methods. It just tries to collect as many
+known attribute names as possible.
 
 Example:
 
@@ -325,13 +336,24 @@ Example:
   # =>  #<ActiveModel::AttributeSet: {"id", "username", "email", "password", "language", "created_at", "updated_at"}>
 ```
 
-Be aware that this method requires that the used ORM has `attributes` data structure available for any model object.
+Be aware that this method requires that the used ORM has `attributes` method available for a model object.
 
 Instead of `all_attributes` you may also use the alias:
 
   * `all_attributes_set`
-  
+
 or call the instance method `attribute_set` without arguments.
+
+The `all_attributes` synopsis is really:
+
+  * `all_attributes(simple = false, no_presence_check = true)`
+
+First argument (`simple`) causes the method to not wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
+
+Second argument (`no_presence_check`) causes the method to not
+check if each attribute exists by verifying presence of its accessor
+in case of semi-real attributes set that is merged into the resulting set.
 
 #### `all_accessible_attributes` ####
 
@@ -344,12 +366,57 @@ Example:
   User.first.all_accessible_attributes
   # =>  #<ActiveModel::AttributeSet: {"username", "email", "language"}> 
 ```
-
-Be aware that this method requires that the used ORM has `accessible_attributes` data structure available for any model class.
+Be aware that this method requires that the used ORM has `accessible_attributes` method available for a model
+class. This method works only if your Rails application supoorts accessible attributes (versions up to 3 support it).
 
 Instead of `all_accessible_attributes` you may also use the alias:
 
   * `accessible_attributes_set`
+  
+Instead of `all_accessible_attributes` you may also use:
+
+  * `all_accessible_attributes(true)`
+
+It works the same way but doesn't wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
+
+#### `all_inaccessible_attributes` ####
+
+The [`all_inaccessible_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_inaccessible_attributes)
+method **returns the attribute set containing all inaccessible attributes**.
+
+Example:
+
+```ruby
+  User.first.all_inaccessible_attributes
+  # =>  #<ActiveModel::AttributeSet: {"id", "confirmation_token", "encrypted_password", "deleted_at"}> 
+```
+
+Be aware that this method requires that the used ORM has `accessible_attributes` and `protected_attributes`
+method available in a model. This method works only if your Rails application supoorts accessible
+attributes (versions up to 3 support it).
+
+Instead of `all_inaccessible_attributes` you may also use the alias:
+
+  * `inaccessible_attributes_set`
+  
+Instead of `all_inaccessible_attributes` you may also use:
+
+  * `all_inaccessible_attributes(true)`
+
+It works the same way but doesn't wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
+
+The `all_inaccessible_attributes` synopsis is really:
+
+  * `all_inaccessible_attributes(simple = false, no_presence_check = true)`
+
+First argument (`simple`) causes the method to not wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
+
+Second argument (`no_presence_check`) causes the method to not
+check if each attribute exists by verifying presence of its accessor
+in case of semi-real attributes set that is used to compute the resulting set.
 
 #### `all_protected_attributes` ####
 
@@ -360,34 +427,80 @@ Example:
 
 ```ruby
   User.first.all_protected_attributes
-  # =>  #<ActiveModel::AttributeSet: {"id"}> 
+  # =>  #<ActiveModel::AttributeSet: {"id", "type"}> 
 ```
 
-Be aware that this method requires that the used ORM has `protected_attributes` data structure available for any model class.
+Be aware that this method requires that the used ORM has `protected_attributes` method available for a model
+class. This method works only if your Rails application supoorts accessible attributes (versions up to 3 support it).
 
 Instead of `all_protected_attributes` you may also use the alias:
 
   * `protected_attributes_set`
 
-#### `all_inaccessible_attributes` ####
+Instead of `all_protected_attributes` you may also use:
 
-The [`all_inaccessible_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_inaccessible_attributes)
-method **returns the attribute set containing all inaccessible attributes**. Inaccessible attributes are attributes
-that aren't listed as accessible, which includes protected attributes and attributes for which the `attr_accessible` clause
-wasn't used.
+  * `all_protected_attributes(true)`
+
+It works the same way but doesn't wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
+
+#### `all_semi_real_attributes` ####
+
+The [`all_semi_real_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_semi_real_attributes)
+method **returns the attribute set containing all attributes marked as semi-real**. This is the concept
+of Attribute Filters used to handle attributes that aren't stored in a database (a.k.a virtual attributes, explained later).
 
 Example:
 
 ```ruby
-  User.first.all_inaccessible_attributes
-  # =>  #<ActiveModel::AttributeSet: {"id", "password", "created_at", "updated_at"}> 
+  class User
+    treat_as_real :trololo
+  end
+  User.first.all_semi_real_attributes
+  # =>  #<ActiveModel::AttributeSet: {"trololo"}> 
 ```
 
-Be aware that this method requires that the used ORM has `accessible_attributes` data structure available for any model class.
+Instead of `all_semi_real_attributes` you may also use one of the aliases:
 
-Instead of `all_inaccessible_attributes` you may also use the alias:
+  * `semi_real_attributes_set`
+  * `treat_as_real` (without arguments)
 
-  * `inaccessible_attributes_set`
+The `all_semi_real_attributes` synopsis is really:
+
+  * `all_semi_real_attributes(simple = false, no_presence_check = true)`
+
+First argument (`simple`) causes the method to not wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
+
+Second argument (`no_presence_check`) causes the method to not
+check if each attribute exists in order to include its name into set.
+
+
+#### `all_virtual_attributes` ####
+
+The [`all_virtual_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:all_virtual_attributes)
+method **returns the attribute set containing all virtual attributes**.
+
+Example:
+
+```ruby
+  class User
+    attr_virtual :lol
+  end
+  User.first.all_virtual_attributes
+  # =>  #<ActiveModel::AttributeSet: {"lol"}> 
+```
+
+Instead of `all_virtual_attributes` you may also use the alias:
+
+  * `virtual_attributes_set`
+
+Instead of `all_virtual_attributes` you may also use:
+
+  * `all_virtual_attributes(true)`
+
+It works the same way but doesn't wrap the result in a transparent proxy
+object that brings some syntactic sugar (explained later).
 
 #### `filtered_attribute(attribute_name)` ####
 
@@ -451,6 +564,59 @@ Example:
   u.attributes_that(:should_be_stripped).invalid?
   # => false
 ```
+
+You can also use one of the aliases:
+
+  * `invalid?`, `is_not_valid?`, `any_invalid?`, `are_not_valid?`, `not_valid?`, `is_any_invalid?`
+  * `valid?`, `is_valid?`, `are_valid?`, `all_valid?`, `are_all_valid?`
+
+#### `changed?` and `unchanged?` ####
+
+The `changed?` and `unchanged?` helpers allow you to test if **any** attribute listed in the set
+has changed its value (`changed?`) or if **all** attributes from a set remain unchanged (`unchanged?`).
+
+
+```ruby
+  u = User.first
+  u.username = ' '
+  # => " " 
+  
+  u.all_attributes.any_changed?
+  # => true 
+  
+  u.all_attributes.unchanged?
+  # => false
+```
+
+You can also use one of the aliases:
+
+  * `changed?`, `any_changed?`, `have_changed?`, `have_any_changed?`, `is_any_changed?`, `has_any_changed?`, `has_changed?`
+  * `unchanged?`, `none_changed?`, `nothing_changed?`, `is_unchanged?`, `are_all_unchanged?`, `all_unchanged?`, `havent_changed?`, `arent_changed?`, `are_not_changed?`, `none_changed?`, `not_changed?`
+
+#### `values` ####
+
+This method simply returns the values of all attributes in a set as an array.
+
+#### `to_set` ####
+
+This method simply produces an object that is a kind of Set and contains all attribute names.
+
+### AttributeSet enumerators ###
+
+The `AttributeSet` class is derived from `Hash` class. The keys are attributes,
+the values are `true` (`TrueClass`) or hashes (`Hash`) if there are any annotations attached
+to attribute name. All overriden enumerators are kind of `AttributeSet::Enumerator`.
+
+Let's see what are the differences from standard enumerators that can be found in the Hash class.
+
+  * `each` – works on keys but 
+  * `each_pair` 
+  * `collect` (`map`)
+  * `select` 
+  * `select_accessible` 
+  * `reject` 
+  * `sort` 
+  * `sort_by` 
 
 ### Syntactic sugar for queries ###
 
@@ -571,6 +737,13 @@ Another example, but with `any`:
   # => true
 ```
 
+You also do:
+
+```ruby
+  User.first.attributes_that(:should_be_stripped).any.changed?
+  # => false
+```
+
 ##### Elements selectors #####
 
 * **`list`**
@@ -616,12 +789,72 @@ Examples:
   
   u.attributes_that(:should_be_stripped).list.valid?
   # => #<ActiveModel::AttributeSet: {"username", "email"}>
+  
+  User.first.attributes_that(:should_be_stripped).is.any.valid?
+  # => true
+  
+  User.first.are_attributes_that(:should_be_stripped).all.valid?
+  # => true
 ```
 
 Be aware that calling these methods causes model object to be validated. The required condition
 to use these methods is the ORM that has `errors` hash (Active Record has it).
 
-#### Querying attributes for set names ####
+##### Changes tracking helpers #####
+
+* **`changed?`**
+* **`unchanged?`**
+
+Syntactic sugar for changes tracking is used when calls to these methods
+are combined with selectors described above (presence selectors and elements selectors).
+
+Examples:
+
+```ruby
+  u = User.first
+  u.username = " "
+  
+  u.attributes_that(:should_be_stripped).all.changed?
+  # => false
+  
+  u.attributes_that(:should_be_stripped).any.changed?
+  # => true
+  
+  u.attributes_that(:should_be_stripped).list.changed?
+  # => #<ActiveModel::AttributeSet: {"username"}>
+  
+  User.first.all_attributes.is.any.unchanged?
+  # => true
+  
+  User.first.all_attributes.are.none.unchanged?
+  # => false
+```
+
+Be aware that the required condition to use these methods is the ORM that
+has `changes` hash (Active Record has it).
+
+##### Custom method call helpers #####
+
+It's possible to call any other methods using selectors.
+Note that te method next to the given selector will be called **on a value** of each tested attribute.
+
+Examples:
+
+```ruby
+  u = User.first
+  
+  u.attributes_that(:should_be_stripped).all.is_a?(String)
+  # => false
+
+  u.attributes_that(:should_be_stripped).any.is_a?(String)
+  # => false
+  
+  u.attributes_that(:should_be_stripped).list.is_a?(String)
+  # => #<ActiveModel::AttributeSet: {"username", "email"}>
+```
+
+
+#### Querying attributes ####
 
 Querying attributes to know sets they belong to uses one
 instance method available in your models:
@@ -662,7 +895,7 @@ Example:
   # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
 ```
 
-##### Set membership testing #####
+##### Attribute membership querying #####
 
 * **`belongs_to?`**
 * **`in?`**
@@ -690,7 +923,7 @@ Example:
   # => true
 ```
 
-##### Set membership querying #####
+##### Attribute membership testing #####
 
 Membership querying has different syntax from simple testing.
 It uses set name with the question mark attached to it.
@@ -708,7 +941,7 @@ with question mark. Otherwise you may get false positives
 or a strange errors when trying to test if attribute belongs
 to a set. The real method call will override your check.
 
-##### Set accessibility querying #####
+##### Attribute accessibility testing #####
 
 * **`accessible?`**
 * **`inaccessible?`**
@@ -729,6 +962,77 @@ Examples:
   # => true
   u.the_attribute(:id).is.inaccessible?
   # => true
+```
+
+Be aware that this method requires that the used ORM has `accessible_attributes` and `protected_attributes` methods
+available in a model. This method works only if your Rails application supoorts accessible attributes (versions up to 3 support it).
+
+##### Attribute validity testing #####
+
+* **`valid?`**
+* **`invalid?`**
+* **`is_valid?`**
+* **`is_invalid?`**
+
+The methods above allow you to test if certain attribute that changed is valid or invalid.
+
+Examples:
+
+```ruby
+  u = User.first
+  u.username = ' '
+  u.the_attribute(:username).is.valid?
+  # => false
+  u.the_attribute(:username).is_valid?
+  # => false
+  u.the_attribute(:username).invalid?
+  # => true
+```
+
+Be aware that this method requires that the used ORM has `valid?` and `errors` methods that allow to validate
+model on demand. Also note that validations will run when using that methods.
+
+##### Attribute change testing #####
+
+* **`changed?`**
+* **`unchanged?`**
+* **`is_changed?`**
+* **`is_unchanged?`**
+* **`has_changed?`**
+* **`hasnt_changed?`**
+* **`not_changed?`**
+
+The methods above allow you to test if certain attribute changed recently or not.
+
+Examples:
+
+```ruby
+  u = User.first
+  u.username = ' '
+  u.the_attribute(:username).has_changed?
+  # => true
+  u.the_attribute(:id).unchanged?
+  # => true
+```
+
+Be aware that this method requires that the used ORM has `changes` method that allows to query a model for
+all changed attributes.
+
+##### Attribute virtuality testing #####
+
+* **`semi_real?`**
+* **`virtual?`**
+* **`is_semi_real?`**
+* **`is_virtual?`**
+
+The methods above allow to you to test if certain attribute is virtual or semi-real (explained later).
+
+```ruby
+  u = User.first
+  u.the_attribute(:id).is.virtual?
+  # => false
+  u.the_attribute(:id).is.semi_real?
+  # => false
 ```
 
 Attribute filters

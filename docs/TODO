@@ -1,6 +1,10 @@
-* update docs for all_* methods (explain params: simple, no_presence_check)
+* document
+
+  iterators [ ]
+
+* u.attributes_that.should_be_stripped.all.changed?
+
 * update docs (common filters parameters and syntax)
-* document valid? and invalid?, changed? and unchanged?
 
 * improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
   -- user has to use helpers instead of hand-added sets
@@ -14,22 +18,19 @@
 
   sanitize_the_attribute :name
   sanitize_the_attribute :name => { :as => :name }
+  sanitize :name
   the_attribute :name, :should_be_sanitized
   the_attribute :name, :should_be_sanitized => { :as => :name }
   
   before_save :sanitize_attributes
 
-* update docs (common filters)
-
 * one module for sanitizing - AttributeFilters::Sanitize
 * possible submodules that enable certain/additional sanitizing methods
 
 
-class User
-
-  sanitize_attributes :name, :email, :home => { :as => :address }
-
-end
+  class User
+    sanitize_attributes :name, :email, :home => { :as => :address }
+  end
 
 -> uses :should_be_sanitized same as filters do.
 -> sanitization often uses each_element helper
