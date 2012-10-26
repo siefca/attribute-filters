@@ -216,7 +216,7 @@ module ActiveModel
       r.merge!(my_class.send(:__attribute_filters_virtual))
       r << attributes.keys
       if respond_to?(:accessible_attributes)
-        r << accessible_attribute
+        r << accessible_attributes
         r << protected_attributes
       end
       r
