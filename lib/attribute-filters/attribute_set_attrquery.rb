@@ -71,6 +71,16 @@ module ActiveModel
         when :protected?, :is_protected?
           @am_object.all_protected_attributes.include?(@attribute_name)
 
+        when :valid?, :is_valid?
+          return false unless @am_object.all_attributes(true, true).include?(@attribute_name)
+          return true if @am_object.valid?
+          not @am_object.errors.has_key?(@attribute_name.to_sym)
+
+        when :invalid?, :is_invalid?
+          return true unless @am_object.all_attributes(true, true).include?(@attribute_name)
+          return false if @am_object.valid?
+          @am_object.errors.has_key?(@attribute_name.to_sym)
+
         else
           set_name_str = method_sym.to_s
           if !@set_object.respond_to?(method_sym) && set_name_str.slice!(/\?\z/) == '?'
@@ -96,7 +106,7 @@ module ActiveModel
              :set, :in_a_set, :in_set, :in?, :in_set?, :in_a_set?, :in_the_set?, :the_set?, :set?,
              :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to,
              :protected?, :is_protected?, :inaccessible?, :is_inaccessible?,
-             :accessible?, :is_accessible?
+             :accessible?, :is_accessible?, :valid?, :is_valid?, :invalid?, :is_invalid?
           true
         else
           @set_object.respond_to?(name) || name.to_s.slice(-1,1) == '?'
