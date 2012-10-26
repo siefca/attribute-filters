@@ -63,21 +63,21 @@ module ActiveModel
           @set_object.include?(*args, &block)
 
         when :accessible?, :is_accessible?
-          @am_object.all_accessible_attributes.include?(@attribute_name)
+          @am_object.class.accessible_attributes.include?(@attribute_name)
 
         when :inaccessible?, :is_inaccessible?
           @am_object.all_inaccessible_attributes.include?(@attribute_name)
 
         when :protected?, :is_protected?
-          @am_object.all_protected_attributes.include?(@attribute_name)
+          @am_object.class.protected_attributes.include?(@attribute_name)
 
         when :valid?, :is_valid?
-          return false unless @am_object.all_attributes(true, true).include?(@attribute_name)
+          return false unless @am_object.send(:__all_attributes).include?(@attribute_name)
           return true if @am_object.valid?
           not @am_object.errors.has_key?(@attribute_name.to_sym)
 
         when :invalid?, :is_invalid?
-          return true unless @am_object.all_attributes(true, true).include?(@attribute_name)
+          return true unless @am_object.send(:__all_attributes).include?(@attribute_name)
           return false if @am_object.valid?
           @am_object.errors.has_key?(@attribute_name.to_sym)
 
