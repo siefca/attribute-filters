@@ -4,26 +4,30 @@ Usage of Attribute Filters
 Attribute sets
 --------------
 
-Attribute set is a set of attribute names. It's like an array
-or, to be exact, like a set (a hash that can only have true values
-assigned to elements in order to just know whether the key exists or not).
+Attribute set is a set of attribute names and optional annotations.
+It's like a hash and internally it is a kind of Hash, but differs in
+many places.
 
 Attribute sets have simple function; **they group attribute names**. What can
 you do with that? For example you can use it to perform some tasks
-on all attributes that are listed in a set.
+on all attributes that are listed in a set. You can also combine sets,
+intersect, exclusively disjuct them, merge with other data, query their elements,
+iterate through them, and so on.
 
 ### Data structures ###
 
 Attribute sets are instances of
 [`ActiveModel::AttributeSet`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeSet)
-class. You can create and update sets freely and store them wherever you want,
-but when it comes to models then (at the class-level) you can (and you should) rely
-on a storage that is already prepared to handle sets.
+class. You can create and update sets freely and store in them wherever you want.
 
-The attribute sets assigned to models are stored as [class instance variable](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
-**You cannot and should not interact with that storage directly**
-but by using dedicated class methods that are available in your models.
-These methods will allow you to read or write some data from/to global attribute sets.
+For your convenience there are also globally created `AttributeSet` instances bound to your models
+(at the class-level). The binding is materialized using the global hash of these sets. The attribute sets
+assigned to models are stored as
+[class instance variable](http://blog.codegram.com/2011/4/understanding-class-instance-variables-in-ruby).
+
+**You cannot and should not interact with that storage directly** but by using dedicated class methods
+that are available in your models. These methods will allow you to read or write some data from/to
+global attribute sets.
 
 Attribute Filters are using `AttributeSet` instances
 not just to store internal data but also to interact
@@ -40,7 +44,7 @@ Note that when sets are returned the convention is that:
 Also note that once you create a set that is bound to your model you cannot
 remove elements from it and any query returning its contents will give you
 a copy. That's because **model-bound attribute sets should be considered
-a part of the interface**.
+a part of the interface** that does not change runtime.
 
 ### Defining the attribute sets ###
 
@@ -557,7 +561,7 @@ Just imagine that:
 becomes:
 
 ```ruby
-  attributes_that(:should_be_stripped).all? { |attribute| attribute METHOD(ARGUMENTS) }
+  attributes_that(:should_be_stripped).all? { |attribute| attribute.METHOD(ARGUMENTS) }
 ```
 
 Another example, but with `any`:

@@ -1,13 +1,6 @@
 * update docs for all_* methods (explain params: simple, no_presence_check)
-* update docs (Set)
 * update docs (common filters parameters and syntax)
-
-* add: changed? all.changed? any.changed? one.changed? none.changed? to attrquery and query proxies
-  - they can use methods that internally are checking it
-  
-* valid? and invalid? for the_attribute() - calls valid for a model and checks if name is in valid or invalid list..
-
-* replace Set by Hash and add a deep copy
+* document valid? and invalid?, changed? and unchanged?
 
 * improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
   -- user has to use helpers instead of hand-added sets
