@@ -81,6 +81,14 @@ module ActiveModel
           return false if @am_object.valid?
           @am_object.errors.has_key?(@attribute_name.to_sym)
 
+        when :changed?, :is_changed?, :has_changed?
+          return false unless @am_object.changed? && @am_object.send(:__all_attributes).include?(@attribute_name)
+          @am_object.changes.key?(@attribute_name)
+
+        when :unchanged?, :is_unchanged?, :hasnt_changed?
+          return true unless @am_object.changed?
+          @am_object.changes.key?(@attribute_name)
+
         else
           set_name_str = method_sym.to_s
           if !@set_object.respond_to?(method_sym) && set_name_str.slice!(/\?\z/) == '?'
@@ -106,7 +114,8 @@ module ActiveModel
              :set, :in_a_set, :in_set, :in?, :in_set?, :in_a_set?, :in_the_set?, :the_set?, :set?,
              :is_one_that?, :one_that?, :that?, :belongs_to?, :belongs_to,
              :protected?, :is_protected?, :inaccessible?, :is_inaccessible?,
-             :accessible?, :is_accessible?, :valid?, :is_valid?, :invalid?, :is_invalid?
+             :accessible?, :is_accessible?, :valid?, :is_valid?, :invalid?, :is_invalid?,
+             :changed?, :has_changed?, :is_changed?, :unchanged?, :hasnt_changed?, :is_unchanged?
           true
         else
           @set_object.respond_to?(name) || name.to_s.slice(-1,1) == '?'
