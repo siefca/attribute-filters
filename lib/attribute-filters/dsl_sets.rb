@@ -333,7 +333,8 @@ module ActiveModel
             first_arg.each_pair { |k, v| filter_attribute(k, v) }
             nil
           else
-            attributes_to_sets[first_arg.to_s]
+            r = __attributes_to_sets_map[first_arg.to_s]
+            r.frozen? ? r : r.deep_dup
           end
         else
           first_arg = args.shift

@@ -1,5 +1,3 @@
-* attributes_to_sets and __attributes_to_sets - fix it: duplicate is frozen! use __attributes_to_sets where possible
-
 * attr_virtual - wrap method_defined? and add some gotchas into it that will wait for accessor to be added?
   there already is a hash for attr_virtual, all we need is to check any added accessor against that hash
   that will only apply when there weren't accessors while using attr_virtual
@@ -10,8 +8,9 @@
 * document iterators [ ]
 * review & update docs (common filters parameters and syntax)
 
-
 * publish new release!
+
+---------------------------------------------------------------------------------------------
 
 * add sanitize to common filters
   -- sanitize_url
