@@ -35,11 +35,13 @@ module ActiveModel
           end
           set_object = ::ActiveModel::AttributeSet.new
         end
+
         if set_object.is_a?(::Symbol) || set_object.is_a?(::String)   # global set assigned to model class
           set_object = am_object.attribute_set_simple(set_object)     #  - duplicated in class method that gets a set
         elsif !set_object.nil? && !set_object.is_a?(::ActiveModel::AttributeSet) # any other object
           set_object = ::ActiveModel::AttributeSet.new(set_object)    #  - duplicated in AttributeSet initializer
         end
+
         @set_object = set_object                                      # AttributeSet (assuming it's duplicated if needed)
         @am_object = am_object
         @next_method = nil

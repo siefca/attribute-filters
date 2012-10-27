@@ -29,6 +29,9 @@ module ActiveModel
     # If the argument is a kind of {AttributeSet} then the local set
     # is taken and wrapped in a {AttributeSet::AttrQuery} instance.
     # 
+    # If the argument is +nil+ then the local set is guessed by assuming
+    # that the next method in a call chain is really the name of a set.
+    #
     # If the argument is other kind than the specified above then
     # the method tries to initialize new, local set object and wraps
     # it in a `AttributeSet::AttrQuery` instance.
@@ -41,11 +44,7 @@ module ActiveModel
     # @param set_name [Symbol] name of attribute set, attribute object or any object that can initialize a set
     # @return [AttributeSet] attribute set
     def attribute_set(set_name = nil)
-      if set_name.nil?
-        ActiveModel::AttributeSet::Query.new(nil, self)
-      else
-        ActiveModel::AttributeSet::Query.new(set_name, self)
-      end
+      ActiveModel::AttributeSet::Query.new(set_name, self)
     end
     alias_method :attributes_that_are,        :attribute_set
     alias_method :from_attributes_that,       :attribute_set
