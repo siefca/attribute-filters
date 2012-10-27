@@ -181,6 +181,9 @@ module ActiveModel
     # Returns the set of set names that the attribute of the given
     # name belongs to.
     # 
+    # If the given attribute name is +nil+ then it is taken from
+    # the name of a next method in a method call chain.
+    # 
     # @note The returned value is a duplicate. Adding or removing
     #  elements to it will have no effect. Altering attribute sets
     #  is possible on a class-level only, since attribute sets
@@ -188,8 +191,8 @@ module ActiveModel
     # 
     # @param attribute_name [Symbol] name of attribute set
     # @return [AttributeSet] attribute set
-    def filtered_attribute(attribute_name)
-      ActiveModel::AttributeSet::AttrQuery.new(self.class.filter_attribute(attribute_name), self, attribute_name)
+    def filtered_attribute(attribute_name = nil)
+      ActiveModel::AttributeSet::AttrQuery.new(attribute_name, self)
     end
     alias_method :the_attribute,        :filtered_attribute
     alias_method :is_the_attribute,     :filtered_attribute

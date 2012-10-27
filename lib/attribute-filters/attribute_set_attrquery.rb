@@ -20,11 +20,20 @@ module ActiveModel
       # @param set_object [AttributeSet] attribute set containing set names for which the query will be made
       # @param am_object [Object] model object which has access to attributes (may be an instance of ActiveRecord or similar)
       # @param attribute_name [Sting,Symbol] name of attribute the query is made for
-      def initialize(set_object, am_object, attribute_name)
-        @set_object = set_object
+      def initialize(attribute_name = nil, am_object = nil)
+        if am_object.nil?
+          am_object = attribute_name
+          attribute_name = nil
+          unless am_object.included_modules.include?(::ActiveModel::AttributeFilters)
+            raise ::ArgumentError, "incompatible object passed to AttributeSet::AttrQuery (not a model class?)"
+          end
+        end
         @am_object = am_object
-        @attribute_name = attribute_name.to_s
         @next_method = nil
+        unless attribute_name.nil?
+          @set_object = @am_object.class.filter_attribute(attribute_name)
+          @attribute_name = attribute_name.to_s
+        end
       end
 
       # This is a proxy method that causes some calls to be
@@ -50,7 +59,15 @@ module ActiveModel
       # @param args [Array] optional arguments to be passed to a method call
       # @yield optional block to be passed to a method call
       def method_missing(method_sym, *args, &block)
-        case method_sym.to_sym
+        method_sym = method_sym.to_sym
+
+        if @attribute_name.nil?
+          @attribute_name = method_sym.to_s
+          @set_object = @am_object.class.filter_attribute(@attribute_name)
+          return self
+        end
+
+        case method_sym
         when :are, :is, :one, :is_one, :in, :list, :be, :should,
              :the, :a, :sets, :in_sets, :set, :in_a_set, :in_set, :belongs_to
           self
