@@ -42,7 +42,7 @@ module ActiveModel
     # @return [AttributeSet] attribute set
     def attribute_set(set_name = nil)
       if set_name.nil?
-        all_attributes
+        ActiveModel::AttributeSet::Query.new(nil, self)
       else
         ActiveModel::AttributeSet::Query.new(set_name, self)
       end

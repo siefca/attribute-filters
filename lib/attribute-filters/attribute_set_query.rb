@@ -37,7 +37,7 @@ module ActiveModel
         end
         if set_object.is_a?(::Symbol) || set_object.is_a?(::String)   # global set assigned to model class
           set_object = am_object.attribute_set_simple(set_object)     #  - duplicated in class method that gets a set
-        elsif !set_object.is_a?(::ActiveModel::AttributeSet)          # any other object
+        elsif !set_object.nil? && !set_object.is_a?(::ActiveModel::AttributeSet) # any other object
           set_object = ::ActiveModel::AttributeSet.new(set_object)    #  - duplicated in AttributeSet initializer
         end
         @set_object = set_object                                      # AttributeSet (assuming it's duplicated if needed)
@@ -72,13 +72,23 @@ module ActiveModel
       # @yield optional block to be passed to a method call or to a queued method call
       # @return [Object] the returned value is passed back from called method
       def method_missing(method_sym, *args, &block)
-        case method_sym.to_sym
+        method_sym = method_sym.to_sym
+
+        # set name as a method name
+        if @set_object.nil?
+          @set_object = @am_object.class.attribute_set(method_sym)
+          return self
+        end
+
+        # neutral method
+        case method_sym
         when :are, :is, :be, :should
           return self
         end
-        # Special selectors
+
+        # special selectors
         if @next_method.nil?
-          case method_sym.to_sym
+          case method_sym
 
           when :all, :any, :none, :one
             ::ActiveModel::AttributeSet::Query.new(@set_object, @am_object).   # new obj. == thread-safe

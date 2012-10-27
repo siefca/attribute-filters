@@ -132,8 +132,12 @@ of class methods to query them.
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_set)
 (a.k.a `attributes_that`) class method called with a single argument **returns the attribute set
-of the given name**. It will always return the instance of `AttributeSet` class, even if there
-is no set registered under the given name (in that case the resulting set will be empty).
+of the given name**.
+
+It will always return the instance of `AttributeSet` class, even if there is no set registered under
+the given name (in that case the resulting set will be empty). To know if the returned set is a stub
+(placed instead of the missing one) you can use `frozen?` on it or you can call the DSL method
+`attribute_set_exists?(set_name)` before querying the global sets for a model.
 
 Example:
 
@@ -143,6 +147,13 @@ Example:
 ```
 
 Note that the returned set will be a copy of the original set stored within your model.
+
+Alternative syntax:
+
+```ruby
+  User.attributes_that.should_be_stripped - User.attributes_that.should_be_downcased
+  # => #<ActiveModel::AttributeSet: {"real_name"}>
+```
 
 Instead of `attribute_set` you may also use one of the aliases:
 
@@ -178,8 +189,15 @@ Note that the returned sets will be copies of the original sets stored within yo
 #### `attribute_set` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_set)
-(a.k.a `attributes_that`) class method called without any arguments is a wrapper that calls `attribute_sets` which
-returns a hash containing **all the defined attribute sets**.
+(a.k.a `attributes_that`) class method called without any arguments is a DSL wrapper that calls `attribute_set(set_name)`
+with `set_name` taken from next method call.
+
+Example:
+
+```ruby
+  User.attributes_that.should_be_downcased
+  # => #<ActiveModel::AttributeSet: {"username", "email"}>
+```
 
 #### `filter_attribute(attribute_name)` ####
 
