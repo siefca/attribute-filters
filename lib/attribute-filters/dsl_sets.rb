@@ -196,6 +196,21 @@ module ActiveModel
     alias_method :are_attributes,       :filtered_attribute
     alias_method :are_the_attributes,   :filtered_attribute
 
+    # Returns the set of set names that the attribute of the given
+    # name belongs to.
+    # 
+    # @note The returned value is a duplicate. Adding or removing
+    #  elements to it will have no effect. Altering attribute sets
+    #  is possible on a class-level only, since attribute sets
+    #  are part of models' interfaces.
+    # 
+    # @param attribute_name [Symbol] name of attribute set
+    # @return [AttributeSet] attribute set
+    def filtered_attribute_simple(attribute_name)
+      self.class.filter_attribute(attribute_name)
+    end
+    alias_method :the_attribute_simple, :filtered_attribute_simple
+
     # Gets all the defined attribute set names hashed by attribute names.
     # 
     # @note Use +key+ method explicitly to check if the given attribute is assigned to any set. The hash
