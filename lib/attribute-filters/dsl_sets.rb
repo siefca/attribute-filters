@@ -171,6 +171,14 @@ module ActiveModel
     alias_method :attributes_sets, :attribute_sets
     alias_method :properties_sets, :attribute_sets
 
+    # Checks if the given set exists.
+    # 
+    # @param [String, Symbol] set_name name of a set
+    # @return [Boolean] +true+ if a set of the given name exists, +false+ otherwise
+    def attribute_set_exists?(set_name)
+      set_name.present? && self.class.send(:__attribute_sets).key?(set_name.to_sym)
+    end
+
     # Returns the set of set names that the attribute of the given
     # name belongs to.
     # 
