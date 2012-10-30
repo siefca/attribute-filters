@@ -526,7 +526,10 @@ The [`filtered_attribute`](http://rubydoc.info/gems/attribute-filters/ActiveMode
 (a.k.a `the_attribute`) method called with a single argument is used for checking
 **what are the sets that the attribute belongs to**. It won't return the exact set object but a duplicate.
 It will always return AttributeSet object, even if there is no attribute of the given name
-(in that case the resulting set will be empty).
+(in that case the resulting set will be empty and frozen).
+
+If the attribute name is not given or it's +nil+ then the name of an attribute is taken from the
+name of a next method in the chain call.
 
 Example:
 
@@ -539,6 +542,11 @@ Instead of `filtered_attribute` you may also use one of the aliases:
 
   * `the_attribute`, `is_the_attribute`, `are_attributes`,     
     `are_the_attributes`
+
+#### `filtered_attribute_simple(attribute_name)` ####
+
+The `filtered_attribute_simple` method is a version of ``filtered_attribute` method that doesn't wrap the resulting
+object in a proxy object. The attribute name must be given.
 
 #### `attributes_to_sets` ####
 
@@ -1051,6 +1059,20 @@ The methods above allow to you to test if certain attribute is virtual or semi-r
   # => false
   u.the_attribute(:id).is.semi_real?
   # => false
+```
+
+##### Attribute value querying #####
+
+  * `value`
+
+Using the `value` method you can get the current value of an attribute.
+
+Example:
+
+```ruby
+  u = User.first
+  u.the_attribute.username.value
+  # => "admin"
 ```
 
 Attribute filters

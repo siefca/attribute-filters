@@ -1,16 +1,17 @@
-* attr_virtual - wrap method_defined? and add some gotchas into it that will wait for accessor to be added?
-  there already is a hash for attr_virtual, all we need is to check any added accessor against that hash
-  that will only apply when there weren't accessors while using attr_virtual
-
-* improve filter_attributes - make it use some table that holds filtering methods that are actually in use (ordered)
-  -- user has to use helpers instead of hand-added sets
+* make user able to register filtering methods with DSL (verify it)
 
 * document iterators [ ]
-* review & update docs (common filters parameters and syntax)
+
+* review & update docs (common filters parameters and syntax, new common filters)
 
 * publish new release!
 
 ---------------------------------------------------------------------------------------------
+
+* attr_virtual - wrap method_defined? and add some gotchas into it that will wait for accessor to be added?
+  there already is a hash for attr_virtual, all we need is to check any added accessor against that hash
+  that will only apply when there weren't accessors while using attr_virtual
+
 
 * add sanitize to common filters
   -- sanitize_url
