@@ -9,6 +9,7 @@
 # This module adds some enumerable properties to AttributeSet objects.
 module ActiveModel
   class AttributeSet < Hash
+
     module Enumerable
       # @private
       def select(&block)
@@ -47,6 +48,22 @@ module ActiveModel
       # @private
       def each_pair
         block_given? ? super : AttributeSet::Enumerator.new(self, :each_pair)
+      end
+
+      # Iterates through the name and value of each attribute found in a set.
+      # If the attribute has no getter method in the context of the given object, it is not evaluated.
+      # 
+      # @param am_object [Object] active model object
+      # @param no_presence_check [Boolean] optional flag that if +true+ causes enumerator
+      #  not to check if a getter method exists (defaults to +false+ – checks are done)
+      # @return [void,AttributeSet::Enumerator]
+      def each_name_value(am_object, no_presence_check = false)
+        block_given? or return AttributeSet::Enumerator.new(self, :each_name_value, am_object, no_presence_check)
+        if no_presence_check
+          each { |name| yield(name, am_object.public_send(name)) }
+        else
+          each { |name| yield(name, am_object.public_send(name)) if am_object.respond_to?(name) }
+        end
       end
 
       # @private
