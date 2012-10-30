@@ -48,6 +48,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :split_attributes, :should_be_splitted
 
         # This submodule contains class methods needed to describe
         # attribute splitting.
@@ -110,7 +111,7 @@ module ActiveModel
           # @option parameters :flatten [Boolean] flag that causes the resulting, intermediate array to be flattened
           # @option parameters :split_flatten [Boolean] flag that causes the resulting, intermediate array to be flattened (alternative name)
           # @return [void]
-          def split_attribute(atr_name, parameters = nil)
+          def split_attributes(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| split_attribute(k, v) }
             setup_attributes_that :should_be_splitted, { atr_name => parameters },
               {
@@ -128,7 +129,7 @@ module ActiveModel
               annotate_attributes_that(:should_be_splitted, :split_into, into.respond_to?(:to_a) ? into.to_a : [ into ])
             end
           end
-          alias_method :split_attributes, :split_attribute
+          alias_method :split_attribute, :split_attributes
         end # module ClassMethods
       end # module Split
 

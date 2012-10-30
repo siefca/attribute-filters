@@ -16,6 +16,7 @@ module ActiveModel
       # This module contains attribute filters responsible for changing the case of letters.
       module Case
         extend CommonFilter
+
         # Downcases attributes.
         # 
         # The attrubutes to be downcased are taken from the attribute set
@@ -33,6 +34,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :downcase_attributes, :should_be_downcased
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -60,6 +62,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :upcase_attributes, :should_be_upcased
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -87,6 +90,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :titleize_attributes, :should_be_titleized
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -114,6 +118,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :capitalize_attributes, :should_be_capitalized
 
         # Fully capitalizes attributes (capitalizes each word and squeezes spaces).
         # 
@@ -125,15 +130,15 @@ module ActiveModel
         #  then any element of the array is changed. The same with hash (its values are changed).
         # 
         # @return [void]
-        def titleize_with_squeezed_spaces
-          s = attribute_set_simple(:should_be_fully_capitalized) + attribute_set_simple(:should_be_titleized)
-          filter_attrs_from_set(s) do |atr|
+        def fully_capitalize_attributes
+          filter_attrs_from_set(:should_be_fully_capitalized) do |atr|
             AFHelpers.each_element(atr, String) do |v|
               v.mb_chars.split(' ').map { |n| n.capitalize }.join(' ')
             end
           end          
         end
-        alias_method :fully_capitalize_attributes, :titleize_with_squeezed_spaces
+        filtering_method  :fully_capitalize_attributes, :should_be_fully_capitalized
+        alias_method      :titleize_with_squeezed_spaces, :fully_capitalize_attributes
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -147,7 +152,7 @@ module ActiveModel
           def fully_capitalize_attributes(*args)
             attributes_that(:should_be_fully_capitalized, args)
           end
-          alias_method :fully_capitalize_attribute, :fully_capitalize_attributes
+          alias_method :fully_capitalize_attribute,    :fully_capitalize_attributes
           alias_method :titleize_with_squeezed_spaces, :fully_capitalize_attributes
         end # module ClassMethods
       end # module Case

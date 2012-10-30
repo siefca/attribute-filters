@@ -44,6 +44,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :fill_attributes, :should_be_filled
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods

@@ -44,6 +44,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :join_attributes, :should_be_joined
 
         # This submodule contains class methods needed to describe
         # attribute joining.
@@ -63,7 +64,7 @@ module ActiveModel
           # @option parameters :compact [Boolean] flag that causes sources to be compacted before joining
           # @option parameters :join_compact [Boolean] flag that causes sources to be compacted before joining (alternative name)
           # @return [void]
-          def join_attribute(atr_name, parameters = nil)
+          def join_attributes(atr_name, parameters = nil)
             atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| join_attribute(k, v) }
             # process reversed notation
             p = parameters
@@ -86,11 +87,11 @@ module ActiveModel
                 :join_compact     => [ :compact, :join_compact ]
               }, :join_from
           end
-          alias_method :join_attributes,      :join_attribute
-          alias_method :joint_attribute,      :join_attribute
-          alias_method :joint_attributes,     :join_attribute
-          alias_method :join_attributes_to,   :join_attribute
-          alias_method :join_attributes_into, :join_attribute
+          alias_method :join_attribute,       :join_attributes
+          alias_method :joint_attribute,      :join_attributes
+          alias_method :joint_attributes,     :join_attributes
+          alias_method :join_attributes_to,   :join_attributes
+          alias_method :join_attributes_into, :join_attributes
         end # module ClassMethods
       end # module Join
 

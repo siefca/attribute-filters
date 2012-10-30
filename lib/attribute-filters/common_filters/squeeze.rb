@@ -39,6 +39,8 @@ module ActiveModel
             end
           end
         end
+        filtering_method :squeeze_attributes, :should_be_squeezed
+
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
           # Registers attributes that should be squeezed.
@@ -69,6 +71,8 @@ module ActiveModel
             end
           end
         end
+        filtering_method :squish_attributes, :should_be_squished
+
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
           # Registers attributes that should be squished.

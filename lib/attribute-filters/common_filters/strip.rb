@@ -29,6 +29,8 @@ module ActiveModel
             AFHelpers.each_element(atr, String) { |v| v.strip }
           end
         end
+        filtering_method :strip_attributes, :should_be_stripped
+
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
           # Registers attributes that should be stripped.

@@ -24,8 +24,11 @@ module ActiveModel
               begin
                 yield(v, atr_name, set_obj)
               rescue NoMethodError, ArgumentError
-                raise unless set_obj.has_annotation?(atr_name, default_key)
-                set_obj.annotation(atr_name, default_key)
+                if set_obj.has_annotation?(atr_name, default_key)
+                  set_obj.annotation(atr_name, default_key)
+                else
+                  v
+                end
               end
             end
           end
@@ -45,13 +48,20 @@ module ActiveModel
           attributes_convert(:should_be_strings, :to_s_default) do |v, atr_name, set_obj|
             if set_obj.has_annotation?(atr_name, :to_s_base)
               v = 0 if v.nil?
-              v.to_s(set_obj.annotation(atr_name, :to_s_base) || 10)
+              if v.method(:to_s).arity != 0
+                v.to_s(set_obj.annotation(atr_name, :to_s_base) || 10)
+              elsif set_obj.has_annotation?(atr_name, :to_s_default)
+                set_obj.annotation(atr_name, :to_s_default)
+              else
+                v
+              end
             else
               v.to_s
             end
           end
         end
-        alias_method :attributes_to_strings, :attributes_to_s
+        filtering_method  :attributes_to_s, :should_be_strings
+        alias_method      :attributes_to_strings, :attributes_to_s
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -82,13 +92,20 @@ module ActiveModel
         def attributes_to_i
           attributes_convert(:should_be_integers, :to_i_default) do |v, atr_name, set_obj|
             if set_obj.has_annotation?(atr_name, :to_i_base)
-              v.to_i(set_obj.annotation(atr_name, :to_i_base) || 10)
+              if v.method(:to_i).arity != 0
+                v.to_i(set_obj.annotation(atr_name, :to_i_base) || 10)
+              elsif set_obj.has_annotation?(atr_name, :to_i_default)
+                set_obj.annotation(atr_name, :to_i_default)
+              else
+                v
+              end
             else
               v.to_i
             end
           end
         end
-        alias_method :attributes_to_integers, :attributes_to_i
+        filtering_method  :attributes_to_i, :should_be_integers
+        alias_method      :attributes_to_integers, :attributes_to_i
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -119,7 +136,8 @@ module ActiveModel
         def attributes_to_f
           attributes_convert(:should_be_floats, :to_f_default) { |v| v.to_f }
         end
-        alias_method :attributes_to_floats,   :attributes_to_f
+        filtering_method  :attributes_to_f, :should_be_floats
+        alias_method      :attributes_to_floats,   :attributes_to_f
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -149,7 +167,8 @@ module ActiveModel
         def attributes_to_numbers
           attributes_convert(:should_be_numbers, :to_f_default) { |v| v.to_f }
         end
-        alias_method :attribute_to_numbers, :attributes_to_numbers
+        filtering_method  :attributes_to_numbers, :should_be_numbers
+        alias_method      :attribute_to_numbers, :attributes_to_numbers
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -176,8 +195,9 @@ module ActiveModel
         def attributes_to_r
           attributes_convert(:should_be_rationals, :to_r_default) { |v| v.to_r }
         end
-        alias_method :attributes_to_rationals,  :attributes_to_r
-        alias_method :attributes_to_fractions,  :attributes_to_r
+        filtering_method  :attributes_to_r, :should_be_rationals
+        alias_method      :attributes_to_rationals,  :attributes_to_r
+        alias_method      :attributes_to_fractions,  :attributes_to_r
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -208,7 +228,8 @@ module ActiveModel
         def attributes_to_b
           attributes_convert(:should_be_boolean, :to_b_default, :process_blank) { |v| !!v }
         end
-        alias_method :attributes_to_boolean, :attributes_to_b
+        filtering_method  :attributes_to_b, :should_be_boolean
+        alias_method      :attributes_to_boolean, :attributes_to_b
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -223,17 +244,6 @@ module ActiveModel
           alias_method :attributes_to_booleans,  :attributes_to_b
           alias_method :attribute_to_booleans,   :attributes_to_b
         end # module ClassMethods
-
-        # Generic method for calling all the conversion methods.
-        # @return [void]
-        def convert_attributes
-          attributes_to_r
-          attributes_to_f
-          attributes_to_numbers
-          attributes_to_i
-          attributes_to_s
-          attributes_to_b
-        end
 
       end # module Convert
 

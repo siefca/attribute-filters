@@ -215,7 +215,6 @@ describe ActiveModel::AttributeFilters do
     end
 
     it "should pick attributes" do
-      TestModel.class_eval{before_save :pick_attributes}
       TestModel.class_eval do
         attributes_that :should_be_picked, :p_a
         attributes_that :should_be_picked, :p_b => { :pick_separator => " " }
@@ -286,7 +285,6 @@ describe ActiveModel::AttributeFilters do
     end
 
     it "should reverse attribute values" do
-      TestModel.class_eval{before_save :reverse_attributes}
       TestModel.class_eval do
         attributes_that :should_be_reversed, :reverse_one
         attributes_that :should_be_reversed, :reverse_two => { :reverse_enumerable => true }
@@ -319,7 +317,6 @@ describe ActiveModel::AttributeFilters do
     end
 
     it "should convert attributes" do
-      TestModel.class_eval{before_save :convert_attributes}
       TestModel.class_eval do
         attributes_that :should_be_strings, :to_strings => { :base => 10 }
         attributes_that :should_be_integers, :to_integers
@@ -351,7 +348,7 @@ describe ActiveModel::AttributeFilters do
       @tm.to_fractions.should == "1/2".to_r
       @tm.to_numbers.should == [ 1, 2, 3 ]
       @tm.to_integers_two.should == 17
-      @tm.to_boolean.should == false
+      @tm.to_boolean.should === false
     end
 
     shared_examples "splitting" do |ev|
@@ -361,7 +358,6 @@ describe ActiveModel::AttributeFilters do
         @tm.real_name = "Paweł Wilk Trzy"
         @tm.first_name = nil
         @tm.last_name = nil
-        #-> { @tm.save }.should_not raise_error
         @tm.save
         @tm.first_name.should == 'Paweł'
         @tm.last_name.should == 'Wilk'

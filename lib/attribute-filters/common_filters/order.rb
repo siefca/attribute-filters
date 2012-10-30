@@ -36,6 +36,7 @@ module ActiveModel
             end
           end
         end
+        filtering_method :reverse_attributes, :should_be_reversed
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -78,6 +79,7 @@ module ActiveModel
           end
         end
       end
+      filtering_method :shuffle_attributes, :should_be_shuffled
 
       # This submodule contains class methods used to easily define filter.
       module ClassMethods

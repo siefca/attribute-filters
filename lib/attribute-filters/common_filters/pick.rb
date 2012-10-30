@@ -60,6 +60,8 @@ module ActiveModel
             end
           end
         end
+        filtering_method :pick_attributes, :should_be_picked
+
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
           # Registers attributes that should be picked.
