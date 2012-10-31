@@ -127,18 +127,16 @@ module ActiveModel
 
           when :valid?
             @am_object.valid?
-            method_for_each_attr(n_m, *args) { |atr| not @am_object.errors.key?(atr.to_sym) }
+            method_for_each_attr(n_m, *args) { |atr| not @am_object.errors.include?(atr.to_sym) }
 
           when :invalid?
             @am_object.valid?
-            method_for_each_attr(n_m, *args) { |atr| @am_object.errors.key?(atr.to_sym) }
+            method_for_each_attr(n_m, *args) { |atr| @am_object.errors.include?(atr.to_sym) }
 
           when :changed?
-            return false unless @am_object.changed?
             method_for_each_attr(n_m, *args) { |atr| @am_object.changes.key?(atr) }
 
           when :unchanged?
-            return true unless @am_object.changed?
             method_for_each_attr(n_m, *args) { |atr| not @am_object.changes.key?(atr) }
 
           else
