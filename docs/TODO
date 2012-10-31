@@ -6,8 +6,8 @@
 
 ---------------------------------------------------------------------------------------------
 
-* attr_virtual - wrap method_defined? and add some gotchas into it that will wait for accessor to be added?
-  there already is a hash for attr_virtual, all we need is to check any added accessor against that hash
+* attr_virtual - wrap method_defined? and add some gotchas into it that will wait for accessor to be added
+  there already is a hash for attr_virtual, all we need to do is to check any added accessor against that hash
   that will only apply when there weren't accessors while using attr_virtual
 
 

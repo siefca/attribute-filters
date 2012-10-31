@@ -486,7 +486,7 @@ module ActiveModel
                 end
               end
             end
-            return
+            return nil
           else
             atr_name = atr_name.to_s
             unless __attributes_to_sets_map.key?(atr_name)
@@ -501,6 +501,7 @@ module ActiveModel
         else
           __attribute_sets[set_name] << sanitized_atrs
         end
+        nil
       end
     end # module ClassMethods
   end # module AttributeMethods

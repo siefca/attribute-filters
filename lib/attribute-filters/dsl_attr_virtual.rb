@@ -43,6 +43,7 @@ module ActiveModel
               EVAL
             end
           end
+          nil
         end # def attr_virtual
       end # unless method_defined?(:attr_virtual)
     end # module ClassMethods

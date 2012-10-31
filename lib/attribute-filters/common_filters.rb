@@ -24,8 +24,9 @@ module ActiveModel
         return unless method_defined?(method_name)
         f = (@__filtering_sets ||= MetaSet.new)
         f[set_name] = method_name unless f.key?(set_name)
+        nil
       end
-    end
+    end # module FilteringRegistration
 
     # This module contains common, ready-to-use filtering methods.
     module Common
@@ -93,11 +94,14 @@ module ActiveModel
     # This method is a callback method that tries to call all
     # known filtering methods if they are in use.
     # 
-    # Calling order depends on registering order.
+    # Calling order depends on sets registering order.
+    # 
+    # @return [nil]
     def filter_attributes
       as, fs = *self.class.class_eval { [__attribute_sets, @__filtering_sets] }
       return if fs.blank? || as.blank?
       as.each_pair { |set_name, o| send(fs[set_name]) if fs.has_key?(set_name) }
+      nil
     end
 
     # Gets a list of filtering hooks that are in use.

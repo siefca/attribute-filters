@@ -22,23 +22,28 @@ module ActiveModel
       #   @param attribute_name [Symbol,String] name of annotated attribute
       #   @param annotation_key [Symbol,String] name of annotation key
       #   @param value [Object] annotation value
+      #   @return [nil]
       #
       #  @overload annotate_attribute_set(set_name, attribute_name, annotation)
       #   @param set_name [Symbol,String] name of a set
       #   @param attribute_name [Symbol,String] name of annotated attribute
       #   @param annotation [Hash{Symbol => Object}] annotation key => value pairs
+      #   @return [nil]
       # 
       #  @overload annotate_attribute_set(set_name, annotation)
       #   @param set_name [Symbol,String] name of a set
       #   @param annotation [Hash{Symbol => Array<Symbol,Object>}] annotation key and value assigned to attribute name
+      #   @return [nil]
       # 
       # @overload annotate_attribute_set(set_name, *annotation)
       #   @param set_name [Symbol,String] name of a set
       #   @param annotation [Array<Symbol,Symbol,Object>}] attribute name, annotation key and value
+      #   @return [nil]
       # 
       #  @overload annotate_attribute_set(set_name, annotations)
       #   @param set_name [Symbol,String] name of a set
       #   @param annotations [Hash{Symbol => Hash{Symbol => Object}}] annotation key => value pairs for attributes
+      #   @return [nil]
       def annotate_attribute_set(*args)
         first_arg = args.shift
         if first_arg.is_a?(Hash)                  # multiple sets defined
@@ -84,6 +89,7 @@ module ActiveModel
       # @param param_defs [Hash{Symbol => Array<Symbol,String>}]
       # @param default_param [Symbol,String,nil]
       # @param attribute_defs [Hash{Symbol => Object}, Array<Symbol,String>]
+      # @return [nil]
       # @example
       #   setup_attributes_set  :should_be_filled,
       #                         { 'atr_name'  => { :with => 'x', :fill_any => true }, :other_atr => 'text' },
@@ -122,6 +128,7 @@ module ActiveModel
         else
           attribute_set(set_name, *attribute_defs)
         end
+        nil
       end
       alias_method :setup_attributes_that, :setup_attributes_set
 
@@ -131,7 +138,7 @@ module ActiveModel
       # @param atr_name [String,Symbol] attribute name
       # @param annotations [Array<String,Symbol>] annotation keys
       # 
-      # @return [void]
+      # @return [nil]
       def delete_annotation_from_set(set_name, atr_name = nil, *annotations)
         if set_name.is_a?(Hash)
           r = {}
@@ -146,10 +153,11 @@ module ActiveModel
           end
         else
           set_name = set_name.to_sym
-          return unless __attribute_sets.key?(set_name) && atr_name.present?
+          return nil unless __attribute_sets.key?(set_name) && atr_name.present?
           atr_name = atr_name.to_sym
           __attribute_sets[set_name].delete_annotation(atr_name, *annotations)
         end
+        nil
       end
       alias_method :delete_annotations_from_set,  :delete_annotation_from_set
       alias_method :unannotate_set,               :delete_annotation_from_set
@@ -163,7 +171,7 @@ module ActiveModel
     # @param name [String,Symbol] annotation key
     # @param value [Object] annotation value
     # @raise [ArgumentError] when the given attribute name does not exist in a set
-    # @return [void]
+    # @return [nil]
     def annotate(atr_name, name, value)
       atr_name = atr_name.to_s unless atr_name.blank?
       unless key?(atr_name)
@@ -171,6 +179,7 @@ module ActiveModel
       end
       self[atr_name] = Hash.new unless self[atr_name].is_a?(Hash)
       self[atr_name][name.to_sym] = value
+      nil
     end
     alias_method :add_op,   :annotate
     alias_method :bind_op,  :annotate
@@ -256,9 +265,10 @@ module ActiveModel
     alias_method :delete_annotations, :delete_annotation
 
     # Removes all annotations.
-    # @return [void]
+    # @return [nil]
     def remove_annotations
       each_pair { |k, v| self[k] = true }
+      nil
     end
 
     # Returns all annotations.

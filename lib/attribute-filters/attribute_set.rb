@@ -37,7 +37,7 @@ module ActiveModel
     # and didn't existed there before.
     # 
     # @param args [Array<Object,Hash,Array,Enumerable>] object(s) to be added to set
-    # @return [AttributeSet,nil]
+    # @return [AttributeSet] current attribute set object
     def add(*args)
       args.flatten.each do |a|
         if a.is_a?(Hash)
@@ -48,6 +48,7 @@ module ActiveModel
           self[a] = true
         end
       end
+      self
     end
     alias_method :<<, :add
 
