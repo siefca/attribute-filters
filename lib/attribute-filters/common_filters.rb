@@ -102,7 +102,7 @@ module ActiveModel
 
     # Gets a list of filtering hooks that are in use.
     # 
-    # @return [Hash{Symbol => Symbol}] a hash of filtering methods and associated sets
+    # @return [MetaSet{Symbol => Symbol}] a meta set of filtering methods and associated sets
     def filtering_methods
       f = self.class.instance_variable_get(:@__filtering_sets)
       f.nil? ? ActiveModel::MetaSet.new : f.dup

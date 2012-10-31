@@ -48,14 +48,15 @@ module ActiveModel
     end
     alias_method :attributes_that_are,        :attribute_set
     alias_method :from_attributes_that,       :attribute_set
+    alias_method :are_attributes_that,        :attribute_set
     alias_method :are_attributes_that_are,    :attribute_set
+    alias_method :are_attributes,             :attribute_set
+    alias_method :are_attributes_for,         :attribute_set
     alias_method :from_attributes_that_are,   :attribute_set
     alias_method :within_attributes_that_are, :attribute_set
     alias_method :attributes_that,            :attribute_set
     alias_method :attributes_are,             :attribute_set
     alias_method :attributes_for,             :attribute_set
-    alias_method :are_attributes,             :attribute_set
-    alias_method :are_attributes_for,         :attribute_set
     alias_method :attributes_set,             :attribute_set
     alias_method :properties_that,            :attribute_set
 
@@ -86,6 +87,7 @@ module ActiveModel
       r = __all_attributes(no_presence_check).deep_dup
       simple ? r : ActiveModel::AttributeSet::Query.new(r, self)
     end
+    alias_method :all_attributes_set, :all_attributes
 
     # Returns a set containing all accessible attributes.
     # 
@@ -159,7 +161,7 @@ module ActiveModel
     #  will always return {AttributeSet} object. If there is no such set defined then the returned,
     #  matching set will be empty.
     # 
-    # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
+    # @return [MetaSet{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
     def attribute_sets
       s = self.class.attribute_sets
       s.each_pair do |set_name, set_object|
@@ -220,7 +222,7 @@ module ActiveModel
     #  returned by this method will always return {AttributeSet} object. If the attribute is not assigned
     #  to any set then the returned, matching set will be empty.
     # 
-    # @return [Hash{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
+    # @return [MetaSet{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
     def attributes_to_sets
       self.class.attributes_to_sets
     end
@@ -387,7 +389,7 @@ module ActiveModel
       #  will always return {AttributeSet} object. If there is no such set defined then the returned,
       #  matching set will be empty. All set objects are duplicates of the defined sets.
       # 
-      # @return [Hash{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
+      # @return [MetaSet{Symbol => AttributeSet<String>}] the collection of attribute sets indexed by their names
       def attribute_sets
         __attribute_sets.deep_dup
       end
@@ -401,7 +403,7 @@ module ActiveModel
       #  to any set then the returned, matching set will be empty. This method returns a duplicate of each
       #  reverse mapped set.
       # 
-      # @return [Hash{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
+      # @return [MetaSet{String => AttributeSet<Symbol>}] the collection of attribute set names indexed by attribute names
       def attributes_to_sets
         __attributes_to_sets_map.deep_dup
       end
@@ -465,7 +467,7 @@ module ActiveModel
       end
 
       def __attributes_to_sets_map
-        @__attributes_to_sets_map ||= MetaSet.new(ActiveModel::AttributeSet.new.freeze)
+        @__attributes_to_sets_map ||= MetaSet.new(ActiveModel::MetaSet.new.freeze)
       end
 
       def __attribute_sets
@@ -488,10 +490,9 @@ module ActiveModel
           else
             atr_name = atr_name.to_s
             unless __attributes_to_sets_map.key?(atr_name)
-              __attributes_to_sets_map[atr_name] = ActiveModel::AttributeSet.new(set_name)
-            else
-              __attributes_to_sets_map[atr_name] << set_name
+              __attributes_to_sets_map[atr_name] = ActiveModel::MetaSet.new
             end
+              __attributes_to_sets_map[atr_name] << set_name
           end
         end
         sanitized_atrs = atrs.map{ |a| a.to_s.dup }
