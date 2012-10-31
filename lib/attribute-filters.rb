@@ -7,6 +7,7 @@ require 'attribute-filters/helpers'
 
 require 'attribute-filters/attribute_set_enum'
 require 'attribute-filters/attribute_set'
+require 'attribute-filters/meta_set'
 require 'attribute-filters/attribute_set_annotations'
 require 'attribute-filters/attribute_set_query'
 require 'attribute-filters/attribute_set_attrquery'

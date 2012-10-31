@@ -26,6 +26,7 @@ lib/attribute-filters/attribute_set_enum.rb
 lib/attribute-filters/attribute_set_query.rb
 lib/attribute-filters/backports.rb
 lib/attribute-filters/common_filters.rb
+lib/attribute-filters/common_filters/bare.rb
 lib/attribute-filters/common_filters/case.rb
 lib/attribute-filters/common_filters/convert.rb
 lib/attribute-filters/common_filters/join.rb
@@ -39,6 +40,7 @@ lib/attribute-filters/dsl_attr_virtual.rb
 lib/attribute-filters/dsl_filters.rb
 lib/attribute-filters/dsl_sets.rb
 lib/attribute-filters/helpers.rb
+lib/attribute-filters/meta_set.rb
 lib/attribute-filters/railtie.rb
 lib/attribute-filters/version.rb
 spec/attribute-filters_spec.rb
