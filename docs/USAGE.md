@@ -5,7 +5,7 @@ Attribute sets
 --------------
 
 Attribute set is a set of attribute names and optional annotations.
-It's like a hash and internally it is a kind of Hash, but different in
+It's like a hash and internally it is a kind of Hash, but differs in
 many places.
 
 Attribute sets have simple function; **they group attribute names**. What can
@@ -164,7 +164,7 @@ Instead of `attribute_set` you may also use one of the aliases:
 #### `attribute_sets` ####
 
 The [`attribute_sets`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_sets)
-class method returns a hash containing **all the defined attribute sets** indexed by their names.
+class method returns a MetaSet kind of value containing **all the defined attribute sets** indexed by their names.
 
 Example:
 
@@ -222,9 +222,8 @@ Instead of `filter_attribute` you may also use one of the aliases:
 #### `attributes_to_sets` ####
 
 The [`attributes_to_sets`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attributes_to_sets)
-class method returns a hash containing **all filtered attributes and arrays of sets**
-that the attributes belong to. The hash is indexed by attribute names.
-(Filtered means that they belong to some sets.)
+class method returns a MetaSet kind of value containing **all filtered attributes and sets that the attributes
+belong to**. The meta set is indexed by attribute names.
 
 Example:
 
@@ -245,8 +244,8 @@ Instead of `attributes_to_sets` you may also use one of the aliases:
 The [`filter_attribute`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:filter_attribute)
 (a.k.a `the_attribute`) class method called without any arguments
 is a wrapper that calls `attributes_to_sets` which returns
-a hash containing **all filtered attributes and arrays of sets**
-that the attributes belong to.
+a returns a MetaSet kind of value containing **all filtered attributes and sets that the attributes
+belong to**.
 
 ### Querying sets in model objects ###
 
@@ -318,7 +317,7 @@ object that brings some syntactic sugar (explained later).
 #### `attribute_sets` ####
 
 The [`attribute_sets`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attribute_sets)
-method returns a hash containing **all the defined attribute sets** indexed by their names.
+method returns a meta set containing **all the defined attribute sets** indexed by their names.
 It won't return the exact internal hash but a duplicate and every set within it will also be a duplicate
 of the original one.
 
@@ -551,8 +550,8 @@ object in a proxy object. The attribute name must be given.
 #### `attributes_to_sets` ####
 
 The [`attributes_to_sets`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters:attributes_to_sets)
-method returns a hash containing **all filtered attributes and arrays of sets**
-that the attributes belong to. The hash is indexed by attribute names.
+method returns a meta set containing **all filtered attributes and sets that the attributes belong to**.
+The meta set is indexed by attribute names.
 
 Example:
 
@@ -937,7 +936,11 @@ Example:
 
 ```ruby
   User.first.the_attribute(:username).list.sets
-  # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
+  # => {:should_be_downcased => true, :should_be_stripped => true}
+  
+  User.first.the_attribute(:username).list.sets.to_a
+  # => [:should_be_downcased, :should_be_stripped]
+
 ```
 
 ##### Attribute membership querying #####
@@ -1810,7 +1813,7 @@ end
 
 To know which methods are known to `filter_attributes`
 use the `filtering_methods` instance method
-available in your model. It returns a hash containing
+available in your model. It returns a meta set containing
 attributes set names as keys and the methods assigned
 to them as values (both are symbols).
 

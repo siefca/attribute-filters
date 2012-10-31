@@ -165,13 +165,16 @@ use it to express some logic
 ### Sneak peeks ###
 
 ```ruby
-  @user.attributes_that(:should_be_stripped).all.present?
+  @user.are_attributes_that.should_be_stripped.all.present?
   # => false
   
   @user.attributes_that.should_be_stripped.list.present?
   # => #<ActiveModel::AttributeSet: {"username", "email"}>
   
   @user.the_attribute(:username).should_be_stripped?
+  # => true
+  
+  @user.is_the_attribute.username.required_to_use_application?
   # => true
   
   @user.the_attribute(:username).list.sets
