@@ -198,6 +198,7 @@ module ActiveModel
     end
     alias_method :the_attribute,        :filtered_attribute
     alias_method :is_the_attribute,     :filtered_attribute
+    alias_method :has_the_attribute,    :filtered_attribute
     alias_method :are_attributes,       :filtered_attribute
     alias_method :are_the_attributes,   :filtered_attribute
 

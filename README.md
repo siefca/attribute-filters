@@ -160,34 +160,47 @@ use it to express some logic
 [on your own](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md#Custom_applications).
 
 * **See [USAGE](http://rubydoc.info/gems/attribute-filters/file/docs/USAGE.md) for examples and detailed information about the usage.**
+* **See [COMMON-FILTERS](http://rubydoc.info/gems/attribute-filters/file/docs/COMMON-FILTERS.md) for examples and detailed description of common filters.**
 * See [whole documentation](http://rubydoc.info/gems/attribute-filters/) to browse all documents.
 
 ### Sneak peeks ###
 
 ```ruby
-  @user.are_attributes_that.should_be_stripped.all.present?
-  # => false
-  
-  @user.attributes_that.should_be_stripped.list.present?
-  # => #<ActiveModel::AttributeSet: {"username", "email"}>
-  
+  @user.is_the_attribute.username.required_to_use_application?
+  # => true
+    
   @user.the_attribute(:username).should_be_stripped?
   # => true
   
-  @user.is_the_attribute.username.required_to_use_application?
-  # => true
-  
-  @user.the_attribute(:username).list.sets
-  # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
-  
-  @user.the_attribute(:username).accessible?
+  @user.is_the_attribute(:username).accessible?
   # => true
   
   @user.is_the_attribute.username.protected?
   # => false
+
+  @user.has_the_attribute.username.changed?
+  # => false
+
+  @user.is_the_attribute.username.valid?
+  # => true
+  
+  @user.are_attributes_that.should_be_stripped.all.present?
+  # => false
+  
+  @user.the_attribute(:username).list.sets
+  # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
+  
+  @user.attributes_that.should_be_stripped.list.present?
+  # => #<ActiveModel::AttributeSet: {"username", "email"}>
   
   @user.all_attributes.list.valid?
   # => #<ActiveModel::AttributeSet: {"username", "email"}>
+  
+  @user.all_attributes.list.changed?
+  # => #<ActiveModel::AttributeSet: {"username"}>
+  
+  @user.all_attributes.any.changed?
+  # => true
 ```
 
 How it works?

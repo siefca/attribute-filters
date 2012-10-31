@@ -8,6 +8,7 @@ Manifest.txt
 README.md
 Rakefile
 attribute-filters.gemspec
+docs/COMMON-FILTERS.md
 docs/COPYING
 docs/HISTORY
 docs/LEGAL
