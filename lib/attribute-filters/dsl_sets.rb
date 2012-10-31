@@ -465,11 +465,11 @@ module ActiveModel
       end
 
       def __attributes_to_sets_map
-        @__attributes_to_sets_map ||= Hash.new(ActiveModel::AttributeSet.new.freeze)
+        @__attributes_to_sets_map ||= MetaSet.new(ActiveModel::AttributeSet.new.freeze)
       end
 
       def __attribute_sets
-        @__attribute_sets ||= Hash.new(ActiveModel::AttributeSet.new.freeze)
+        @__attribute_sets ||= MetaSet.new(ActiveModel::AttributeSet.new.freeze)
       end
 
       def add_atrs_to_set(set_name, *atrs)

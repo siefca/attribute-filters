@@ -175,5 +175,25 @@ module ActiveModel
         a_hash.deep_merge(my_class.new(ov))
       end
     end
-  end # module AttributeSet
+  end # class AttributeSet
+
+  # This is a kind of AttributeSet class
+  # but its purpose it so store other information
+  # than attribute names.
+  class MetaSet < AttributeSet
+    def initialize(*args)
+      Hash.instance_method(:initialize).bind(self).call(*args)
+    end
+    def inspect(*args)
+      Hash.instance_method(:inspect).bind(self).call(*args)
+    end
+    # Internal method for merging sets.
+    def merge_set(my_v, ov, my_class = self.class)
+      if my_v.is_a?(my_class) && ov.is_a?(my_class)
+        my_v.deep_merge(ov)
+      else
+        my_v
+      end
+    end
+  end
 end # module ActiveModel
