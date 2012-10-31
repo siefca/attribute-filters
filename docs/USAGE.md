@@ -689,6 +689,25 @@ in order to help you in creating nice looking method call chains like:
   User.first.attributes_that(:should_be_stripped).sort.list.present?
 ```
 
+##### Set & attribute names as methods #####
+
+It's possible to enter a set name or an attribute name as a name
+of next method in a call chain instead of passing them as a symbolic argument.
+It works with DSL instance methods `attribute_set(set_name)`
+and `filtered_attribute(attribute_name)`.
+
+Examples:
+
+```ruby
+  User.first.attributes_that.should_be_stripped   # same as User.first.attributes_that(:should_be_stripped)
+  User.first.attributes_that_are.required_to_use_app.present?
+  User.first.attributes_that.should_be_stripped.sort.list.present?
+  
+  User.first.the_attribute.username               # same as User.first.the_attribute(:username)
+  User.first.the_attribute.username.list.sets
+  User.first.the_attribute.username.valid?
+```
+
 ##### Neutral methods #####
 
 * **`are`**
@@ -859,7 +878,7 @@ Examples:
 Be aware that the required condition to use these methods is the ORM that
 has `changes` hash (Active Record has it).
 
-##### Custom method call helpers #####
+##### Calling custom methods #####
 
 It's possible to call any other methods using selectors.
 Note that te method next to the given selector will be called **on a value** of each tested attribute.
@@ -1665,13 +1684,15 @@ Example:
 Predefined filters
 ------------------
 
-Predefined filters are ready-to-use methods
-for filtering attributes. You just have to call them
+Predefined filters are ready-to-use methods for filtering attributes. You just have to call them
 or register them as [callbacks](http://api.rubyonrails.org/classes/ActiveRecord/Callbacks.html).
 
 To use all predefined filters you have to manually
 include the [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
 module. That will include **all available filtering methods** into your model.
+
+Predefined filters work by utilizing global attribute sets of predetermined names. For example
+a common filter that downcases attributes will use the set called `:should_be_downcased`.
 
 Example:
 
@@ -1686,7 +1707,8 @@ class User < ActiveRecord::Base
 end
 ```
 
-If you don't want to include portions of code that you'll never use, you can include some filters selectively. To do that include just a submodule containing certain filtering method:
+If you don't want to include portions of code that you'll never use in your model classes, you may
+want to include some filters selectively. To do that just include a submodule containing needed filtering method:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1711,28 +1733,36 @@ For example, to squeeze attributes `name` and `email` you can write:
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
-  attributes_that should_be_sqeezed: [:email, :name]
+  attributes_that should_be_squeezed: [:email, :name]
   before_validation :squeeze_attributes
 end
 ```
 
+### Filtering keywords ###
+
 The filtering methods usually come with class-level DSL methods
-that are a simple wrappers calling `the_attribute`. So you can
-also write:
+that are helpful wrappers. They are simply calling `the_attribute`
+method to add some attributes to a proper set for you.
+
+So you can also write:
 
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
-  squeeze_attributes :email, :name
-  before_validation :squeeze_attributes
+  squeeze_attributes  :email, :name
+  before_validation   :squeeze_attributes
 end
 ```
 
-### Calling all at once ###
+Some of these helpers are doing some extra work to make things syntactically easier
+than with using pure sets. Check the list if common filters for more information.
+
+### Calling all ###
 
 There is a special method called
-[`filter_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters.html#filter_attributes-instance_method) that can be registered as a callback. It will call all possible (known) filtering methods
-in a predetermined order.
+[`filter_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters.html#filter_attributes-instance_method) that can be registered as a callback. It will call all filtering methods which sets (that they're assigned to)
+are non-empty. In other words it will run specific filtering method for each global attribute set if the set exists
+and contains at least one element. The calling order is the same as the order of adding sets in your model class.
 
 Example:
 
@@ -1741,42 +1771,128 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
   include ActiveModel::AttributeFilters::Common::Capitalize
 
-  squeeze_attributes :email, :name
+  squeeze_attributes    :email, :name
   capitalize_attributes :name
 
   before_validation :filter_attributes
 end
 ```
 
-Use this method if you're really lazy.
-You can also create your own method like that and call all needed filters there:
+Or even more simpler (but it will include all common filters):
 
 ```ruby
 class User < ActiveRecord::Base
-  include ActiveModel::AttributeFilters::Common::Squeeze
-  include ActiveModel::AttributeFilters::Common::Capitalize
+  include ActiveModel::AttributeFilters::Common
 
-  squeeze_attributes :email, :name
+  squeeze_attributes    :email, :name
   capitalize_attributes :name
 
-  before_validation :my_total_filtering_method
+  before_validation :filter_attributes
+end
+```
 
-  def my_total_filtering_method
-    squeeze_attributes
-    capitalize_attributes
+The method of using common filters presented in he example above
+is the easiest and the most consistent one.
+
+Of course the `filter_attributes` will also work if the sets are
+specified explicitly:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  attributes_that :should_be_squeezed     =>  [ :email, :name ]
+  attributes_that :should_be_capitalized  => :name
+
+  before_validation :filter_attributes
+end
+```
+
+To know which methods are known to `filter_attributes`
+use the `filtering_methods` instance method
+available in your model. It returns a hash containing
+attributes set names as keys and the methods assigned
+to them as values (both are symbols).
+
+Note that the method above returns **all** known
+methods marked as filtering methods, including those
+that might not be called until a proper set will
+be defined. To check what methods will be really
+called (at a given time) use:
+
+```ruby
+  (attribute_sets & filtering_methods).values
+```
+
+### Custom filtering order ###
+
+Instead of relaying on `filter_attributes` you may create
+your own callback method containing invocations of your
+filtering methods in the desired order (independent from
+the "natural" order, based on adding the sets to model class):
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  attributes_that :should_be_squeezed     =>  [ :email, :name ]
+  attributes_that :should_be_capitalized  => :name
+
+  before_validation :prepare_attributes
+
+  def prepare_attributes
+    capitalize_attributes   # common filter that uses the set called :should_be_capitalized
+    squeeze_attributes      # common filter that uses the set called :should_be_squeezed
   end
 end
 ```
 
-But to increase readability you should go with the old-fashion way and register
-each filtering callback method separately.
+Or you can just register multiple callbacks to achieve the same
+result.
+
+### Custom filtering methods ###
+
+You can create your own filtering methods and they will be called
+among others by `filter_attributes`. You just have to use special
+DSL class method called `filtering_method` to mark your method
+and assign its name to some global attribute set (not used by
+any other filtering method).
+
+Synopsis:
+
+  * `filtering_method(method_name, set_name)`
+
+The global set of the given name will be looked up when callback
+method `filter_attributes` will be called and if non-empty then
+the registered method will be called (among others).
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common
+
+  attributes_that   should_be_happy: [ :username, :real_name ]
+  before_validation :filter_attributes
+
+  def happify
+    filter_attributes_that(:should_be_happy) do |v, o|
+      v + "-happy"
+    end
+  end
+  filtering_method :happify, :should_be_happy
+end
+```
+
+Of course, you can set your own method as a callback explicitly
+instead of using the `filter_attributes`.
 
 ### Data types ###
 
-The common filters are aware and can operate on attributes that
-are arrays or hashes. If an array or a hash is detected then
+The common filters are aware of different kinds of data and can operate
+on attributes that are arrays or hashes. If an array or a hash is detected then
 the filtering is made **recursively** for each element (or for each value in case
-of a hash) and the produced structure is returned. If the attribute has an
+of a hash) and the produced value is returned. If the attribute has an
 unknown type then its value is not altered at all and left intact.
 
 Some of the common filters may treat arrays and hashes in a slight different

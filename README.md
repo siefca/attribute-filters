@@ -1,7 +1,7 @@
 Attribute Filters for Rails
 ===========================
 
-**attribute-filters version `1.4`** (**`Fried Meerkat`**)
+**attribute-filters version `2.0`** (`Beard`)
 
 * https://rubygems.org/gems/attribute-filters
 * https://github.com/siefca/attribute-filters/tree
@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-or if you want to have more control:
+or if you want more control:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -107,9 +107,11 @@ class User < ActiveRecord::Base
   attributes_that should_be_downcased:    [ :username, :email ]
   attributes_that should_be_capitalized:  [ :real_name ]
 
-  before_validation :strip_names
-  before_validation :downcase_names
-  before_validation :capitalize_names
+  before_validation :filter_attributes
+
+  filtering_method :downcase_names, :should_be_downcased
+  filtering_method :capitalize,     :should_be_capitalized
+  filtering_method :strip_names,    :should_be_stripped
 
   def downcase_names
     filter_attributes_that :should_be_downcased do |atr|
@@ -166,7 +168,7 @@ use it to express some logic
   @user.attributes_that(:should_be_stripped).all.present?
   # => false
   
-  @user.attributes_that(:should_be_stripped).list.present?
+  @user.attributes_that.should_be_stripped.list.present?
   # => #<ActiveModel::AttributeSet: {"username", "email"}>
   
   @user.the_attribute(:username).should_be_stripped?
@@ -178,7 +180,7 @@ use it to express some logic
   @user.the_attribute(:username).accessible?
   # => true
   
-  @user.is_the_attribute(:username).protected?
+  @user.is_the_attribute.username.protected?
   # => false
   
   @user.all_attributes.list.valid?
