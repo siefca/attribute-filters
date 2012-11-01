@@ -53,7 +53,7 @@ module ActiveModel
     alias_method :are_attributes,             :attribute_set
     alias_method :are_attributes_for,         :attribute_set
     alias_method :from_attributes_that_are,   :attribute_set
-    alias_method :within_attributes_that_are, :attribute_set
+    alias_method :in_attributes_that_are,     :attribute_set
     alias_method :attributes_that,            :attribute_set
     alias_method :attributes_are,             :attribute_set
     alias_method :attributes_for,             :attribute_set
@@ -307,20 +307,17 @@ module ActiveModel
           nil
         end
       end
+      alias_method :attributes_set,           :attribute_set
       alias_method :attributes_that_are,      :attribute_set
       alias_method :attributes_that,          :attribute_set
-      alias_method :attributes_are,           :attribute_set
-      alias_method :attributes_for,           :attribute_set
-      alias_method :attributes_set,           :attribute_set
       alias_method :properties_that,          :attribute_set
-      alias_method :has_attributes_that_are,  :attribute_set
-      alias_method :has_attributes_that,      :attribute_set
+      alias_method :has_attribute_set,        :attribute_set
       alias_method :has_attribute_that,       :attribute_set
       alias_method :has_attribute_that_is,    :attribute_set
-      alias_method :has_attributes_are,       :attribute_set
-      alias_method :has_attributes_for,       :attribute_set
+      alias_method :has_attributes,           :attribute_set
       alias_method :has_attributes_set,       :attribute_set
-      alias_method :has_attribute_set,        :attribute_set
+      alias_method :has_attributes_that_are,  :attribute_set
+      alias_method :has_attributes_that,      :attribute_set
       alias_method :has_properties_that,      :attribute_set
 
       # @overload filter_attribute()
@@ -387,15 +384,13 @@ module ActiveModel
         end
       end
       alias_method :the_attribute,            :filter_attribute
-      alias_method :add_attribute_to_set,     :filter_attribute
-      alias_method :add_attribute_to_sets,    :filter_attribute
       alias_method :attribute_to_set,         :filter_attribute
       alias_method :filtered_attribute,       :filter_attribute
       alias_method :filtered_attributes,      :filter_attribute
       alias_method :filters_attribute,        :filter_attribute
       alias_method :filters_attributes,       :filter_attribute
-      alias_method :adds_attribute_to_set,    :filter_attribute
-      alias_method :adds_attribute_to_sets,   :filter_attribute
+      alias_method :its_attribute,            :filter_attribute
+      alias_method :has_attribute,            :filter_attribute
       alias_method :has_the_attribute,        :filter_attribute
       alias_method :has_filtered_attribute,   :filter_attribute
       alias_method :has_filtered_attributes,  :filter_attribute
@@ -458,7 +453,10 @@ module ActiveModel
       #   Informs Attribute Filters that the given attributes
       #   should be treated as virtual (even not present in the
       #   attributes hash provided by ORM or ActiveModel).
-      # 
+      #   
+      #   @note This method may be used directly if your setter
+      #    notifies Rails about changes. Otherwise it's recommended
+      #    to use the DSL keyword +attr_virtual+.
       #   @param attributes [Array] list of attribute names
       #   @return [void]
       # 

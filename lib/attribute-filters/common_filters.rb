@@ -26,6 +26,7 @@ module ActiveModel
         f[set_name] = method_name unless f.key?(set_name)
         nil
       end
+      alias_method :has_filtering_method, :filtering_method
 
     end # module FilteringRegistration
 

@@ -167,6 +167,7 @@ module ActiveModel
         nil
       end
       alias_method :delete_annotations_from_set,  :delete_annotation_from_set
+      alias_method :deletes_annotation_from_set,  :delete_annotation_from_set
       alias_method :deletes_annotations_from_set, :delete_annotation_from_set
     end # module ClassMethods
   end # module AttributeFilters

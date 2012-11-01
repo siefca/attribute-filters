@@ -90,10 +90,10 @@ module ActiveModel
           setup_attributes_that :should_be_shuffled, args,
             {
               :shuffle_enumerable => [:enum, :enums, :whole_enums, :shuffle_enums, :shuffle_enumerable],
-              :shuffle_generator  => [:random_generator, :generator, :rnd, :shuffle_generator]
+              :shuffle_generator  => [:random_generator, :generator, :rnd, :rng, :shuffle_generator]
             }, :shuffle_generator
         end
-        alias_method :shuffle_attribute,  :shuffle_attributes
+        alias_method :shuffle_attribute,    :shuffle_attributes
         alias_method :shuffles_attribute,   :shuffle_attributes
         alias_method :shuffles_attributes,  :shuffle_attributes
       end # module ClassMethods

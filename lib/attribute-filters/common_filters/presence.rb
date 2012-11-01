@@ -52,7 +52,7 @@ module ActiveModel
           def fill_attributes(*args)
             setup_attributes_that :should_be_filled, args,
               {
-                :fill_value      => [:with, :fill_with, :fill_value, :fill, :value, :content, :default],
+                :fill_value      => [:with, :fill_with, :fill, :value, :content, :default, :fill_value],
                 :fill_any        => [:all, :any, :fill_always, :always_fill, :always, :fill_present, :fill_all, :fill_any],
                 :fill_enumerable => [:replace_enumerable, :replace_enums, :enums, :whole_enums, :fill_enums, :fill_enumerable]
               }, :fill_value
