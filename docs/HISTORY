@@ -1,3 +1,45 @@
+=== 2.0.0 / 2012-10-01
+
+* major enhancements
+
+  * Operating speed increased by 100%
+  * API change:
+    * AttributeSet is now based on a Hash
+    * Added MetaSet for keeping sets of attribute sets
+    * Added DSL keyword for registering filtering methods
+    * DSL method `filter_attributes` is using filtering methods registered before
+  * Creation of duplicates for sets moved to class-level accessors
+  * Adding elements to sets improved, `AttributeSet` initializer uses the method `add`
+  * Common Filters seriously refactored (easily expandable and parametrizable now)
+  * Added common filters: Convert, Order, Pick, Presence
+
+* minor enhancements
+
+  * DSL class methods for models have now aliases named in third person
+  * `AttributeSet#annotations` returns a hash containing annotated attributes only
+  * Documentation updated, common filters specific documentation moved to `COMMON-FILTERS`
+  * Added `AttributeSet::Enumerable#each_name_value` enumerator
+  * Added `AttributeSet::Enumerable#select_accessible` enumerator
+  * Added DSL for attribute name gethering from next method name in a chain
+  * Added `filtered_attribute_simple` DSL method
+  * Added `attribute_set_exists?` DSL class method
+  * Added `virtual?` and `semi_real?` to `AttributeSet::AttrQuery` and `AttributeSet::Query`
+  * Added `changed?` and `unchanged?` to `AttributeSet::AttrQuery` and `AttributeSet::Query`
+  * Added `AttributeSet#to_set`
+  * Improved DSL methods: `valid?`, `invalid?`, `accessible?`, `protected?`
+  * Improved `AttributeSet::Query` initializer (added error checking)
+  * Improved `attributes_to_filter` DLS method (removed redundant calls to duplicates of a set)
+  * Overriden `inspect` method in `AttributeSet`
+
+* major bugfixes
+
+  * Fixed `AttributeSet::Query` wrapper calls (passing custom calls to next method was broken)
+  * Replaced `hash.merge(hash)` expressions with more `HashWithIndifferentAccess` compliant
+
+* minor bugfixes
+
+  *  Enumerators wrapped to return `AttributeSet::Enumerator` objects
+
 === 1.4.0 / 2012-08-24
 
 * major enhancements
