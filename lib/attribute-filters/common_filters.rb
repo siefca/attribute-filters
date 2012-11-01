@@ -26,6 +26,7 @@ module ActiveModel
         f[set_name] = method_name unless f.key?(set_name)
         nil
       end
+
     end # module FilteringRegistration
 
     # This module contains common, ready-to-use filtering methods.
@@ -39,12 +40,7 @@ module ActiveModel
 
           # merge filtering sets from filtering modules to models
           fs = @__filtering_sets
-          unless fs.nil?
-            base.class_eval do
-              @__filtering_sets ||= MetaSet.new
-              @__filtering_sets.merge!(fs)
-            end
-          end
+          base.class_eval { (@__filtering_sets ||= MetaSet.new).merge!(fs) } unless fs.nil?
 
           if  base.const_defined?(:ClassMethods)  &&
               base.instance_of?(::Module)         &&
@@ -55,6 +51,8 @@ module ActiveModel
             base.class_eval <<-EVAL
               unless singleton_class.method_defined?(:included)
                 def self.included(base)
+                  fs = @__filtering_sets
+                  base.class_eval { (@__filtering_sets ||= MetaSet.new).merge!(fs) } unless fs.nil?
                   base.extend ClassMethods
                 end
               end
