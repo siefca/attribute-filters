@@ -278,10 +278,13 @@ module ActiveModel
       nil
     end
 
-    # Returns all annotations.
-    # Practically it returns the contents of a set.
+    # Returns all annotations that are set.
+    # 
+    # @return [Hash{String => Hash}] annotations indexed by attribute names
     def annotations
-      self.deep_dup
+      Hash.new.tap do |r|
+        each_pair { |atr_name, an| r[atr_name] = an.deep_dup if an.is_a?(Hash) }
+      end
     end
 
   end # class AttributeSet
