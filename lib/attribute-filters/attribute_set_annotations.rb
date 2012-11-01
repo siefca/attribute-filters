@@ -74,14 +74,21 @@ module ActiveModel
         end
         nil
       end
-      alias_method :annotate_attributes_that_are, :annotate_attribute_set
-      alias_method :annotate_attributes_that,     :annotate_attribute_set
-      alias_method :annotate_attributes_are,      :annotate_attribute_set
-      alias_method :annotate_attributes_for,      :annotate_attribute_set
-      alias_method :annotate_attributes_set,      :annotate_attribute_set
-      alias_method :annotate_properties_that,     :annotate_attribute_set
-      alias_method :annotate_attributes,          :annotate_attribute_set
-      alias_method :attribute_set_annotate,       :annotate_attribute_set
+      alias_method :annotate_attributes_that_are,   :annotate_attribute_set
+      alias_method :annotate_attributes_that,       :annotate_attribute_set
+      alias_method :annotate_attributes_are,        :annotate_attribute_set
+      alias_method :annotate_attributes_for,        :annotate_attribute_set
+      alias_method :annotate_attributes_set,        :annotate_attribute_set
+      alias_method :annotate_properties_that,       :annotate_attribute_set
+      alias_method :annotate_attributes,            :annotate_attribute_set
+      alias_method :annotates_attributes_that_are,  :annotate_attribute_set
+      alias_method :annotates_attributes_that,      :annotate_attribute_set
+      alias_method :annotates_attributes_are,       :annotate_attribute_set
+      alias_method :annotates_attributes_for,       :annotate_attribute_set
+      alias_method :annotates_attributes_set,       :annotate_attribute_set
+      alias_method :annotates_properties_that,      :annotate_attribute_set
+      alias_method :annotates_attributes,           :annotate_attribute_set
+      alias_method :attribute_set_annotate,         :annotate_attribute_set
 
       # Helps in adding attributes to sets with annotations used to store parameters.
       # 
@@ -160,7 +167,7 @@ module ActiveModel
         nil
       end
       alias_method :delete_annotations_from_set,  :delete_annotation_from_set
-      alias_method :unannotate_set,               :delete_annotation_from_set
+      alias_method :deletes_annotations_from_set, :delete_annotation_from_set
     end # module ClassMethods
   end # module AttributeFilters
 

@@ -62,6 +62,7 @@ module ActiveModel
         end
         filtering_method  :attributes_to_s, :should_be_strings
         alias_method      :attributes_to_strings, :attributes_to_s
+        alias_method      :convert_to_strings,    :attributes_to_s
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -75,9 +76,8 @@ module ActiveModel
           end
           alias_method :convert_to_string,      :attributes_to_s
           alias_method :convert_to_strings,     :attributes_to_s
-          alias_method :attributes_to_strings,  :attributes_to_s
-          alias_method :attribute_to_strings,   :attributes_to_s
-          alias_method :attribute_to_s,         :attributes_to_s
+          alias_method :converts_to_string,     :attributes_to_s
+          alias_method :converts_to_strings,    :attributes_to_s
         end # module ClassMethods
 
         # Convert attributes to integers.
@@ -106,6 +106,7 @@ module ActiveModel
         end
         filtering_method  :attributes_to_i, :should_be_integers
         alias_method      :attributes_to_integers, :attributes_to_i
+        alias_method      :convert_to_integers,    :attributes_to_i
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -119,9 +120,8 @@ module ActiveModel
           end
           alias_method :convert_to_integer,     :attributes_to_i
           alias_method :convert_to_integers,    :attributes_to_i
-          alias_method :attributes_to_integers, :attributes_to_i
-          alias_method :attribute_to_integers,  :attributes_to_i
-          alias_method :attribute_to_i,         :attributes_to_i
+          alias_method :converts_to_integer,    :attributes_to_i
+          alias_method :converts_to_integers,   :attributes_to_i
         end # module ClassMethods
 
         # Convert attributes to floats.
@@ -137,7 +137,8 @@ module ActiveModel
           attributes_convert(:should_be_floats, :to_f_default) { |v| v.to_f }
         end
         filtering_method  :attributes_to_f, :should_be_floats
-        alias_method      :attributes_to_floats,   :attributes_to_f
+        alias_method      :attributes_to_floats,  :attributes_to_f
+        alias_method      :convert_to_floats,     :attributes_to_f
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -149,9 +150,8 @@ module ActiveModel
           end
           alias_method :convert_to_float,      :attributes_to_f
           alias_method :convert_to_floats,     :attributes_to_f
-          alias_method :attributes_to_floats,  :attributes_to_f
-          alias_method :attribute_to_floats,   :attributes_to_f
-          alias_method :attribute_to_f,        :attributes_to_f
+          alias_method :converts_to_float,     :attributes_to_f
+          alias_method :converts_to_floats,    :attributes_to_f
         end # module ClassMethods
 
         # Convert attributes to numbers.
@@ -165,10 +165,11 @@ module ActiveModel
         # 
         # @return [void]
         def attributes_to_numbers
-          attributes_convert(:should_be_numbers, :to_f_default) { |v| v.to_f }
+          attributes_convert(:should_be_numbers, :to_num_default) { |v| v.to_f }
         end
         filtering_method  :attributes_to_numbers, :should_be_numbers
-        alias_method      :attribute_to_numbers, :attributes_to_numbers
+        alias_method      :convert_to_numbers,    :attributes_to_numbers
+        alias_method      :attribute_to_numbers,  :attributes_to_numbers
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -180,7 +181,8 @@ module ActiveModel
           end
           alias_method :convert_to_number,     :attributes_to_numbers
           alias_method :convert_to_numbers,    :attributes_to_numbers
-          alias_method :attribute_to_numbers,  :attributes_to_numbers
+          alias_method :converts_to_number,    :attributes_to_numbers
+          alias_method :converts_to_numbers,   :attributes_to_numbers
         end # module ClassMethods
 
         # Convert attributes to rationals.
@@ -198,6 +200,7 @@ module ActiveModel
         filtering_method  :attributes_to_r, :should_be_rationals
         alias_method      :attributes_to_rationals,  :attributes_to_r
         alias_method      :attributes_to_fractions,  :attributes_to_r
+        alias_method      :convert_to_rationals,     :attributes_to_r
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -211,9 +214,10 @@ module ActiveModel
           alias_method :convert_to_rationals,     :attributes_to_r
           alias_method :convert_to_fraction,      :attributes_to_r
           alias_method :convert_to_fractions,     :attributes_to_r
-          alias_method :attributes_to_rationals,  :attributes_to_r
-          alias_method :attribute_to_rationals,   :attributes_to_r
-          alias_method :attribute_to_fraction,    :attributes_to_r
+          alias_method :converts_to_rational,     :attributes_to_r
+          alias_method :converts_to_rationals,    :attributes_to_r
+          alias_method :converts_to_fraction,     :attributes_to_r
+          alias_method :converts_to_fractions,    :attributes_to_r
         end # module ClassMethods
 
         # Convert attributes to boolean values.
@@ -230,6 +234,7 @@ module ActiveModel
         end
         filtering_method  :attributes_to_b, :should_be_boolean
         alias_method      :attributes_to_boolean, :attributes_to_b
+        alias_method      :convert_to_boolean,    :attributes_to_b
 
         # This submodule contains class methods used to easily define filter.
         module ClassMethods
@@ -241,8 +246,8 @@ module ActiveModel
           end
           alias_method :convert_to_boolean,      :attributes_to_b
           alias_method :convert_to_booleans,     :attributes_to_b
-          alias_method :attributes_to_booleans,  :attributes_to_b
-          alias_method :attribute_to_booleans,   :attributes_to_b
+          alias_method :converts_to_boolean,     :attributes_to_b
+          alias_method :converts_to_booleans,    :attributes_to_b
         end # module ClassMethods
 
       end # module Convert

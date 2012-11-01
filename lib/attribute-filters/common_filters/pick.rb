@@ -59,7 +59,7 @@ module ActiveModel
               end
             end
           end
-        end
+        end 
         filtering_method :pick_attributes, :should_be_picked
 
         # This submodule contains class methods used to easily define filter.
@@ -77,8 +77,9 @@ module ActiveModel
                 :pick_join        => [:joiner, :join, :join_with, :pick_join]
               }, :pick_separator
           end
-          alias_method :pick_attribute, :pick_attributes
-          alias_method :pick_from, :pick_attributes
+          alias_method :pick_attribute,   :pick_attributes
+          alias_method :picks_attribute,  :pick_attributes
+          alias_method :picks_attributes, :pick_attributes
         end # module ClassMethods
       end # module Pick
 

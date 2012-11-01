@@ -45,7 +45,9 @@ module ActiveModel
             setup_attributes_that :should_be_reversed, args,
               :reverse_enumerable => [:enum, :enums, :whole_enums, :reverse_enums, :reverse_enumerable]
           end
-          alias_method :reverse_attribute, :reverse_attributes
+          alias_method :reverse_attribute,    :reverse_attributes
+          alias_method :reverses_attribute,   :reverse_attributes
+          alias_method :reverses_attributes,  :reverse_attributes
         end # module ClassMethods
       end # module Order
 
@@ -91,7 +93,9 @@ module ActiveModel
               :shuffle_generator  => [:random_generator, :generator, :rnd, :shuffle_generator]
             }, :shuffle_generator
         end
-        alias_method :shuffle_attribute, :shuffle_attributes
+        alias_method :shuffle_attribute,  :shuffle_attributes
+        alias_method :shuffles_attribute,   :shuffle_attributes
+        alias_method :shuffles_attributes,  :shuffle_attributes
       end # module ClassMethods
 
       include Order

@@ -42,7 +42,9 @@ module ActiveModel
           def downcase_attributes(*args)
             attributes_that(:should_be_downcased, args)
           end
-          alias_method :downcase_attribute, :downcase_attributes
+          alias_method :downcase_attribute,   :downcase_attributes
+          alias_method :downcases_attribute,  :downcase_attributes
+          alias_method :downcases_attributes, :downcase_attributes
         end # module ClassMethods
 
         # Upcases attributes.
@@ -70,7 +72,9 @@ module ActiveModel
           def upcase_attributes(*args)
             attributes_that(:should_be_upcased, args)
           end
-          alias_method :upcase_attribute, :upcase_attributes
+          alias_method :upcase_attribute,   :upcase_attributes
+          alias_method :upcases_attribute,  :upcase_attributes
+          alias_method :upcases_attributes, :upcase_attributes
         end # module ClassMethods
 
         # Titleizes attributes.
@@ -98,7 +102,9 @@ module ActiveModel
           def titleize_attributes(*args)
             attributes_that(:should_be_titleized, args)
           end
-          alias_method :titleize_attribute, :titleize_attributes
+          alias_method :titleize_attribute,   :titleize_attributes
+          alias_method :titleizes_attribute,  :titleize_attributes
+          alias_method :titleizes_attributes, :titleize_attributes
         end # module ClassMethods
 
         # Capitalizes attributes.
@@ -146,13 +152,17 @@ module ActiveModel
           def capitalize_attributes(*args)
             attributes_that(:should_be_capitalized, args)
           end
-          alias_method :capitalize_attribute, :capitalize_attributes
+          alias_method :capitalize_attribute,   :capitalize_attributes
+          alias_method :capitalizes_attribute,  :capitalize_attributes
+          alias_method :capitalizes_attributes, :capitalize_attributes
 
           # Registers attributes that should be fully capitalized.
           def fully_capitalize_attributes(*args)
             attributes_that(:should_be_fully_capitalized, args)
           end
           alias_method :fully_capitalize_attribute,    :fully_capitalize_attributes
+          alias_method :fully_capitalizes_attribute,   :fully_capitalize_attributes
+          alias_method :fully_capitalizes_attributes,  :fully_capitalize_attributes
           alias_method :titleize_with_squeezed_spaces, :fully_capitalize_attributes
         end # module ClassMethods
       end # module Case

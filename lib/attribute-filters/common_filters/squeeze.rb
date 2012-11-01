@@ -51,7 +51,9 @@ module ActiveModel
                                        :with_characters, :with_character, :characters]
               }, :squeeze_other_str
           end
-          alias_method :squeeze_attribute, :squeeze_attributes
+          alias_method :squeeze_attribute,    :squeeze_attributes
+          alias_method :squeezes_attribute,   :squeeze_attributes
+          alias_method :squeezes_attributes,  :squeeze_attributes
         end # module ClassMethods
 
         # Squeezes white characters in attributes, removes leading and trailing spaces and newlines.
@@ -79,7 +81,9 @@ module ActiveModel
           def squish_attributes(*args)
             attributes_that(:should_be_squished, args)
           end
-          alias_method :squish_attribute, :squish_attributes
+          alias_method :squish_attribute,     :squish_attributes
+          alias_method :squishes_attribute,   :squish_attributes
+          alias_method :squishes_attributes,  :squish_attributes
         end # module ClassMethods
       end # module Squeeze
 

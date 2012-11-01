@@ -37,7 +37,9 @@ module ActiveModel
           def strip_attributes(*args)
             attributes_that(:should_be_stripped, args)
           end
-          alias_method :strip_attribute, :strip_attributes
+          alias_method :strip_attribute,    :strip_attributes
+          alias_method :strips_attribute,   :strip_attributes
+          alias_method :strips_attributes,  :strip_attributes
         end # module ClassMethods
       end # module Strip
 

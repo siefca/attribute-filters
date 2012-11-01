@@ -110,9 +110,12 @@ module ActiveModel
           # @option parameters :destination [String,Symbol,Array<String,Symbol>] names of attributes that results should be written to (alternative name)
           # @option parameters :flatten [Boolean] flag that causes the resulting, intermediate array to be flattened
           # @option parameters :split_flatten [Boolean] flag that causes the resulting, intermediate array to be flattened (alternative name)
-          # @return [void]
+          # @return [nil]
           def split_attributes(atr_name, parameters = nil)
-            atr_name.is_a?(Hash) and return atr_name.each_pair { |k, v| split_attribute(k, v) }
+            if atr_name.is_a?(Hash)
+              atr_name.each_pair { |k, v| split_attribute(k, v) }
+              return nil
+            end
             setup_attributes_that :should_be_splitted, { atr_name => parameters },
               {
                 :split_pattern  => [ :with, :pattern, :split_pattern ],
@@ -128,8 +131,11 @@ module ActiveModel
             elsif !into.is_a?(Array)
               annotate_attributes_that(:should_be_splitted, :split_into, into.respond_to?(:to_a) ? into.to_a : [ into ])
             end
+            nil
           end
-          alias_method :split_attribute, :split_attributes
+          alias_method :split_attribute,    :split_attributes
+          alias_method :splits_attribute,   :split_attributes
+          alias_method :splits_attributes,  :split_attributes
         end # module ClassMethods
       end # module Split
 

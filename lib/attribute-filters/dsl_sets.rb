@@ -307,12 +307,21 @@ module ActiveModel
           nil
         end
       end
-      alias_method :attributes_that_are,  :attribute_set
-      alias_method :attributes_that,      :attribute_set
-      alias_method :attributes_are,       :attribute_set
-      alias_method :attributes_for,       :attribute_set
-      alias_method :attributes_set,       :attribute_set
-      alias_method :properties_that,      :attribute_set
+      alias_method :attributes_that_are,      :attribute_set
+      alias_method :attributes_that,          :attribute_set
+      alias_method :attributes_are,           :attribute_set
+      alias_method :attributes_for,           :attribute_set
+      alias_method :attributes_set,           :attribute_set
+      alias_method :properties_that,          :attribute_set
+      alias_method :has_attributes_that_are,  :attribute_set
+      alias_method :has_attributes_that,      :attribute_set
+      alias_method :has_attribute_that,       :attribute_set
+      alias_method :has_attribute_that_is,    :attribute_set
+      alias_method :has_attributes_are,       :attribute_set
+      alias_method :has_attributes_for,       :attribute_set
+      alias_method :has_attributes_set,       :attribute_set
+      alias_method :has_attribute_set,        :attribute_set
+      alias_method :has_properties_that,      :attribute_set
 
       # @overload filter_attribute()
       #   Gets all the defined attribute sets.
@@ -377,12 +386,19 @@ module ActiveModel
           nil
         end
       end
-      alias_method :the_attribute,        :filter_attribute
-      alias_method :add_attribute_to_set, :filter_attribute
-      alias_method :add_attribute_to_sets,:filter_attribute
-      alias_method :attribute_to_set,     :filter_attribute
-      alias_method :filtered_attribute,   :filter_attribute
-      alias_method :filtered_attributes,  :filter_attribute
+      alias_method :the_attribute,            :filter_attribute
+      alias_method :add_attribute_to_set,     :filter_attribute
+      alias_method :add_attribute_to_sets,    :filter_attribute
+      alias_method :attribute_to_set,         :filter_attribute
+      alias_method :filtered_attribute,       :filter_attribute
+      alias_method :filtered_attributes,      :filter_attribute
+      alias_method :filters_attribute,        :filter_attribute
+      alias_method :filters_attributes,       :filter_attribute
+      alias_method :adds_attribute_to_set,    :filter_attribute
+      alias_method :adds_attribute_to_sets,   :filter_attribute
+      alias_method :has_the_attribute,        :filter_attribute
+      alias_method :has_filtered_attribute,   :filter_attribute
+      alias_method :has_filtered_attributes,  :filter_attribute
 
       # Gets all the defined attribute sets.
       # 
@@ -434,6 +450,9 @@ module ActiveModel
       alias_method :attribute_filters_semi_real,  :treat_as_real
       alias_method :treat_attribute_as_real,      :treat_as_real
       alias_method :treat_attributes_as_real,     :treat_as_real
+      alias_method :treats_attribute_as_real,     :treat_as_real
+      alias_method :treats_attributes_as_real,    :treat_as_real
+      alias_method :treats_as_real,               :treat_as_real
 
       # @overload attribute_filters_virtual(*attributes)
       #   Informs Attribute Filters that the given attributes
@@ -453,9 +472,12 @@ module ActiveModel
         __attribute_filters_virtual << args.flatten.compact.map { |atr| atr.to_s }
         nil
       end
-      alias_method :attribute_filters_virtual, :treat_as_virtual
-      alias_method :treat_attribute_as_virtual, :treat_as_virtual
-      alias_method :treat_attributes_as_virtual, :treat_as_virtual
+      alias_method :attribute_filters_virtual,    :treat_as_virtual
+      alias_method :treat_attribute_as_virtual,   :treat_as_virtual
+      alias_method :treat_attributes_as_virtual,  :treat_as_virtual
+      alias_method :treats_attribute_as_virtual,  :treat_as_virtual
+      alias_method :treats_attributes_as_virtual, :treat_as_virtual
+      alias_method :treats_as_virtual,            :treat_as_virtual
 
       private
 

@@ -57,7 +57,9 @@ module ActiveModel
                 :fill_enumerable => [:replace_enumerable, :replace_enums, :enums, :whole_enums, :fill_enums, :fill_enumerable]
               }, :fill_value
           end
-          alias_method :fill_attribute, :fill_attributes
+          alias_method :fill_attribute,   :fill_attributes
+          alias_method :fills_attribute,  :fill_attributes
+          alias_method :fills_attributes, :fill_attributes
         end # module ClassMethods
       end # module Presence
 

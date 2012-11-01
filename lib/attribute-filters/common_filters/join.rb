@@ -87,11 +87,14 @@ module ActiveModel
                 :join_compact     => [ :compact, :join_compact ]
               }, :join_from
           end
-          alias_method :join_attribute,       :join_attributes
-          alias_method :joint_attribute,      :join_attributes
-          alias_method :joint_attributes,     :join_attributes
-          alias_method :join_attributes_to,   :join_attributes
-          alias_method :join_attributes_into, :join_attributes
+          alias_method :join_attribute,         :join_attributes
+          alias_method :joint_attribute,        :join_attributes
+          alias_method :joint_attributes,       :join_attributes
+          alias_method :join_attributes_to,     :join_attributes
+          alias_method :join_attributes_into,   :join_attributes
+          alias_method :joins_attribute,        :join_attributes
+          alias_method :joins_attributes_to,    :join_attributes
+          alias_method :joins_attributes_into,  :join_attributes
         end # module ClassMethods
       end # module Join
 

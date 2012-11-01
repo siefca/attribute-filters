@@ -1,21 +1,27 @@
-
 Common filters
 --------------
 
 ## List of filters ##
 
-* **`capitalize_attributes`**
-* **`fully_capitalize_attributes`**
-* **`titleize_attributes`**
-* **`downcase_attributes`**
-* **`upcase_attributes`**
-* **`strip_attributes`**
-* **`squeeze_attributes`**
-* **`squish_attributes`**
-
 See the
 [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
 for descriptions of common filtering modules.
+
+Terms used when describing filters:
+
+> Callback method – a method that does the filtering, may be called manually, registered as a callback (e.g. with `after_` or `before_` methods from Active Record) or called automatically when `filter_attributes` is called.
+
+> Class-level helper – a DSL method that may be used in a model class to setup a filter.
+
+> Uses set – a global attribute set (assigned to model) that is used to store information on attributes that should be filtered and optional parameters (stored as annotations) that are sometimes used by filtering method.
+
+> Operates on – data types that the filtering method operates on.
+
+> Uses annotations – a statement concerning the use of annotations (as parameters) by the filtering method and a list of annotations and their meanings.
+
+> Parameters' aliases – aliases of parameters that can be used when utilizing class-level helper to setup the given filter.
+
+> Default annotation – a parameter which value is taken from a value assigned to the whole attribute when setting up a filter.
 
 ### Case ###
 
@@ -27,6 +33,7 @@ Capitalizes attributes.
 
 * Callback method: `capitalize_attributes`
 * Class-level helper: `capitalize_attributes(*attribute_names)`
+* Class-level helper aliases: `capitalize_attribute`, `capitalizes_attribute`, `capitalizes_attributes`
 * Uses set: `:should_be_capitalized`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -67,6 +74,7 @@ Capitalizes attributes and squeezes spaces that separate strings.
 
 * Callback method: `fully_capitalize_attributes`
 * Class-level helper: `fully_capitalize_attributes(*attribute_names)`
+* Class-level helper aliases: `fully_capitalize_attribute`, `fully_capitalizes_attribute`, `fully_capitalizes_attributes`
 * Uses set: `:should_be_fully_capitalized`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -107,6 +115,7 @@ Titleizes attributes.
 
 * Callback method: `titleize_attributes`
 * Class-level helper: `titleize_attributes(*attribute_names)`
+* Class-level helper aliases: `titleize_attribute`, `titleizes_attribute`, `titleizes_attributes`
 * Uses set: `:should_be_titleized`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -147,6 +156,7 @@ Upcases attributes.
 
 * Callback method: `upcase_attributes`
 * Class-level helper: `upcase_attributes(*attribute_names)`
+* Class-level helper aliases: `upcase_attribute`, `upcases_attribute`, `upcases_attributes`
 * Uses set: `:should_be_upcased`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -187,6 +197,7 @@ Downcases attributes.
 
 * Callback method: `downcase_attributes`
 * Class-level helper: `downcase_attributes(*attribute_names)`
+* Class-level helper aliases: `downcase_attribute`, `downcases_attribute`, `downcases_attributes`
 * Uses set: `:should_be_downcased`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -221,6 +232,280 @@ will become:
 
 > `"some name"`
 
+### Convert ###
+
+* Submodule: [`Convert`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Convert.html)
+
+#### `attributes_to_s` ####
+
+Converts attributes to strings.
+
+* Callback method: `attributes_to_s`
+* Class-level helper: `attributes_to_s(*attribute_names)`
+* Class-level helper aliases: `convert_to_strings`, `convert_to_string`, `converts_to_strings`, `converts_to_string`
+* Uses set: `:should_be_strings`
+* Operates on: numbers, arrays of numbers, hashes of numbers (as values), other convertable types
+* Uses annotations: yes
+ * `:to_s_default` – a value used in case of a conversion error
+ * `:to_s_base` – a base used when converting numbers (2 for binary, 10 for decimal and so on) (default annotation)
+* Parameters' aliases:
+ * `:to_s_default` – `:default`, `:on_error`
+ * `:to_s_base` – `:base`, `:with_base`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  convert_to_strings  :name
+  before_validation   :attributes_to_strings
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  attributes_that     :should_be_strings => [ :name ]
+  before_validation   :attributes_to_strings
+end
+```
+
+#### `attributes_to_i` ####
+
+Converts attributes to integers.
+
+* Callback method: `attributes_to_i`
+* Class-level helper: `attributes_to_i(*attribute_names)`
+* Class-level helper aliases: `convert_to_integers`, `convert_to_integer`, `converts_to_integers`, `converts_to_integer`
+* Uses set: `:should_be_integers`
+* Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
+* Uses annotations: yes
+ * `:to_i_default` – a value used in case of a conversion error
+ * `:to_i_base` – a base used when converting numbers (2 for binary, 10 for decimal and so on) (default annotation)
+* Parameters' aliases:
+ * `:to_i_default` – `:default`, `:on_error`
+ * `:to_i_base` – `:base`, `:with_base`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  convert_to_integers :number
+  before_validation   :attributes_to_integers
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  attributes_that   :should_be_integers => [ :number ]
+  before_validation :attributes_to_integers
+end
+```
+
+#### `attributes_to_f` ####
+
+Converts attributes to floats.
+
+* Callback method: `attributes_to_f`
+* Class-level helper: `attributes_to_f(*attribute_names)`
+* Class-level helper aliases: `convert_to_floats`, `convert_to_float`, `converts_to_floats`, `converts_to_float`
+* Uses set: `:should_be_floats`
+* Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
+* Uses annotations: yes
+ * `:to_f_default` – a value used in case of a conversion error (default annotation)
+* Parameters' aliases:
+ * `:to_f_default` – `:default`, `:on_error`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  convert_to_floats :number
+  before_validation :attributes_to_floats
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  attributes_that   :should_be_floats => [ :number ]
+  before_validation :attributes_to_floats
+end
+```
+
+#### `attributes_to_numbers` ####
+
+Converts attributes to numbers.
+
+Works the same way as `attributes_to_f` but uses different attribute set.
+
+* Callback method: `attributes_to_numbers`
+* Class-level helper: `attributes_to_numbers(*attribute_names)`
+* Class-level helper aliases: `convert_to_numbers`, `convert_to_number`, `converts_to_numbers`, `converts_to_number`
+* Uses set: `:should_be_numbers`
+* Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
+* Uses annotations: yes
+ * `:to_num_default` – a value used in case of a conversion error (default annotation)
+* Parameters' aliases:
+ * `:to_num_default` – `:default`, `:on_error`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  convert_to_numbers   :number
+  before_validation     :attributes_to_numbers
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  attributes_that     :should_be_numbers => [ :number ]
+  before_validation   :attributes_to_numbers
+end
+```
+
+#### `attributes_to_r` ####
+
+Converts attributes to rationals.
+
+* Callback method: `attributes_to_r`
+* Class-level helper: `attributes_to_r(*attribute_names)`
+* Class-level helper aliases: `convert_to_rationals`, `convert_to_rational`, `converts_to_rationals`, `converts_to_rational`, `convert_to_fractions`, `convert_to_fraction`, `converts_to_fractions`, `converts_to_fraction`
+* Uses set: `:should_be_rationals`
+* Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
+* Uses annotations: yes
+ * `:to_r_default` – a value used in case of a conversion error (default annotation)
+* Parameters' aliases:
+ * `:to_r_default` – `:default`, `:on_error`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  convert_to_rationals   :number
+  before_validation     :attributes_to_rationals
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  attributes_that     :should_be_rationals => [ :number ]
+  before_validation   :attributes_to_rationals
+end
+```
+
+#### `attributes_to_b` ####
+
+Converts attributes to boolean.
+
+* Callback method: `attributes_to_b`
+* Class-level helper: `attributes_to_b(*attribute_names)`
+* Class-level helper aliases: `convert_to_booleans`, `convert_to_boolean`, `converts_to_booleans`, `converts_to_boolean`
+* Uses set: `:should_be_boolean`
+* Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
+* Uses annotations: yes
+ * `:to_b_default` – a value used in case of a conversion error (default annotation)
+* Parameters' aliases:
+ * `:to_b_default` – `:default`, `:on_error`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  convert_to_boolean   :number
+  before_validation     :attributes_to_boolean
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Convert
+
+  attributes_that     :should_be_boolean => [ :number ]
+  before_validation   :attributes_to_boolean
+end
+```
+
+### Order ###
+
+* Submodule: [`Order`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Order.html)
+
+#### `reverse_attributes` ####
+
+Reverses order of attribute values.
+
+* Callback method: `reverse_attributes`
+* Class-level helper: `reverse_attributes(*attribute_names)`
+* Class-level helper aliases: `reverse_attribute`, `reverses_attribute`, `reverses_attributes`
+* Uses set: `:should_be_reversed`
+* Operates on: strings, arrays of numbers, hashes of numbers (as values), other enumerable types
+* Uses annotations: yes
+ * `:reverse_enumerable` – 
+* Parameters' aliases:
+ * `:reverse_enumerable` – `:enum`, `:enums`, `:whole_enums`, `:reverse_enums`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Order
+
+  reverse_attributes  :name
+  before_validation   :reverse_attributes
+end
+```
+
+or
+
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Order
+
+  attributes_that     :should_be_reversed => [ :name ]
+  before_validation   :reverse_attributes
+end
+```
+
+
 ### Strip ###
 
 * Submodule: [`Strip`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Strip.html)
@@ -231,6 +516,7 @@ Strips attributes of leading and trailing spaces.
 
 * Callback method: `strip_attributes`
 * Class-level helper: `strip_attributes(*attribute_names)`
+* Class-level helper aliases: `strip_attribute`, `strips_attribute`, `strips_attributes`
 * Uses set: `:should_be_stripped`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -275,9 +561,13 @@ Squeezes attributes (squeezes repeating spaces into one).
 
 * Callback method: `squeeze_attributes`
 * Class-level helper: `squeeze_attributes(*attribute_names)`
+* Class-level helper aliases: `squeeze_attribute`, `squeezes_attribute`, `squeezes_attributes`
 * Uses set: `:should_be_squeezed`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
-* Uses annotations: no
+* Uses annotations: yes
+ * `:squeeze_other_str` – argument used when calling [`String#squeeze`](http://www.ruby-doc.org/core/String.html#method-i-squeeze) (optional)
+* Parameters' aliases (used with class-level helper):
+ * `:squeeze_other_str` – `:other_str`, `:string`, `:with_string`, `:with_characters`, `:with_character`, `:characters`
 
 Example:
 
@@ -315,6 +605,7 @@ Squishes attributes (removes all whitespace characters on both ends of the strin
 
 * Callback method: `squish_attributes`
 * Class-level helper: `squish_attributes(*attribute_names)`
+* Class-level helper aliases: `squish_attribute`, `squishes_attribute`, `squishes_attributes`
 * Uses set: `:should_be_squished`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: no
@@ -361,37 +652,65 @@ Splits attributes into arrays and puts the results into other attributes or into
 * Class-level helpers:
  * `split_attributes(attribute_name, parameters_hash)`
  * `split_attributes(attribute_name)`
+* Class-level helper aliases: `split_attribute`, `splits_attribute`, `splits_attributes`
 * Uses set: `:should_be_splitted`
 * Operates on: strings, arrays of strings, hashes of strings (as values)
 * Uses annotations: yes
- * `split_pattern` - a pattern passed to [`split`](http://www.ruby-doc.org/core/String.html#method-i-split) method (optional)
- * `split_limit` - a limit passed to `split` method (optional)
- * `split_into` - attribute names used as destinations for parts
- * `split_flatten` - flag that causes resulting array to be flattened
- 
-If some source attribute is an array or a hash then the filter will recursively traverse it and
+ * `split_pattern` – a pattern passed to [`split`](http://www.ruby-doc.org/core/String.html#method-i-split) method (optional)
+ * `split_limit` – a limit passed to `split` method (optional)
+ * `split_into` – attribute names used as destinations for parts (default annotation)
+ * `split_flatten` – flag that causes resulting array to be flattened
+* Parameters' aliases (used with class-level helpers):
+ * `split_pattern` – `:with`, `:pattern`
+ * `split_limit` – `:limit`
+ * `split_into` – `:into`, `:to`, `:destination`
+ * `split_flatten` – `:flatten`
+
+If a source attribute is an array or a hash then the filter will recursively traverse it and
 operate on each element. The filter works the same way as the `split` method from the `String` class
-of Ruby's standard library. If the filter encounters an object which is not a string nor an array or a hash,
-it simply leaves it as is.
+of Ruby standard library. If the filter encounters an object which is not a string nor an array or a hash,
+it simply leaves the value as is.
 
 You can set `:pattern` (`:split_pattern`) and `:limit` (`:split_limit`) arguments passed to
 `split` method but note that **a limit is applied to each processed string separately**,
-not to the resulting array **(if the processed attribute is an array)**. For instance,
-if there is a string containing 3 words (`'A B C'`) and the limit is set to 2 then the last two words
-will be left intact and placed in a second element of the resulting array (`['A', 'B C']`).
-If the source is an array (`['A', 'B B B B', 'C']`) the result of this operation will be array of arrays
-(`[ ['A'], ['B B'], ['C'] ]`); as you can see the limit will be applied to its second element.
+not to the resulting array **(if the processed attribute is an array)**.
 
-If there are no destination attributes defined (`:into` or `:split_into` option) then
-the resulting array will be written to a current attribute. If there are destination attributes
-given then the resulting array will be written into them (each subsequent element into each next attribute).
-The elements that don't fit in the collection are simply ignored.
+For instance, if there is a string containing 3 words:
+
+> `'A B C'`
+
+and the limit is set to 2 then the last two words will be left intact
+and placed in a second element of the resulting array:
+
+> `['A', 'B C']`
+
+If the source is an array:
+
+> `['A', 'B B B B', 'C']`
+
+then the result of this operation will be the array of arrays:
+
+> `[ ['A'], ['B B'], ['C'] ]`
+
+As you can see the limit will be applied to its second element.
+
+If there are no destination attributes defined (`:into` or `:split_into` option)
+then the resulting array will be written to the currently processed attribute.
+
+If there are destination attributes given then then the resulting array
+will be written into them (each subsequent element into each next attribute).
+The elements that don't fit in the resulting collection of attributes
+are simply ignored **unless the limit is given and it's the same as their count**
+(in such case the rest is, as said before, written into the last element).
 
 There is also `flatten` (or `:split_flatten`) parameter that causes the resulting array to be
 flattened. Note that it doesn't change how the limits work; they still will be applied but to a single
 split results, not to the whole resulting array (in case of array of arrays).
 
 Examples:
+
+(We're using `attr_virtual` here, but in some real-life the source may also be
+a real attribute that is written into the database.)
 
 ```ruby
 class User < ActiveRecord::Base
@@ -400,13 +719,11 @@ class User < ActiveRecord::Base
 
   # Registering virtual attribute
   attr_virtual      :real_name
-  attr_accessible   :real_name
 
   # Adding attribute name to :should_be_splitted set
   split_attributes  :real_name
 
   # Registering callback method
-  # Warning: it will be executed each time model object is validated
   before_validation :split_attributes
 end
 ```
@@ -442,7 +759,6 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Split
 
   attr_virtual      :real_name
-  attr_accessible   :real_name
   split_attributes  :real_name, :limit => 2
   before_validation :split_attributes
 end
@@ -455,7 +771,6 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Split
 
   attr_virtual      :real_name
-  attr_accessible   :real_name
 
   attributes_that   :should_be_splitted => { :real_name => { :split_limit => 2 } }
   before_validation :split_attributes
@@ -478,7 +793,6 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Split
 
   attr_virtual      :real_name
-  attr_accessible   :real_name
   split_attributes  :real_name, :limit => 2, :into => [ :first_name, :last_name ], :pattern => ' '
   before_validation :split_attributes
 end
@@ -507,9 +821,7 @@ If you remove the limit, then it will be quite different:
 
 That's because there are more results than attributes they fit into. You just have to keep in mind
 that this filter behaves like the String's split method with the difference when the results are written
-into other attributes. In that case the limit causes redundant data to be placed in the last element (if a limit
-is lower or is the same as the count of destination attributes) and its lack causes some of the resulting data to
-be ignored (if there are more slices than receiving attributes).
+into other attributes.
 
 The pattern parameter (`:pattern` when using `split_attributes` or `:split_pattern` when directly
 annotating attribute in a set) should be a string.
@@ -526,21 +838,28 @@ Joins attributes and places the results into other attributes or into the same a
 * Class-level helpers:
  * `join_attributes(attribute_name, parameters_hash)` (a.k.a `joint_attribute`)
  * `join_attributes(attribute_name)` (a.k.a `joint_attribute`)
+* Class-level helper aliases: `join_attribute`, `joins_attribute`, `joins_attributes`
 * Uses set: `:should_be_joined`
 * Operates on: strings, arrays of strings
 * Uses annotations: yes
- * `join_separator` - a pattern passed to [`join`](http://www.ruby-doc.org/core/Array.html#method-i-join) method (optional)
- * `join_compact` - compact flag; if true then an array is compacted before it's joined (optional)
- * `join_from` - attribute names used as sources for joins
+ * `join_separator` – a pattern passed to [`join`](http://www.ruby-doc.org/core/Array.html#method-i-join) method (optional)
+ * `join_compact` – compact flag; if true then an array is compacted before it's joined (optional)
+ * `join_from` – attribute names used as sources for joins (default annotation)
+* Parameters' aliases (used with class-level helpers):
+ * `join_separator` – `:with`, `:separator`
+ * `join_compact` – `:compact`
+ * `join_from` – `:from`, `:source`, `:sources`
 
 The join filter uses `join` instance method of the `Array` class to produce single string from multiple strings.
 These strings may be values of other attributes (source attributes), values of an array stored in an attribute
 or mix of it. If the `:compact` (`:join_compact` in case of manually annotating a set) parameter is given
-and it's not `false` nor `nil` then results are compacted during processing. That means any slices equals to `nil` are 
-removed.
+and it's not `false` nor `nil` then the results are compacted during processing. That means any slices (components)
+equals to `nil` are removed just before joining.
 
 If the parameter `:from` (or annotation key `:join_from`) was not given then a currently processed attribute
 is treated as a source (it should be an array).
+
+If the joined attribute is a single attribute and its value is an array then all elements of that array will be joined.
 
 Examples:
 
@@ -565,4 +884,21 @@ or add a descriptive keyword `:into`:
 
 ```ruby
   join_attributes         [ :first_name, :last_name ], :into => :real_name
+```
+
+Adding parameters:
+
+```ruby
+  join_attributes         [ :first_name, :last_name ], :into => :real_name, :compact => true
+```
+or
+
+```ruby
+  join_attributes         [ :first_name, :last_name ] => :real_name, :compact => true
+```
+
+or without class-level helper:
+
+```ruby
+  attributes_that should_be_joined: { :real_name => { :join_from => [ :first_name, :last_name ], :join_compact => true } }
 ```
