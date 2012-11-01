@@ -1733,7 +1733,7 @@ To use all predefined filters you have to manually
 include the [`ActiveModel::AttributeFilters::Common`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common)
 module. That will include **all available filtering methods** into your model.
 
-Predefined filters work by utilizing global attribute sets of predetermined names. For example
+Predefined filters work by utilizing global attribute sets with predetermined names. For example,
 a common filter that downcases attributes will use the set called `:should_be_downcased`.
 
 Example:

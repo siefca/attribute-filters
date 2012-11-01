@@ -2,21 +2,21 @@
 
 Gem::Specification.new do |s|
   s.name = "attribute-filters"
-  s.version = "1.4.0.20120824020319"
+  s.version = "2.0.0.20121101164113"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pawe\u{142} Wilk"]
   s.cert_chain = ["/Users/siefca/.gem/gem-public_cert.pem"]
-  s.date = "2012-08-24"
+  s.date = "2012-11-01"
   s.description = "Concise way of filtering model attributes in Rails."
   s.email = ["pw@gnu.org"]
   s.extra_rdoc_files = ["Manifest.txt"]
-  s.files = [".rspec", ".yardopts", "ChangeLog", "Gemfile", "Gemfile.lock", "LGPL-LICENSE", "Manifest.txt", "README.md", "Rakefile", "attribute-filters.gemspec", "docs/COPYING", "docs/HISTORY", "docs/LEGAL", "docs/LGPL-LICENSE", "docs/TODO", "docs/USAGE.md", "docs/rdoc.css", "docs/yard-tpl/default/fulldoc/html/css/common.css", "init.rb", "lib/attribute-filters.rb", "lib/attribute-filters/active_model_insert.rb", "lib/attribute-filters/attribute_set.rb", "lib/attribute-filters/attribute_set_annotations.rb", "lib/attribute-filters/attribute_set_attrquery.rb", "lib/attribute-filters/attribute_set_enum.rb", "lib/attribute-filters/attribute_set_query.rb", "lib/attribute-filters/backports.rb", "lib/attribute-filters/common_filters.rb", "lib/attribute-filters/common_filters/case.rb", "lib/attribute-filters/common_filters/join.rb", "lib/attribute-filters/common_filters/split.rb", "lib/attribute-filters/common_filters/squeeze.rb", "lib/attribute-filters/common_filters/strip.rb", "lib/attribute-filters/dsl_attr_virtual.rb", "lib/attribute-filters/dsl_filters.rb", "lib/attribute-filters/dsl_sets.rb", "lib/attribute-filters/helpers.rb", "lib/attribute-filters/railtie.rb", "lib/attribute-filters/version.rb", "spec/attribute-filters_spec.rb", "spec/spec_helper.rb", ".gemtest"]
+  s.files = [".rspec", ".yardopts", "ChangeLog", "Gemfile", "Gemfile.lock", "LGPL-LICENSE", "Manifest.txt", "README.md", "Rakefile", "attribute-filters.gemspec", "docs/COMMON-FILTERS.md", "docs/COPYING", "docs/HISTORY", "docs/LEGAL", "docs/LGPL-LICENSE", "docs/TODO", "docs/USAGE.md", "docs/rdoc.css", "docs/yard-tpl/default/fulldoc/html/css/common.css", "init.rb", "lib/attribute-filters.rb", "lib/attribute-filters/active_model_insert.rb", "lib/attribute-filters/attribute_set.rb", "lib/attribute-filters/attribute_set_annotations.rb", "lib/attribute-filters/attribute_set_attrquery.rb", "lib/attribute-filters/attribute_set_enum.rb", "lib/attribute-filters/attribute_set_query.rb", "lib/attribute-filters/backports.rb", "lib/attribute-filters/common_filters.rb", "lib/attribute-filters/common_filters/bare.rb", "lib/attribute-filters/common_filters/case.rb", "lib/attribute-filters/common_filters/convert.rb", "lib/attribute-filters/common_filters/join.rb", "lib/attribute-filters/common_filters/order.rb", "lib/attribute-filters/common_filters/pick.rb", "lib/attribute-filters/common_filters/presence.rb", "lib/attribute-filters/common_filters/split.rb", "lib/attribute-filters/common_filters/squeeze.rb", "lib/attribute-filters/common_filters/strip.rb", "lib/attribute-filters/dsl_attr_virtual.rb", "lib/attribute-filters/dsl_filters.rb", "lib/attribute-filters/dsl_sets.rb", "lib/attribute-filters/helpers.rb", "lib/attribute-filters/meta_set.rb", "lib/attribute-filters/railtie.rb", "lib/attribute-filters/version.rb", "spec/attribute-filters_spec.rb", "spec/spec_helper.rb", ".gemtest"]
   s.homepage = "https://rubygems.org/gems/attribute-filters/"
   s.rdoc_options = ["--title", "Attribute::Filters Documentation", "--quiet"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "attribute-filters"
-  s.rubygems_version = "1.8.11"
+  s.rubygems_version = "1.8.24"
   s.signing_key = "/Users/siefca/.gem/gem-private_key.pem"
   s.summary = "Concise way of filtering model attributes in Rails"
 
