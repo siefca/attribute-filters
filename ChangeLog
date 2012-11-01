@@ -1,3 +1,498 @@
+commit 602f63462008c2eee2fc9a1fabb231a3fa8bc858
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 17:05:51 2012 +0100
+
+    Version 2
+
+commit 3595cf888a15cbb2fc94078992be099c9e110ab4
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 16:43:34 2012 +0100
+
+    Dependencies updated
+
+commit 2a5d3d3cf0fe2dcb1711f12fc1322586bdbeaad5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 16:37:20 2012 +0100
+
+    Documentation updated
+
+commit 4060f7d9e0109361a737afd6e643f4794cf8db44
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 16:32:00 2012 +0100
+
+    Documentation updated
+
+commit d67f9e5f06b3a365a322b7b8bd7899662668f035
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 16:31:40 2012 +0100
+
+    Added missing aliases
+
+commit ab1f3904ea9205c5a8f0cf2e76a30a3a69dd7cfa
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 11:39:05 2012 +0100
+
+    Documentation updated
+
+commit e5c82df87c5f979aa693de192b3b24feab6ebbba
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 11:38:45 2012 +0100
+
+    Filtering methods register merging improved (now it works with indirect inclusion too)
+
+commit 86a4f948eec075f693b81014bf81e57c59755ade
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 11:37:01 2012 +0100
+
+    AttributeSet#annotations now returns a hash containing only annotated attributes
+
+commit 19d39e8f7bc84e2f044de286a1719b35cc988bb7
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 11:36:14 2012 +0100
+
+    Class methods names disambiguated (added second-person aliases)
+
+commit 476bf111c8179a50947b885b98d4bf3d875a65a1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 20:33:32 2012 +0100
+
+    Documentation updated, common filters specific documentation moved to docs/COMMON-FILTERS.md
+
+commit 92c28621620f047deb5ddb7753e2fe901c181a2b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 19:17:17 2012 +0100
+
+    Fixed return values of methods
+
+commit bd757dfd8d024669f9b26ecd9fe7bcdf78b5fff5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 18:57:32 2012 +0100
+
+    More fixes for MetaSet compliance
+
+commit 0350a2e481faf93511f20713decc9ebea69cd526
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 18:56:58 2012 +0100
+
+    Documentation updated
+
+commit 543cba5aa180149f5a68addbf8eb55670bc171bf
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 18:56:44 2012 +0100
+
+    Fixed four errors in DSL proxy class AttributeSet::Query (validation and changes tracking)
+
+commit 57eb34f3a9a70674eaaf59264bd5f8e05eefa38f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 18:55:32 2012 +0100
+
+    The MetaSet class moved to a separate file
+
+commit 3f54db096b5511e7a95d6eb5dadfbbf14d64a54c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 11:56:58 2012 +0100
+
+    Improved filtering methods registration and querying
+
+commit b5965852204ee64339ef4581670083c5e1b5313e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 11:56:07 2012 +0100
+
+    Added MetaSet – a simple replacement for a Hash in internal data structures
+
+commit 0954ee3935e1da40462d97fb04b66123230e3b3b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 11:48:07 2012 +0100
+
+    Added bare filtering module
+
+commit 1d3c941bbaa691235c4bdfa3fadc30cfa3ab2e02
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 31 11:47:49 2012 +0100
+
+    Documentation updated
+
+commit 02ff862f148306e7f713f4024569abb5d8773491
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Oct 30 21:36:16 2012 +0100
+
+    Creating filtering methods and calling all filters seriously refactored
+    
+    - Added DSL class method filtering_method that memorizes method->attribute set pairs
+      (available in all classes that directly or indirectly include AttributeFilters;
+    
+    - Added __filtering_sets class instance variable merging to CommonFilter#included hook,
+      which is then propagated as class method to all classes that contain common and custom filters;
+    
+    - Changed filter_attributes DSL method, it now calls any method registered as filtered (uses
+      __filtering_sets class instance variable) if there is a global set in use, which name
+      is assigned to some filtering method;
+    
+    - Added registered_attribute_filters DSL instance method for listing registered methods
+
+commit 73533da9b37b460e84bc147da3504bc68fdcb9fd
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Oct 30 21:28:03 2012 +0100
+
+    Added AttributeSet#each_name_value enumerator
+
+commit 82e518659429899b53e889dfca09b473a2836e3e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Oct 30 21:27:37 2012 +0100
+
+    Documentation updated
+
+commit c48345e34ade6ddf99d1a79f1305b2cf04995aa5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 15:16:37 2012 +0200
+
+    Refactored AttrQuery initialization, added attribute name gethering from next method name in a chain
+
+commit ac8f8131134be35fa3e1cac5118856b0d7664142
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 15:15:32 2012 +0200
+
+    Added filtered_attribute_simple DSL method
+
+commit b4ee22cc8d7a66a44062f105ecb04aa8554d4d2d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 15:14:50 2012 +0200
+
+    Improved attribute_set DSL method (removed unneeded condition)
+
+commit 26182a3a5650321fb7e286374613f460368986cd
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 15:13:36 2012 +0200
+
+    Fixed attribute_set DSL method: doesn't return duplicate of a frozen set anymore
+
+commit fc2b32fcba24149018c82c2ca4b50d932d0b04a3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 02:55:58 2012 +0200
+
+    The all_attributes DSL instance method can now use the next method call to get a set name
+
+commit fed4f500863fc2dce347128ae4ad9346e45f284b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 02:54:49 2012 +0200
+
+    Added attribute_set_exists? DSL class method
+
+commit 85564f3c6be7b7703b49a8ebd7f88ff672d00644
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 01:29:24 2012 +0200
+
+    Documentation updated
+
+commit cb5f24dc693cc18751b775aae551db0466ce306f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 27 01:29:17 2012 +0200
+
+    Added virtual? and semi_real? to AttrQuery proxy
+
+commit 299fcb8d3b87bb24b25b7b3a739281640dd6d8a3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 15:07:30 2012 +0200
+
+    Documentation updated
+
+commit f1da92544ce9be6198861e908fed0ac22802a713
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 15:07:18 2012 +0200
+
+    Typo fixed in the all_attributes DSL method
+
+commit 3f31782c3783f14885d6cd74925329aeff2ef640
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 15:06:29 2012 +0200
+
+    Added changed? and unchanged? to Query, fixed argument passing to next method in chain
+
+commit 15de2f97034844656a6be5866316ba3348aa0cb5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 15:05:39 2012 +0200
+
+    Added changed? and unchanged? to AttrQuery
+
+commit 7a9f00c6b2876f811b0775a2d683fb13180b99a3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 15:05:04 2012 +0200
+
+    Improved Query DSL methods: valid?, invalid?, accessible?, protected?
+
+commit bc9cd1de49b5eb4d25e41e688f92fd9500cb4943
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 15:03:40 2012 +0200
+
+    Added AttributeSet#to_set
+
+commit 191c00b2d5c1104448c5be2da02975fa79ba9233
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 10:12:51 2012 +0200
+
+    Overriden inspect method in AttributeSet
+
+commit 062d4114cb6b5573b135e8c08c1df3fe4480ded5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 26 10:10:58 2012 +0200
+
+    Added valid? and invalid? responders to AttributeSet::AttrQuery
+
+commit 7289165792ec36408d42620fd3f8620e7fe16556
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 25 22:35:15 2012 +0200
+
+    Fixed AttributeSet::Query wrapper calls, improved Query initializer (added error checking)
+
+commit b16c4f40c845cdf32830fe340116033e9007edb5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 25 15:44:29 2012 +0200
+
+    Attribute Filters are now 2 times faster than before optimizations. ;-)
+
+commit b0aa47edd4fa4f5cb6467d75844081d3b0415d60
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 25 15:12:27 2012 +0200
+
+    DLS method attributes_to_filter improved (removed redundant calls to set duplicates)
+    
+    Looks a bit messy but it's faster
+
+commit ba4c88480b30d590ba9e20eb8bb7663375dfbce5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 25 15:10:32 2012 +0200
+
+    Enumerators improved: sort, select, reject fixed; all other wrapped to return AttributeSet object
+
+commit 08cd09f7164d606d396fd488f7e4088a12f2ae38
+Merge: ce84ecd 4a27e64
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 25 01:33:39 2012 +0200
+
+    Merge branch 'hashset': AttributeSet is now based on nested hashes
+
+commit 4a27e64da26f6451582a0643e3930989951016c9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 25 01:25:50 2012 +0200
+
+    Serious refactoring: creation of duplicates for sets moved to class-level accessors
+
+commit 2dd84925a3a025ba199feaa21ac91e1cb78f7cfa
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 21:04:21 2012 +0200
+
+    Refactored all_attributes DSL method and removed all_attributes_simple (speed related optimizations)
+
+commit bd509597813cfe4efabc208c968fa6430f488fcb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 21:02:45 2012 +0200
+
+    Replaced block with select_accessible enumerator in all_semi_real_attributes DSL method
+
+commit c636f157a706595ed2c66a37fb470a8e2a3f4f98
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 21:00:44 2012 +0200
+
+    s/attribute_filters_virtual/treat_as_virtual/
+
+commit acfc44cff753e8e2e3daa463e7033f439b7b1731
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 20:59:25 2012 +0200
+
+    treat_as_real and treat_as_virtual accessors moved to dsl_sets.rb
+
+commit 94d6b45a5d2e81061e93352caf61f45f0570d921
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 20:56:45 2012 +0200
+
+    Added AttributeSet::Enumerator#select_accessible for picking up attributes that have setters/getters
+
+commit ad7e8e824f36781fb1876fd406f8dd8c65bee204
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 20:55:47 2012 +0200
+
+    Adding elements to sets improved, AttributeSet initializer uses the method add()
+
+commit 18b3b77a02ec141b47a909bb4b9b0b8429d2fde7
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 11:00:17 2012 +0200
+
+    Improved virtual and semi-real attributes storage handling
+
+commit f64476a208d304f261721b9e56be2c410c09fd5a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 24 10:57:47 2012 +0200
+
+    Changed include? to key?
+
+commit 14fb78dd7322d4ab1bf1640530e387c05cc3a658
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Oct 23 14:59:49 2012 +0200
+
+    Compatibility fixes after changing basic structure to be ancestor of the Hash
+
+commit d7ce56dfd6e1d9bd056381e018d2b44c980e5fd2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Oct 23 11:49:28 2012 +0200
+
+    Basic data structure (AttributeSet) is now based directly on a Hash
+
+commit ce84ecd151cc523af935985e44ef7b11f3fb9934
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Oct 21 20:53:25 2012 +0200
+
+    Prepared for branch
+
+commit e674eb0a5ffa54b97a82bd2e105856b3398145c4
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Oct 21 15:06:30 2012 +0200
+
+    The each_element helper improved
+
+commit 8d44b5d1f448262c6599b8ab13762d5a1eb19de8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Oct 21 15:05:44 2012 +0200
+
+    Virtual attributes handling simplified, created different sets for virtual and semi-real attributes
+
+commit f6ed979c584c6935dfbc62ef3f4036bde4d25005
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 18 22:29:38 2012 +0200
+
+    README updated
+
+commit 50fac4cb0e3972e3aab41017cdc8bbae8759f8d3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 13 15:15:11 2012 +0200
+
+    Replaced hash.merge(hash) expressions with more HashWithIndifferentAccess compliant
+
+commit 97d622f3ceb1314b5ea323bcbc91eaba7c0f4fb2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 13 13:12:53 2012 +0200
+
+    Added :enum as an alias name for :enums flags in parametrized common filters
+
+commit feff6921c6b2542193c66c8f2b74e9d359f29743
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Oct 13 13:12:19 2012 +0200
+
+    Added Pick filters for array and string manipulation (range and step based husking)
+
+commit 114a7263e8752479262cddd039a3636fb247ae74
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 17:06:39 2012 +0200
+
+    Added shuffle filter to Order common filters
+
+commit 0e68700f03c1d49cafed8392831f0c56d6dc8eb5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 14:58:39 2012 +0200
+
+    Added Order common filters group
+
+commit f685f03195ff65927c0e0e50ef9c20cc9ac8a250
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 14:15:23 2012 +0200
+
+    Common filters inclusion automated
+
+commit 3cede89f7fba20efe99534757312321b3e1414a3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 14:15:04 2012 +0200
+
+    Added presence and convert filters to Manifest.txt
+
+commit 306ae4bdcf8a07c12094ee77a7a072b089beac17
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 14:00:09 2012 +0200
+
+    Added :replace_enumerable to common filters
+
+commit 18c663acb7338289fe9f6240ecaef954406a1908
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 13:14:37 2012 +0200
+
+    Documentation updated
+
+commit 41548b693aae3f83ca0ce8b0efeafc7a033aed5f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 13:11:05 2012 +0200
+
+    Refactored common filters (all are using setup_attributes_set to set parameters as annotations)
+
+commit be8e6cb43d9e5596a4d5b353fddcd4f486e219f0
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 01:13:48 2012 +0200
+
+    Documentation updated
+
+commit 8a6bb42886a593eba070322c6d6033465a725d35
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Oct 12 01:13:35 2012 +0200
+
+    Added Presence filter module (and moved fill attribute filter into it)
+
+commit d340ba770d8a668d0e07ba04af4893b58fbf9a63
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 11 23:16:42 2012 +0200
+
+    Added Fill filter
+
+commit 038aa87c42c4da2f413d733c53b0a6261d231cbe
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 11 23:16:04 2012 +0200
+
+    Added setup_attributes_set generic method that helps in parsing parametrized attribute sets
+
+commit 927c86e0b616d79a93eecaf017fa7b492a432c00
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 3 13:22:09 2012 +0200
+
+    Added Convert common filters for converting attribute types
+
+commit c49184e0c478be46b1161e6d0afc1f6d03c5c797
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 3 13:21:29 2012 +0200
+
+    Added squeeze filter example to spec
+
+commit 85240335169123643e62342f3a3502fcbbc06c09
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 3 13:20:41 2012 +0200
+
+    Squeeze filtering method now supports parameter (other_text)
+
+commit 727ea13e01c7733f3433419b7f753c17c8d3fd70
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 3 13:19:48 2012 +0200
+
+    Added missing documentation to join and split filtering methods
+
+commit dad78091b838e6dcdda383c556789a57309dfb3e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Oct 3 13:19:20 2012 +0200
+
+    Added annotate_attributes_with_params helper
+
+commit 40f1378a8da604836c2f1ab47151d645cb0eb440
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Sep 8 14:54:38 2012 +0200
+
+    README updated
+
+commit 7cb026fcc75f9a0adde1fbd4d61031a242e6551e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Aug 24 13:34:02 2012 +0200
+
+    ChangeLog updated
+
+commit 0fef709aca9b1424c499fb2577c068731d7a171a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Aug 24 13:33:55 2012 +0200
+
+    Class methods from common filters are now inheritable if base is a module
+
 commit 5c5da5237f5f563b454395719375a56715eceedd
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Aug 24 02:03:44 2012 +0200
