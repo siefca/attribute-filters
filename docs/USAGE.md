@@ -1176,7 +1176,7 @@ The evaluated block can make use of the following arguments that are passed to i
 * `set_name` [Symbol] - a name of the processed attribute set
 * `args` [Array] - an optional arguments passed to the method
 
-By default only existing, changed and non-blank attributes are processed.
+By default only **existing, changed and non-blank** attributes are processed.
 You can change that behavior by adding a flags as the first arguments:
 
   * `:process_blank` – tells to also process attributes that are blank (empty or `nil`)
@@ -1662,8 +1662,8 @@ To check if a set has any annotations you can use one of the methods:
 
 To read annotations you can use :
 
-* **`annotation(attribute_name)`** - gets a hash of annotations or returns nil
-* **`annotation(attribute_name, *keys)`** - gets an array annotation values for the given keys (puts nils if key is missing) or returns nil
+* **`annotation(attribute_name)`** - gets a hash of annotations or returns `nil`
+* **`annotation(attribute_name, *keys)`** - gets an array annotation values for the given keys (puts `nil`s if key is missing) or returns `nil`
 
 Example:
 
@@ -1684,6 +1684,16 @@ Example:
 
   end
 ```
+
+To read **all annotations** use `annotations` method called on an attribute set. For instance:
+
+```ruby
+  User.first.attributes_that(:should_be_splitted).annotations
+  # => {"some_name"=>{:split_into=>[:first_part, :second_part]}}
+```
+
+As you can see it returns a hash with attribute names as keys and annotations as values.
+If some attribute from a set doesn't have any annotations then it's not included in the results.
 
 Predefined filters
 ------------------
@@ -1821,7 +1831,7 @@ to them as values (both are symbols).
 Note that the method above returns **all** known
 methods marked as filtering methods, including those
 that might not be called until a proper set will
-be defined. To check what methods will be really
+be defined. To check what methods will actually be
 called (at a given time) use:
 
 ```ruby
