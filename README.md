@@ -16,6 +16,11 @@ and some syntactic sugar to Rails, thereby allowing you
 to express filtering and grouping model attributes
 in a concise and clean way.
 
+If you are a fan of declarative style, this gem is for you.
+It lets you program your models in a way that it's clear
+to see what's going on with attributes just by looking
+at the top of their classes.
+
 When?
 -----
 
