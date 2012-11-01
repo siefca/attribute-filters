@@ -553,20 +553,20 @@ Picks attributes from leading and trailing spaces or other surrounding character
 * Operates on: strings, arrays of strings, hashes of string (as values), other enumerable types
 * Uses annotations: yes
  * `:pick_enumerable` – disables recursive traversing of arrays and hashes to filter each element
- * `:pick_step – step of picking the elements (defaults to 1)
- * `:pick_from – beginning of picked range (defaults to 0)
- * `:pick_to – end of picked range (defaults to elements count - 1)
- * `:pick_range – replaces `:pick_from` and `:pick_to`
- * `:pick_separator – if a value is a string it splits it into elements using the given character(s) or regexp (defaults to "") (default parameter)
- * `:pick_join – if a value is a string it joins the results using the given character(s) (defaults to the value of :pick_separator or +nil+ in case of regexp)
+ * `:pick_step` – step of picking the elements (defaults to 1)
+ * `:pick_from` – beginning of picked range (defaults to 0)
+ * `:pick_to` – end of picked range (defaults to elements count - 1)
+ * `:pick_range` – replaces `:pick_from` and `:pick_to`
+ * `:pick_separator` – if a value is a string it splits it into elements using the given character(s) or regexp (defaults to "") (default parameter)
+ * `:pick_join` – if a value is a string it joins the results using the given character(s) (defaults to the value of `:pick_separator` or `nil` in case of regexp)
 * Parameters' aliases:
  * `:pick_enumerable` – `:enum`, `:enums`, `:whole_enums`, `:pick_enums`
- * `:pick_step – `:step`, `:with_step`, `:each`
- * `:pick_from – `:from`, `:head`, `:take`, `:first`, `:pick_first`, `:pick_head`
- * `:pick_to – `:to`, `:tail`, `:last`, `:pick_last`, `:pick_tail`
- * `:pick_range – `:range`
- * `:pick_separator – `:separator`, `:regex`, `:split_with`, `:split_separator`
- * `:pick_join – `:joiner`, `:join`, `:join_with`
+ * `:pick_step` – `:step`, `:with_step`, `:each`
+ * `:pick_from` – `:from`, `:head`, `:take`, `:first`, `:pick_first`, `:pick_head`
+ * `:pick_to` – `:to`, `:tail`, `:last`, `:pick_last`, `:pick_tail`
+ * `:pick_range` – `:range`
+ * `:pick_separator` – `:separator`, `:regex`, `:split_with`, `:split_separator`
+ * `:pick_join` – `:joiner`, `:join`, `:join_with`
                       
 Example:
 
