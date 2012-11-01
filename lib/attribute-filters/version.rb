@@ -18,7 +18,7 @@ module ActiveModel
     # @private
     NAME        = 'attribute-filters'
     # @private
-    SUMMARY     = 'Concise way of filtering model attributes in Rails'
+    SUMMARY     = 'Concise way of filtering and grouping model attributes in Rails'
     # @private
     URL         = 'https://rubygems.org/gems/attribute-filters/'
     # @private
