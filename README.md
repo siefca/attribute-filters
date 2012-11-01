@@ -73,9 +73,9 @@ The filtering code is not reusable since it operates on specific attributes.
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
 
-  strip_attributes    :username, :email, :real_name
-  downcase_attributes :username, :email
-  titleize_attribute  :real_name
+  strips_attributes    :username, :email, :real_name
+  downcases_attributes :username, :email
+  titleizes_attribute  :real_name
 
   before_validation :filter_attributes
 end
@@ -89,9 +89,9 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Downcase
   include ActiveModel::AttributeFilters::Common::Titleize  
 
-  attributes_that should_be_stripped:   [ :username, :email, :real_name ]
-  attributes_that should_be_downcased:  [ :username, :email ]
-  attributes_that should_be_titleized:  [ :real_name ]
+  has_attributes_that should_be_stripped:   [ :username, :email, :real_name ]
+  has_attributes_that should_be_downcased:  [ :username, :email ]
+  has_attributes_that should_be_titleized:  [ :real_name ]
 
   before_validation :strip_attributes
   before_validation :downcase_attributes
@@ -103,15 +103,15 @@ or if you would like to create filtering methods on your own:
 
 ```ruby
 class User < ActiveRecord::Base
-  attributes_that should_be_stripped:     [ :username, :email, :real_name ]
-  attributes_that should_be_downcased:    [ :username, :email ]
-  attributes_that should_be_capitalized:  [ :real_name ]
+  has_attributes_that should_be_stripped:     [ :username, :email, :real_name ]
+  has_attributes_that should_be_downcased:    [ :username, :email ]
+  has_attributes_that should_be_capitalized:  [ :real_name ]
 
   before_validation :filter_attributes
 
-  filtering_method :downcase_names, :should_be_downcased
-  filtering_method :capitalize,     :should_be_capitalized
-  filtering_method :strip_names,    :should_be_stripped
+  has_filtering_method :downcase_names, :should_be_downcased
+  has_filtering_method :capitalize,     :should_be_capitalized
+  has_filtering_method :strip_names,    :should_be_stripped
 
   def downcase_names
     filter_attributes_that :should_be_downcased do |atr|
@@ -146,9 +146,9 @@ registering them then the alternative syntax may be helpful:
 
 ```ruby
 class User < ActiveRecord::Base
-  the_attribute email:        [ :should_be_stripped, :should_be_downcased   ]
-  the_attribute username:     [ :should_be_stripped, :should_be_downcased   ]
-  the_attribute real_name:    [ :should_be_stripped, :should_be_capitalized ]
+  its_attribute email:        [ :should_be_stripped, :should_be_downcased   ]
+  its_attribute username:     [ :should_be_stripped, :should_be_downcased   ]
+  its_attribute real_name:    [ :should_be_stripped, :should_be_capitalized ]
 end
 ```
 

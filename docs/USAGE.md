@@ -59,7 +59,7 @@ by common filters and by your own methods.
 #### `attribute_set(set_name => attr_names)` ####
 
 The [`attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods:attribute_set)
-(a.k.a `attributes_that`) class method allows to **create or update a set** that will be
+(a.k.a `has_attributes_that`) class method allows to **create or update a set** that will be
 tied to a model.
 
 Example:
@@ -67,18 +67,18 @@ Example:
 ```ruby
 class User < ActiveRecord::Base
 
-  attributes_that should_be_stripped:     [ :username, :email, :real_name ]
-  attributes_that should_be_downcased:    [ :username, :email ]
-  attributes_that should_be_capitalized:  [ :real_name ]
+  has_attributes_that should_be_stripped:     [ :username, :email, :real_name ]
+  has_attributes_that should_be_downcased:    [ :username, :email ]
+  has_attributes_that should_be_capitalized:  [ :real_name ]
 
 end
 ```
 
 Instead of `attribute_set` you may also use one of the aliases:
 
-  * `attributes_that`, `attributes_that_are`, `are_attributes_that_are`, `from_attributes_that_are`,   
-    `within_attributes_that_are`, `attributes_that`, `attributes_are`, `attributes_for`,  
-    `are_attributes`, `are_attributes_for`, `attributes_set`, `properties_that`   
+  * `attributes_set`, `attributes_that_are`, `attributes_that`, `properties_that`,         
+    `has_attribute_set`, `has_attribute_that`, `has_attribute_that_is`, `has_attributes`,          
+    `has_attributes_set`, `has_attributes_that_are`, `has_attributes_that`, `has_properties_that`
 
 #### `filter_attribute(attr => set_names)` ####
 
@@ -94,17 +94,18 @@ Example:
 ```ruby
 class User < ActiveRecord::Base
 
-  the_attribute real_name:  [ :should_be_stripped, :should_be_capitalized ]
-  the_attribute username:   [ :should_be_stripped, :should_be_downcased   ]
-  the_attribute email:      [ :should_be_stripped, :should_be_downcased   ]
+  its_attribute real_name:  [ :should_be_stripped, :should_be_capitalized ]
+  its_attribute username:   [ :should_be_stripped, :should_be_downcased   ]
+  its_attribute email:      [ :should_be_stripped, :should_be_downcased   ]
 
 end
 ```
 
 Instead of `filter_attribute` you may also use one of the aliases:
 
-  * `filtered_attribute`, `the_attribute`, `add_attribute_to_set`,    
-    `add_attribute_to_sets`, `attribute_to_set`, `filtered_attributes`
+  * `the_attribute`, `attribute_to_set`, `filtered_attribute`, `filtered_attributes`,
+    `filters_attribute`, `filters_attributes`, `its_attribute`, `has_attribute`,
+    `has_the_attribute`, `has_filtered_attribute`, `has_filtered_attributes`
 
 #### Mixing the syntaxes ####
 
@@ -114,11 +115,11 @@ You can also use regular arguments instead of hashes to create sets:
 ```ruby
 class User < ActiveRecord::Base
 
-  attributes_that :should_be_stripped, :username, :email, :real_name
+  has_attributes_that :should_be_stripped, :username, :email, :real_name
 
-  the_attribute :real_name, :should_be_capitalized
-  the_attribute :username,  :should_be_downcased
-  the_attribute :email,     :should_be_downcased
+  its_attribute :real_name, :should_be_capitalized
+  its_attribute :username,  :should_be_downcased
+  its_attribute :email,     :should_be_downcased
 
 end
 ```
@@ -157,9 +158,9 @@ Alternative syntax:
 
 Instead of `attribute_set` you may also use one of the aliases:
 
-  * `attributes_that`, `attributes_that_are`, `are_attributes_that_are`, `from_attributes_that_are`,   
-    `within_attributes_that_are`, `attributes_that`, `attributes_are`, `attributes_for`,  
-    `are_attributes`, `are_attributes_for`, `attributes_set`, `properties_that`
+  * `attributes_set`, `attributes_that_are`, `attributes_that`, `properties_that`,         
+    `has_attribute_set`, `has_attribute_that`, `has_attribute_that_is`, `has_attributes`,          
+    `has_attributes_set`, `has_attributes_that_are`, `has_attributes_that`, `has_properties_that`
 
 #### `attribute_sets` ####
 
@@ -302,10 +303,9 @@ There are also variants of this method that differ in a kind of taken argument:
 
 Instead of `attribute_set` you may also use one of the aliases:
 
-  * `attributes_that_are`, `from_attributes_that`, `are_attributes_that_are`, `from_attributes_that_are`,   
-    `within_attributes_that_are`, `attributes_that`, `attributes_are`,      
-    `attributes_for`, `are_attributes`, `are_attributes_for`, `attributes_set`,            
-    `properties_that`
+  * `attributes_set`, `attributes_that_are`, `attributes_that`, `properties_that`,         
+    `has_attribute_set`, `has_attribute_that`, `has_attribute_that_is`, `has_attributes`,          
+    `has_attributes_set`, `has_attributes_that_are`, `has_attributes_that`, `has_properties_that`
     
 Instead of `attribute_set` you may also use:
 
@@ -471,7 +471,7 @@ Example:
 
 ```ruby
   class User
-    treat_as_real :trololo
+    treats_as_real :trololo
   end
   User.first.all_semi_real_attributes
   # =>  #<ActiveModel::AttributeSet: {"trololo"}> 
@@ -616,7 +616,8 @@ has changed its value (`changed?`) or if **all** attributes from a set remain un
 You can also use one of the aliases:
 
   * `changed?`, `any_changed?`, `have_changed?`, `have_any_changed?`, `is_any_changed?`, `has_any_changed?`, `has_changed?`
-  * `unchanged?`, `none_changed?`, `nothing_changed?`, `is_unchanged?`, `are_all_unchanged?`, `all_unchanged?`, `havent_changed?`, `arent_changed?`, `are_not_changed?`, `none_changed?`, `not_changed?`
+  * `unchanged?`, `none_changed?`, `nothing_changed?`, `is_unchanged?`, `are_all_unchanged?`, `all_unchanged?`, 
+    `havent_changed?`, `arent_changed?`, `are_not_changed?`, `none_changed?`, `not_changed?`
 
 #### `values` ####
 
@@ -1119,9 +1120,9 @@ class User < ActiveRecord::Base
 
   # Defining attribute sets
 
-  the_attribute real_name:  [ :should_be_stripped, :should_be_capitalized ]
-  the_attribute username:   [ :should_be_stripped, :should_be_downcased   ]
-  the_attribute email:      [ :should_be_stripped, :should_be_downcased   ]
+  its_attribute real_name:  [ :should_be_stripped, :should_be_capitalized ]
+  its_attribute username:   [ :should_be_stripped, :should_be_downcased   ]
+  its_attribute email:      [ :should_be_stripped, :should_be_downcased   ]
 
   # Registering filtering callback methods
 
@@ -1130,6 +1131,10 @@ class User < ActiveRecord::Base
   before_validation :capitalize_names
 
   # Defining filtering methods
+
+  has_filtering_method :downcase_names,   :should_be_downcased
+  has_filtering_method :capitalize_names, :should_be_capitalized
+  has_filtering_method :strip_names,      :should_be_stripped
 
   def downcase_names
     filter_attributes_that :should_be_downcased do |atr|
@@ -1186,13 +1191,13 @@ You can change that behavior by adding a flags as the first arguments:
 
 The checking mentioned in `:no_presence_check` flag description is done by querying internal Rails hashes
 containing known attributes and internal sets containing virtual attributes added by `attr_virtual` or
-`treat_as_real` keywords (described later).
+`treats_as_real` keywords (described later).
 
 Example:
 
 ```ruby
   class User
-    attributes_that should_be_lolized: [ :username ]
+    has_attribute_that should_be_lolized: :username
     before_validation :lolize
 
     def lolize
@@ -1200,6 +1205,7 @@ Example:
         [attribute_value, set_name.to_s, attribute_name, *args.flatten].join('-')
       end
     end
+    filtering_method :lolize, :should_be_lolized
   end
 
   u = User.new
@@ -1249,13 +1255,13 @@ You can change that behavior by adding a flags as the first arguments:
 
 The checking mentioned in `:no_presence_check` flag description is done by querying internal Rails hashes
 containing known attributes and internal sets containing virtual attributes added by `attr_virtual` or
-`treat_as_real` keywords (described later).
+`treats_as_real` keywords (described later).
 
 Example:
 
 ```ruby
   class User
-    attributes_that should_be_lolized: [ :username ]
+    has_attribute_that should_be_lolized: :username
     before_validation :lolize
 
     def lolize
@@ -1263,6 +1269,7 @@ Example:
         attribute_object << '-' << [set_name.to_s, attribute_name, *args.flatten].join('-')
       end
     end
+    filtering_method :lolize, :should_be_lolized
   end
 
   u = User.new
@@ -1342,7 +1349,7 @@ class User < ActiveRecord::Base
   attr_virtual :real_name
 
   # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
+  has_attributes_that :should_be_splitted => [ :real_name ]
 
   # register a callback method
   before_validation :split_attributes
@@ -1355,6 +1362,7 @@ class User < ActiveRecord::Base
       self.last_name  = names[1]
     end
   end
+  filtering_method :split_attributes, :should_be_splitted
 
 end
 ```
@@ -1370,10 +1378,10 @@ to wrap you methods and enable tracking of changes for the attribute.
 class User < ActiveRecord::Base
 
   # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
+  has_attributes_that :should_be_splitted => [ :real_name ]
 
   # register a callback method
-  before_validation :split_attributes
+  before_validation :split_attributes   # you could also use :filter_attributes here
 
   # create a filtering method
   def split_attributes
@@ -1383,13 +1391,14 @@ class User < ActiveRecord::Base
       self.last_name  = names[1]
     end
   end
+  filtering_method :split_attributes, :should_be_splitted
 
   # own setter
   def real_name=(val)
     # do somehing specific here (or not)
     @real_name = val
   end
-  
+
   # own getter
   def real_name
     # do somehing specific here (or not)
@@ -1420,10 +1429,10 @@ Example:
 class User
 
   # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
+  has_attributes_that :should_be_splitted => [ :real_name ]
 
   # register a callback method
-  before_validation :split_attributes
+  before_validation :split_attributes   # you could also use :filter_attributes here
 
   # create a filtering method
   def split_attributes
@@ -1433,13 +1442,14 @@ class User
       self.last_name  = names[1]  # assuming last_name exists in a database
     end
   end
+  filtering_method :split_attributes, :should_be_splitted
 
 end
 ```
 
 #### Marking as semi-real ####
 
-There is also a way that bases on using `treat_attributes_as_real` (or simply `treat_as_real`) clause in your model
+There is also a way that bases on using `treats_attributes_as_real` (or simply `treats_as_real`) clause in your model
 (available from version 1.2.0 of Attribute Filters). That approach may be applied to attributes
 that aren't (may not or should not be) tracked for changes and aren't (may not or should not be) accessible
 (to a controller) nor marked as protected (if using Rails version <= 3).
@@ -1459,13 +1469,13 @@ Example:
 class User
 
   # mark the attribute as real
-  treat_as_real :real_name
+  treats_as_real :real_name
 
   # define a set
-  attributes_that :should_be_splitted => [ :real_name ]
+  has_attributes_that :should_be_splitted => [ :real_name ]
 
   # register a callback method
-  before_validation :split_attributes
+  before_validation :split_attributes   # you could also use :filter_attributes here
 
   # create a filtering method
   def split_attributes
@@ -1475,9 +1485,15 @@ class User
       self.last_name  = names[1]  # assuming last_name exists in a database
     end
   end
+  filtering_method :split_attributes, :should_be_splitted
 
 end
 ```
+
+Instead of `treat_as_real` you may also use one of its aliases:
+
+  * `attribute_filters_semi_real`, `treat_attribute_as_real`,  `treat_attributes_as_real`,
+    `treats_attribute_as_real`, `treats_attributes_as_real`, `treats_as_real`,             
 
 Annotations
 -----------
@@ -1512,7 +1528,7 @@ Example:
     # Annotation key:   some_key
     # Annotation value: some value
 
-    attributes_that_are cool: { :email => { :some_key => "some value" } }
+    has_attributes_that_are cool: { :email => { :some_key => "some value" } }
   end
 ```
 
@@ -1521,7 +1537,7 @@ You can mix annotated attributes with unannotated; just put the last ones in fro
 
 ```ruby
   class User
-    attributes_that_are cool: [ :some_unannotated, { :email => { :some_key => "some value" } } ]
+    has_attributes_that_are cool: [ :some_unannotated, { :email => { :some_key => "some value" } } ]
   end
 ```
 
@@ -1529,7 +1545,7 @@ or
 
 ```ruby
   class User
-    attributes_that_are :cool => [ :some_unannotated, { :email => { :some_key => "some value" } } ]
+    has_attributes_that_are :cool => [ :some_unannotated, { :email => { :some_key => "some value" } } ]
   end
 ```
 
@@ -1543,15 +1559,23 @@ To create annotations for class-level sets use the [`annotate_attribute_set`](ht
 * **`annotate_attributes_for`**  
 * **`annotate_attributes_set`** 
 * **`annotate_properties_that`**   
-* **`annotate_attributes`**   
+* **`annotate_attributes`**
+* **`annotates_attributes_that_are`**
+* **`annotates_attributes_that`**
+* **`annotates_attributes_are`** 
+* **`annotates_attributes_for`**  
+* **`annotates_attributes_set`** 
+* **`annotates_properties_that`**   
+* **`annotates_attributes`**
+* **`attribute_set_annotate`**
 
 Example:
 
 ```ruby
   class User
-    attributes_that_are cool: [ :some_unannotated, :email, :username ]
-    annotate_attributes_that_are cool: [ :email, :some_key, "some value" ]
-    annotate_attributes_that_are :cool => { :username => { :some_key => "some value", :other_k => 'other v' } }
+    has_attributes_that_are cool: [ :some_unannotated, :email, :username ]
+    annotates_attributes_that_are cool: [ :email, :some_key, "some value" ]
+    annotates_attributes_that_are :cool => { :username => { :some_key => "some value", :other_k => 'other v' } }
   end
 ```
 
@@ -1585,48 +1609,52 @@ Be aware that using these method to delete annotations from class-level sets won
 That's because you'll always get a copy when querying these sets. However there are methods that
 will work in a model:
 
-* **`delete_annotations_from_set(set_name, attribute, *annotation_keys)`** - to delete annotation keys for the given attribute
-* **`delete_annotations_from_set(set_name, attribute)`** - to delete all annotation keys for the given attribute
-* **`delete_annotations_from_set(set_name => *attributes)`** - to delete all annotation keys for the given attribute
-* **`delete_annotations_from_set(set_name => { attribute => keys})`** - to delete specified annotation keys for the given attributes
+* **`delete_annotation_from_set(set_name, attribute, *annotation_keys)`** - to delete annotation keys for the given attribute
+* **`delete_annotation_from_set(set_name, attribute)`** - to delete all annotation keys for the given attribute
+* **`delete_annotation_from_set(set_name => *attributes)`** - to delete all annotation keys for the given attribute
+* **`delete_annotation_from_set(set_name => { attribute => keys})`** - to delete specified annotation keys for the given attributes
+
+Instead of `delete_annotation_from_set` you may use the aliases:
+
+  * `delete_annotations_from_set`, `delete_annotation_from_set`, `deletes_annotations_from_set`
 
 Example:
 
 ```ruby
   class User
-    attributes_that_are cool: [ :some_unannotated, :email ]
+    has_attributes_that_are cool: [ :some_unannotated, :email ]
 
     # That will work
-    delete_annotations_from_set cool: :email
-    delete_annotations_from_set cool: [ :email, :key_one ]
-    delete_annotation_from_set cool: { :email => [:key_one, :other_key], :name => :some_key }
+    deletes_annotations_from_set  cool: :email
+    deletes_annotations_from_set  cool: [ :email, :key_one ]
+    deletes_annotation_from_set   cool: { :email => [:key_one, :other_key], :name => :some_key }
 
     # That won't affect the global set called 'cool'
-    # since we have its copy here, not the original.
+    # since we have its copy, not the original.
     def some_method
       attributes_that_are(:cool).delete_annotation(:email)
     end
 
     # That won't affect the global set called 'cool'
-    # since we have its copy here, not the original.
+    # since the method returns its copy, not the original.
     attributes_that_are(:cool).delete_annotation(:email)
   end
 ```
 
 ### Updating annotations ###
 
-Calling `annotate` method again on a set or redefining set at a class-level allows to add annotations
-or modify their keys.
+Calling `annotate` method again on a set or redefining set at the class-level allows to add annotations
+or to modify their keys.
 
 Example:
 
 ```ruby
   class User
-    attributes_that_are :cool => { :email => { :some_key => "some value"  } }
-    attributes_that_are cool: { :email => { :other_key => "other_value"   } }
-    attributes_that_are cool: { :email => { :some_key  => "another_value" } }
-    annotate_attributes_that_are :cool, :email, :some_key => "x"
-    delete_annotation_from_set :cool => { :email => :other_key }
+    has_attributes_that_are :cool => { :email => { :some_key => "some value"  } }
+    has_attributes_that_are cool: { :email => { :other_key => "other_value"   } }
+    has_attributes_that_are cool: { :email => { :some_key  => "another_value" } }
+    annotates_attributes_that_are :cool, :email, :some_key => "x"
+    deletes_annotation_from_set :cool => { :email => :other_key }
   end
   
   # In the result there will be only one annotation key left;
@@ -1642,7 +1670,7 @@ a copy when querying these sets.
 
 ```ruby
   class User
-    attributes_that_are :cool => { :email => { :some_key => "some value"  } }
+    has_attributes_that_are :cool => { :email => { :some_key => "some value"  } }
     
     # Calling `some_method` won't work on 'cool' global set.
     def some_method
@@ -1714,7 +1742,7 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
 
-  the_attribute name:   [:should_be_downcased, :should_be_titleized ]
+  its_attribute name:   [:should_be_downcased, :should_be_titleized ]
 
   before_validation :downcase_attributes
   before_validation :titleize_attributes
@@ -1729,7 +1757,7 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Downcase
   include ActiveModel::AttributeFilters::Common::Titleize
 
-  the_attribute name:   [:should_be_downcased, :should_be_titleized ]
+  its_attribute name:   [:should_be_downcased, :should_be_titleized ]
 
   before_validation :downcase_attributes
   before_validation :titleize_attributes
@@ -1747,7 +1775,7 @@ For example, to squeeze attributes `name` and `email` you can write:
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
-  attributes_that should_be_squeezed: [:email, :name]
+  has_attributes_that should_be_squeezed: [:email, :name]
   before_validation :squeeze_attributes
 end
 ```
@@ -1763,7 +1791,7 @@ So you can also write:
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
-  squeeze_attributes  :email, :name
+  squeezes_attributes :email, :name
   before_validation   :squeeze_attributes
 end
 ```
@@ -1771,7 +1799,7 @@ end
 Some of these helpers are doing some extra work to make things syntactically easier
 than with using pure sets. Check the list if common filters for more information.
 
-### Calling all ###
+### Calling all filters ###
 
 There is a special method called
 [`filter_attributes`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters.html#filter_attributes-instance_method) that can be registered as a callback. It will call all filtering methods which sets (that they're assigned to)
@@ -1785,8 +1813,8 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
   include ActiveModel::AttributeFilters::Common::Capitalize
 
-  squeeze_attributes    :email, :name
-  capitalize_attributes :name
+  squeezes_attributes   :email, :name
+  capitalizes_attribute :name
 
   before_validation :filter_attributes
 end
@@ -1798,8 +1826,8 @@ Or even more simpler (but it will include all common filters):
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
 
-  squeeze_attributes    :email, :name
-  capitalize_attributes :name
+  squeezes_attributes    :email, :name
+  capitalizes_attribute :name
 
   before_validation :filter_attributes
 end
@@ -1815,8 +1843,8 @@ specified explicitly:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
 
-  attributes_that :should_be_squeezed     =>  [ :email, :name ]
-  attributes_that :should_be_capitalized  => :name
+  has_attributes_that :should_be_squeezed     =>  [ :email, :name ]
+  has_attributes_that :should_be_capitalized  => :name
 
   before_validation :filter_attributes
 end
@@ -1849,8 +1877,8 @@ the "natural" order, based on adding the sets to model class):
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
 
-  attributes_that :should_be_squeezed     =>  [ :email, :name ]
-  attributes_that :should_be_capitalized  => :name
+  has_attributes_that :should_be_squeezed     =>  [ :email, :name ]
+  has_attribute_that  :should_be_capitalized  => :name
 
   before_validation :prepare_attributes
 
@@ -1886,7 +1914,7 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common
 
-  attributes_that   should_be_happy: [ :username, :real_name ]
+  has_attributes_that should_be_happy: [ :username, :real_name ]
   before_validation :filter_attributes
 
   def happify
@@ -1936,7 +1964,7 @@ Example:
 ```ruby
 class User < ActiveRecord::Base
 
-  attributes_that_are required_to_trade: [ :username, :email, :real_name, :address, :account ]
+  has_attributes_that_are required_to_trade: [ :username, :email, :real_name, :address, :account ]
 
   def is_able_to_trade?
     are_attributes_that_are.required_to_trade.all.present? and

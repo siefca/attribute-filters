@@ -13,6 +13,8 @@ Terms used when describing filters:
 
 > Class-level helper – a DSL method that may be used in a model class to setup a filter.
 
+> Class-level helper aliases – aliases of class-level DSL methods used to setup a filter.
+
 > Uses set – a global attribute set (assigned to model) that is used to store information on attributes that should be filtered and optional parameters (stored as annotations) that are sometimes used by filtering method.
 
 > Operates on – data types that the filtering method operates on.
@@ -44,8 +46,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  capitalize_attributes   :name
-  before_validation       :capitalize_attributes
+  capitalizes_attribute :name
+  before_validation     :capitalize_attributes
 end
 ```
 
@@ -55,7 +57,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  attributes_that     :should_be_capitalized => [ :name ]
+  has_attributes_that :should_be_capitalized => [ :name ]
   before_validation   :capitalize_attributes
 end
 ```
@@ -85,8 +87,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  fully_capitalize_attributes   :name
-  before_validation             :fully_capitalize_attributes
+  fully_capitalizes_attribute :name
+  before_validation :fully_capitalize_attributes
 end
 ```
 
@@ -96,7 +98,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  attributes_that     :should_be_fully_capitalized => [ :name ]
+  has_attributes_that :should_be_fully_capitalized => [ :name ]
   before_validation   :fully_capitalize_attributes
 end
 ```
@@ -126,8 +128,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  titleize_attributes   :name
-  before_validation     :titleize_attributes
+  titleizes_attribute :name
+  before_validation   :titleize_attributes
 end
 ```
 
@@ -137,7 +139,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  attributes_that     :should_be_titleized => [ :name ]
+  has_attributes_that :should_be_titleized => [ :name ]
   before_validation   :titleize_attributes
 end
 ```
@@ -167,8 +169,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  upcase_attributes   :name
-  before_validation   :upcase_attributes
+  upcases_attribute :name
+  before_validation  :upcase_attributes
 end
 ```
 
@@ -178,7 +180,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  attributes_that     :should_be_upcased => [ :name ]
+  has_attributes_that :should_be_upcased => [ :name ]
   before_validation   :upcase_attributes
 end
 ```
@@ -208,7 +210,7 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  downcase_attributes :name
+  downcases_attribute :name
   before_validation   :downcase_attributes
 end
 ```
@@ -219,7 +221,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Case
 
-  attributes_that     :should_be_downcased => [ :name ]
+  has_attributes_that :should_be_downcased => [ :name ]
   before_validation   :downcase_attributes
 end
 ```
@@ -247,7 +249,7 @@ Converts attributes to strings.
 * Operates on: numbers, arrays of numbers, hashes of numbers (as values), other convertable types
 * Uses annotations: yes
  * `:to_s_default` – a value used in case of a conversion error
- * `:to_s_base` – a base used when converting numbers (2 for binary, 10 for decimal and so on) (default annotation)
+ * `:to_s_base` – a base used when converting numbers (2 for binary, 10 for decimal and so on) (default parameter)
 * Parameters' aliases:
  * `:to_s_default` – `:default`, `:on_error`
  * `:to_s_base` – `:base`, `:with_base`
@@ -258,19 +260,18 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  convert_to_strings  :name
+  converts_to_string  :name
   before_validation   :attributes_to_strings
 end
 ```
 
 or
 
-
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  attributes_that     :should_be_strings => [ :name ]
+  has_attributes_that :should_be_strings => [ :name ]
   before_validation   :attributes_to_strings
 end
 ```
@@ -286,7 +287,7 @@ Converts attributes to integers.
 * Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
 * Uses annotations: yes
  * `:to_i_default` – a value used in case of a conversion error
- * `:to_i_base` – a base used when converting numbers (2 for binary, 10 for decimal and so on) (default annotation)
+ * `:to_i_base` – a base used when converting numbers (2 for binary, 10 for decimal and so on) (default parameter)
 * Parameters' aliases:
  * `:to_i_default` – `:default`, `:on_error`
  * `:to_i_base` – `:base`, `:with_base`
@@ -297,20 +298,19 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  convert_to_integers :number
+  converts_to_integer :number
   before_validation   :attributes_to_integers
 end
 ```
 
 or
 
-
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  attributes_that   :should_be_integers => [ :number ]
-  before_validation :attributes_to_integers
+  has_attributes_that :should_be_integers => [ :number ]
+  before_validation   :attributes_to_integers
 end
 ```
 
@@ -324,7 +324,7 @@ Converts attributes to floats.
 * Uses set: `:should_be_floats`
 * Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
 * Uses annotations: yes
- * `:to_f_default` – a value used in case of a conversion error (default annotation)
+ * `:to_f_default` – a value used in case of a conversion error (default parameter)
 * Parameters' aliases:
  * `:to_f_default` – `:default`, `:on_error`
 
@@ -334,20 +334,19 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  convert_to_floats :number
+  converts_to_float :number
   before_validation :attributes_to_floats
 end
 ```
 
 or
 
-
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  attributes_that   :should_be_floats => [ :number ]
-  before_validation :attributes_to_floats
+  has_attributes_that  :should_be_floats => [ :number ]
+  before_validation    :attributes_to_floats
 end
 ```
 
@@ -363,7 +362,7 @@ Works the same way as `attributes_to_f` but uses different attribute set.
 * Uses set: `:should_be_numbers`
 * Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
 * Uses annotations: yes
- * `:to_num_default` – a value used in case of a conversion error (default annotation)
+ * `:to_num_default` – a value used in case of a conversion error (default parameter)
 * Parameters' aliases:
  * `:to_num_default` – `:default`, `:on_error`
 
@@ -373,19 +372,18 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  convert_to_numbers   :number
-  before_validation     :attributes_to_numbers
+  converts_to_number  :number
+  before_validation   :attributes_to_numbers
 end
 ```
 
 or
 
-
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  attributes_that     :should_be_numbers => [ :number ]
+  has_attributes_that :should_be_numbers => [ :number ]
   before_validation   :attributes_to_numbers
 end
 ```
@@ -400,7 +398,7 @@ Converts attributes to rationals.
 * Uses set: `:should_be_rationals`
 * Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
 * Uses annotations: yes
- * `:to_r_default` – a value used in case of a conversion error (default annotation)
+ * `:to_r_default` – a value used in case of a conversion error (default parameter)
 * Parameters' aliases:
  * `:to_r_default` – `:default`, `:on_error`
 
@@ -410,19 +408,18 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  convert_to_rationals   :number
+  converts_to_rational  :number
   before_validation     :attributes_to_rationals
 end
 ```
 
 or
 
-
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  attributes_that     :should_be_rationals => [ :number ]
+  has_attributes_that :should_be_rationals => [ :number ]
   before_validation   :attributes_to_rationals
 end
 ```
@@ -435,9 +432,9 @@ Converts attributes to boolean.
 * Class-level helper: `attributes_to_b(*attribute_names)`
 * Class-level helper aliases: `convert_to_booleans`, `convert_to_boolean`, `converts_to_booleans`, `converts_to_boolean`
 * Uses set: `:should_be_boolean`
-* Operates on: strings, arrays of strings, hashes of strings (as values), other convertable types
+* Operates on: objects, arrays of objects, hashes of objects (as values)
 * Uses annotations: yes
- * `:to_b_default` – a value used in case of a conversion error (default annotation)
+ * `:to_b_default` – a value used in case of a conversion error (default parameter)
 * Parameters' aliases:
  * `:to_b_default` – `:default`, `:on_error`
 
@@ -447,19 +444,18 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  convert_to_boolean   :number
-  before_validation     :attributes_to_boolean
+  converts_to_boolean :number
+  before_validation   :attributes_to_boolean
 end
 ```
 
 or
 
-
 ```ruby
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Convert
 
-  attributes_that     :should_be_boolean => [ :number ]
+  has_attributes_that :should_be_boolean => [ :number ]
   before_validation   :attributes_to_boolean
 end
 ```
@@ -476,9 +472,9 @@ Reverses order of attribute values.
 * Class-level helper: `reverse_attributes(*attribute_names)`
 * Class-level helper aliases: `reverse_attribute`, `reverses_attribute`, `reverses_attributes`
 * Uses set: `:should_be_reversed`
-* Operates on: strings, arrays of numbers, hashes of numbers (as values), other enumerable types
+* Operates on: strings, arrays of strings, hashes of strings (as values), other enumerable types
 * Uses annotations: yes
- * `:reverse_enumerable` – 
+ * `:reverse_enumerable` – disables recursive traversing of arrays and hashes to filter each element
 * Parameters' aliases:
  * `:reverse_enumerable` – `:enum`, `:enums`, `:whole_enums`, `:reverse_enums`
 
@@ -488,8 +484,164 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Order
 
-  reverse_attributes  :name
+  reverses_attribute :name
+  before_validation  :reverse_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Order
+
+  has_attributes_that :should_be_reversed => [ :name ]
   before_validation   :reverse_attributes
+end
+```
+
+#### `shuffle_attributes` ####
+
+Shuffles order of attribute values.
+
+* Callback method: `shuffle_attributes`
+* Class-level helper: `shuffle_attributes(*attribute_names)`
+* Class-level helper aliases: `shuffle_attribute`, `shuffles_attribute`, `shuffles_attributes`
+* Uses set: `:should_be_shuffled`
+* Operates on: strings, arrays of strings, hashes of strings (as values), other enumerable types
+* Uses annotations: yes
+ * `:shuffle_enumerable` – disables recursive traversing of arrays and hashes to filter each element
+ * `:shuffle_generator` – random number generation source passed to the `shuffle` method
+* Parameters' aliases:
+ * `:shuffle_enumerable` – `:enum`, `:enums`, `:whole_enums`, `:shuffle_enums`
+ * `:shuffle_generator` – `:random_generator`, `:generator`, `:rnd`, `:rng`
+
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Order
+
+  shuffles_attribute :name
+  before_validation  :shuffle_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Order
+
+  has_attributes_that :should_be_shuffled => [ :name ]
+  before_validation   :shuffle_attributes
+end
+```
+
+### Pick ###
+
+* Submodule: [`Pick`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Pick.html)
+
+#### `pick_attributes` ####
+
+Picks attributes from leading and trailing spaces or other surrounding characters.
+
+* Callback method: `pick_attributes`
+* Class-level helper: `pick_attributes(*attribute_names)`
+* Class-level helper aliases: `pick_attribute`, `picks_attribute`, `picks_attributes`
+* Uses set: `:should_be_picked`
+* Operates on: strings, arrays of strings, hashes of string (as values), other enumerable types
+* Uses annotations: yes
+ * `:pick_enumerable` – disables recursive traversing of arrays and hashes to filter each element
+ * `:pick_step – step of picking the elements (defaults to 1)
+ * `:pick_from – beginning of picked range (defaults to 0)
+ * `:pick_to – end of picked range (defaults to elements count - 1)
+ * `:pick_range – replaces `:pick_from` and `:pick_to`
+ * `:pick_separator – if a value is a string it splits it into elements using the given character(s) or regexp (defaults to "") (default parameter)
+ * `:pick_join – if a value is a string it joins the results using the given character(s) (defaults to the value of :pick_separator or +nil+ in case of regexp)
+* Parameters' aliases:
+ * `:pick_enumerable` – `:enum`, `:enums`, `:whole_enums`, `:pick_enums`
+ * `:pick_step – `:step`, `:with_step`, `:each`
+ * `:pick_from – `:from`, `:head`, `:take`, `:first`, `:pick_first`, `:pick_head`
+ * `:pick_to – `:to`, `:tail`, `:last`, `:pick_last`, `:pick_tail`
+ * `:pick_range – `:range`
+ * `:pick_separator – `:separator`, `:regex`, `:split_with`, `:split_separator`
+ * `:pick_join – `:joiner`, `:join`, `:join_with`
+                      
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Pick
+
+  picks_attribute   :name
+  before_validation :pick_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Order
+
+  has_attributes_that :should_be_picked => [ :name ]
+  before_validation   :pick_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Pick
+
+  picks_attribute   :name, :range => 1..-1, :step => 2
+  before_validation :pick_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Pick
+
+  picks_attribute   :name => " "      # default parameter sets separator
+  before_validation :pick_attributes
+end
+```
+
+### Presence ###
+
+* Submodule: [`Presence`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/Common/Presence.html)
+
+#### `fill_attributes` ####
+
+Fills blank attributes with the given values.
+
+* Callback method: `fill_attributes`
+* Class-level helper: `fill_attributes(*attribute_names)`
+* Class-level helper aliases: `fill_attribute`, `fills_attribute`, `fills_attributes`
+* Uses set: `:should_be_filled`
+* Operates on: objects, arrays of objects, hashes of objects (as values)
+* Uses annotations: yes
+ * `:fill_enumerable` – disables recursive traversing of arrays and hashes to filter each element
+ * `:fill_value` – replacemant value (default parameter)
+ * `:fill_any` – flag that causes to fill any attribute value, not just blank ones
+* Parameters' aliases:
+ * `:fill_enumerable` – `:enums`, `:replace_enumerable`, `:replace_enums`, `:whole_enums`, `:fill_enums`
+ * `:fill_value` – `:with`, `:fill_with`, `:fill`, `:value`, `:content`, `:default`, `:fill_value`
+ * `:fill_any` – `:all`, `:any`, `:fill_always`, `:always_fill`, `:always`, `:fill_present`, `:fill_all`
+                      
+Example:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Presence
+
+  fills_attribute   :name, :with => "none" 
+  before_validation :fill_attributes
 end
 ```
 
@@ -500,8 +652,19 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Order
 
-  attributes_that     :should_be_reversed => [ :name ]
-  before_validation   :reverse_attributes
+  has_attributes_that :should_be_filled => [ :name => { :fill_value => "not given" } ]
+  before_validation   :fill_attributes
+end
+```
+
+or
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Common::Presence
+
+  fills_attribute   :name => "not given"
+  before_validation :fill_attributes
 end
 ```
 
@@ -527,8 +690,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Strip
 
-  strip_attributes    :name
-  before_validation   :strip_attributes
+  strips_attribute  :name
+  before_validation :strip_attributes
 end
 ```
 
@@ -538,7 +701,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Strip
 
-  attributes_that     :should_be_stripped => [ :name ]
+  has_attributes_that :should_be_stripped => [ :name ]
   before_validation   :strip_attributes
 end
 ```
@@ -575,8 +738,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
 
-  squeeze_attributes  :name
-  before_validation   :squeeze_attributes
+  squeezes_attribute :name
+  before_validation  :squeeze_attributes
 end
 ```
 
@@ -586,7 +749,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
 
-  attributes_that     :should_be_squeezed => [ :name ]
+  has_attributes_that :should_be_squeezed => [ :name ]
   before_validation   :squeeze_attributes
 end
 ```
@@ -616,8 +779,8 @@ Example:
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
 
-  squish_attributes   :name
-  before_validation   :squish_attributes
+  squishes_attribute :name
+  before_validation  :squish_attributes
 end
 ```
 
@@ -627,7 +790,7 @@ or
 class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Squeeze
 
-  attributes_that     :should_be_squished => [ :name ]
+  has_attributes_that :should_be_squished => [ :name ]
   before_validation   :squish_attributes
 end
 ```
@@ -658,7 +821,7 @@ Splits attributes into arrays and puts the results into other attributes or into
 * Uses annotations: yes
  * `split_pattern` – a pattern passed to [`split`](http://www.ruby-doc.org/core/String.html#method-i-split) method (optional)
  * `split_limit` – a limit passed to `split` method (optional)
- * `split_into` – attribute names used as destinations for parts (default annotation)
+ * `split_into` – attribute names used as destinations for parts (default parameter)
  * `split_flatten` – flag that causes resulting array to be flattened
 * Parameters' aliases (used with class-level helpers):
  * `split_pattern` – `:with`, `:pattern`
@@ -721,7 +884,7 @@ class User < ActiveRecord::Base
   attr_virtual      :real_name
 
   # Adding attribute name to :should_be_splitted set
-  split_attributes  :real_name
+  splits_attribute  :real_name
 
   # Registering callback method
   before_validation :split_attributes
@@ -740,7 +903,7 @@ class User < ActiveRecord::Base
   attr_accessible   :real_name
 
   # Adding attribute name to :should_be_splitted set (by hand)
-  attributes_that   :should_be_splitted => :real_name
+  has_attributes_that :should_be_splitted => :real_name
 
   # Registering callback method
   before_validation :split_attributes
@@ -759,7 +922,7 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Split
 
   attr_virtual      :real_name
-  split_attributes  :real_name, :limit => 2
+  splits_attribute  :real_name, :limit => 2
   before_validation :split_attributes
 end
 ```
@@ -772,7 +935,7 @@ class User < ActiveRecord::Base
 
   attr_virtual      :real_name
 
-  attributes_that   :should_be_splitted => { :real_name => { :split_limit => 2 } }
+  has_attributes_that :should_be_splitted => { :real_name => { :split_limit => 2 } }
   before_validation :split_attributes
 end
 ```
@@ -793,7 +956,7 @@ class User < ActiveRecord::Base
   include ActiveModel::AttributeFilters::Common::Split
 
   attr_virtual      :real_name
-  split_attributes  :real_name, :limit => 2, :into => [ :first_name, :last_name ], :pattern => ' '
+  splits_attribute  :real_name, :limit => 2, :into => [ :first_name, :last_name ], :pattern => ' '
   before_validation :split_attributes
 end
 ```
@@ -844,7 +1007,7 @@ Joins attributes and places the results into other attributes or into the same a
 * Uses annotations: yes
  * `join_separator` – a pattern passed to [`join`](http://www.ruby-doc.org/core/Array.html#method-i-join) method (optional)
  * `join_compact` – compact flag; if true then an array is compacted before it's joined (optional)
- * `join_from` – attribute names used as sources for joins (default annotation)
+ * `join_from` – attribute names used as sources for joins (default parameter)
 * Parameters' aliases (used with class-level helpers):
  * `join_separator` – `:with`, `:separator`
  * `join_compact` – `:compact`
@@ -869,7 +1032,7 @@ class User < ActiveRecord::Base
 
   attr_virtual            :first_name, :last_name
   attr_accessible         :first_name, :last_name
-  join_attributes_into    :real_name, :from => [ :first_name, :last_name ]
+  joins_attributes_into   :real_name, :from => [ :first_name, :last_name ]
   before_validation       :join_attributes
 end
 ```
@@ -877,28 +1040,28 @@ end
 you can also switch source with destination:
 
 ```ruby
-  join_attributes         [ :first_name, :last_name ] => :real_name
+  joins_attributes         [ :first_name, :last_name ] => :real_name
 ```
 
 or add a descriptive keyword `:into`:
 
 ```ruby
-  join_attributes         [ :first_name, :last_name ], :into => :real_name
+  joins_attributes         [ :first_name, :last_name ], :into => :real_name
 ```
 
 Adding parameters:
 
 ```ruby
-  join_attributes         [ :first_name, :last_name ], :into => :real_name, :compact => true
+  joins_attributes         [ :first_name, :last_name ], :into => :real_name, :compact => true
 ```
 or
 
 ```ruby
-  join_attributes         [ :first_name, :last_name ] => :real_name, :compact => true
+  joins_attributes         [ :first_name, :last_name ] => :real_name, :compact => true
 ```
 
 or without class-level helper:
 
 ```ruby
-  attributes_that should_be_joined: { :real_name => { :join_from => [ :first_name, :last_name ], :join_compact => true } }
+  has_attributes_that should_be_joined: { :real_name => { :join_from => [ :first_name, :last_name ], :join_compact => true } }
 ```
