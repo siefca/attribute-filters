@@ -12,17 +12,8 @@ module ActiveModel
   # This is a kind of AttributeSet class
   # but its purpose it so store other information
   # than attribute names.
-  class MetaSet < AttributeSet
-
-    # @private
-    def initialize(*args)
-      Hash.instance_method(:initialize).bind(self).call(*args)
-    end
-
-    # @private
-    def inspect(*args)
-      Hash.instance_method(:inspect).bind(self).call(*args)
-    end
+  class MetaSet < Hash
+    include AttributeFilters::AttributeSetMethods
 
     private
 
