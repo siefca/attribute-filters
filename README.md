@@ -140,7 +140,7 @@ Attributes that should be altered may be simply added
 to the attribute sets that you define and then filtered
 with generic methods that operate on that sets. You can share
 these methods across all of your models by putting them into your own
-handy module that will be included in models that needs it.
+handy module that will be included in models that need it.
 
 Alternatively (as presented at the beginning) you can use predefined filtering methods from `ActiveModel::AttributeFilters::Common` module and its submodules. They contain filters
 for changing the case, stripping, squishng, squeezing, joining, splitting
@@ -185,9 +185,9 @@ use it to express some logic
 ### Sneak peeks ###
 
 ```ruby
-  @user.is_the_attribute.username.required_to_use_application?
+  @user.is_the_attribute.username.required_to_make_deals?
   # => true
-    
+  
   @user.the_attribute(:username).should_be_stripped?
   # => true
   
@@ -196,18 +196,21 @@ use it to express some logic
   
   @user.is_the_attribute.username.protected?
   # => false
-
+  
   @user.has_the_attribute.username.changed?
   # => false
-
+  
   @user.is_the_attribute.username.valid?
   # => true
   
   @user.are_attributes_that.should_be_stripped.all.present?
   # => false
   
+  @user.from_attributes_that.should_be_stripped.list.blank?
+  # => #<ActiveModel::AttributeSet: {"unconfirmed_email"}> 
+  
   @user.the_attribute(:username).list.sets
-  # => #<ActiveModel::AttributeSet: {:should_be_downcased, :should_be_stripped}>
+  # => {:should_be_downcased=>true, :should_be_stripped=>true}
   
   @user.attributes_that.should_be_stripped.list.present?
   # => #<ActiveModel::AttributeSet: {"username", "email"}>
@@ -227,18 +230,17 @@ How it works?
 
 It creates a new Active Model submodule called `AttributeFilters`. That module
 contains the needed DSL that goes into your models. It also creates `ActiveModel::AttributeSet`
-class which is just a new kind of set, a structure for storing attribute names.
+and `ActiveModel::MetaSet` classes which are just new kinds of hash used for storing attribute names
+and attribute set names.
 
 Then it forces Rails to include the `ActiveModel::AttributeFilters` in any model that
-at any time includes `ActiveModel::AttributeMethods`. The last one is included
-quite often; e.g. Active Record and other popular ORM-s use it. (I'm calling that thechnique
+will at any time include `ActiveModel::AttributeMethods`. The last one is included
+quite often; many popular ORM-s use it. (I'm calling that thechnique
 "the accompanying module".)
 
-That's why you can make use of attribute filters without explicitly including
-the module, as long as your application uses some popular ORM.
-
-However, if something goes wrong or your application is somehow unusual, you can always
-include the `AttributeFilters` module manually in any of your models:
+It all should work out of the box with ActiveModel. However, if your application
+is somehow unusual, you can always include the `AttributeFilters` module manually
+in any model:
 
 ```ruby
 class ExampleModel
