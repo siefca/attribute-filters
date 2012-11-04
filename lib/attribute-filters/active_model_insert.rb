@@ -29,7 +29,6 @@ module ActiveModel
       if singleton_class.method_defined?(:included)
         singleton_class.send(:alias_method, :included_without_attribute_methods, :included)
         singleton_class.send(:alias_method, :included, :included_with_attribute_methods)
-        #singleton_class.send(:alias_method_chain, :included, :attribute_methods)
       end
 
     end # ActiveModel::AttributeMethods.class_eval

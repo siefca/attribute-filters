@@ -22,7 +22,7 @@ module ActiveModel
       def filtering_method(method_name, set_name)
         set_name = set_name.to_sym
         return unless method_defined?(method_name)
-        f = (@__filtering_sets ||= MetaSet.new)
+        f = (@attribute_filters ||= MetaSet.new)
         f[set_name] = method_name unless f.key?(set_name)
         nil
       end
@@ -40,8 +40,8 @@ module ActiveModel
         def included(base)
 
           # merge filtering sets from filtering modules to models
-          fs = @__filtering_sets
-          base.class_eval { (@__filtering_sets ||= MetaSet.new).merge!(fs) } unless fs.nil?
+          fs = @attribute_filters
+          base.class_eval { (@attribute_filters ||= MetaSet.new).merge!(fs) } unless fs.nil?
 
           if  base.const_defined?(:ClassMethods)  &&
               base.instance_of?(::Module)         &&
@@ -52,8 +52,8 @@ module ActiveModel
             base.class_eval <<-EVAL
               unless singleton_class.method_defined?(:included)
                 def self.included(base)
-                  fs = @__filtering_sets
-                  base.class_eval { (@__filtering_sets ||= MetaSet.new).merge!(fs) } unless fs.nil?
+                  fs = @attribute_filters
+                  base.class_eval { (@attribute_filters ||= MetaSet.new).merge!(fs) } unless fs.nil?
                   base.extend ClassMethods
                 end
               end
@@ -97,7 +97,7 @@ module ActiveModel
     # 
     # @return [nil]
     def filter_attributes
-      as, fs = *self.class.class_eval { [__attribute_sets, @__filtering_sets] }
+      as, fs = *self.class.class_eval { [__attribute_sets, @attribute_filters] }
       return if fs.blank? || as.blank?
       as.each_pair { |set_name, o| send(fs[set_name]) if fs.has_key?(set_name) }
       nil
@@ -107,7 +107,7 @@ module ActiveModel
     # 
     # @return [MetaSet{Symbol => Symbol}] a meta set of filtering methods and associated sets
     def filtering_methods
-      f = self.class.instance_variable_get(:@__filtering_sets)
+      f = self.class.instance_variable_get(:@attribute_filters)
       f.nil? ? ActiveModel::MetaSet.new : f.dup
     end
 

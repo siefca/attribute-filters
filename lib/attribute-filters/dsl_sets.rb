@@ -454,7 +454,7 @@ module ActiveModel
       #   should be treated as virtual (even not present in the
       #   attributes hash provided by ORM or ActiveModel).
       #   
-      #   @note This method may be used directly if your setter
+      #   @note This method may be used directly ONLY if your setter
       #    notifies Rails about changes. Otherwise it's recommended
       #    to use the DSL keyword +attr_virtual+.
       #   @param attributes [Array] list of attribute names
@@ -467,7 +467,9 @@ module ActiveModel
       #   @return [AttributeSet] set of attribute names
       def treat_as_virtual(*args)
         return __attribute_filters_virtual.deep_dup if args.blank?
-        __attribute_filters_virtual << args.flatten.compact.map { |atr| atr.to_s }
+        args.flatten.compact.each do |atr|
+          __attribute_filters_virtual[atr.to_s] = :no_wrap
+        end
         nil
       end
       alias_method :attribute_filters_virtual,    :treat_as_virtual
@@ -479,20 +481,24 @@ module ActiveModel
 
       private
 
+      def __attribute_sets_meta
+        @attribute_sets ||= MetaSet.new
+      end
+
       def __attribute_filters_semi_real
-        @__attribute_filters_semi_real ||= ActiveModel::AttributeSet.new
+        __attribute_sets_meta[:semi_real] ||= ActiveModel::AttributeSet.new
       end
 
       def __attribute_filters_virtual
-        @__attribute_filters_virtual ||= ActiveModel::AttributeSet.new
+        __attribute_sets_meta[:virtual] ||= ActiveModel::AttributeSet.new
       end
 
       def __attributes_to_sets_map
-        @__attributes_to_sets_map ||= MetaSet.new(ActiveModel::MetaSet.new.freeze)
+        __attribute_sets_meta[:attrs] ||= MetaSet.new(ActiveModel::MetaSet.new.freeze)
       end
 
       def __attribute_sets
-        @__attribute_sets ||= MetaSet.new(ActiveModel::AttributeSet.new.freeze)
+        __attribute_sets_meta[:sets] ||= MetaSet.new(ActiveModel::AttributeSet.new.freeze)
       end
 
       def add_atrs_to_set(set_name, *atrs)

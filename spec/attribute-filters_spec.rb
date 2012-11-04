@@ -180,13 +180,14 @@ describe ActiveModel::AttributeFilters do
     before do
       TestModel.class_eval do
         include ActiveModel::AttributeFilters::Common
-        @__attribute_sets = nil
+        #@__attribute_sets = nil
+        @attribute_sets = nil
       end
       @tm = TestModel.new
     end
 
     after do
-      TestModel.class_eval{@__attribute_sets = nil}
+      TestModel.class_eval{@attribute_sets = nil}
       @tm.attributes_that(:should_be_splitted).should be_empty
       @tm.attributes_that(:should_be_joined).should be_empty
       @tm.attributes_that(:should_be_splitted).annotation(:real_name).should == nil
