@@ -7,6 +7,8 @@
 # This file contains ActiveModel::AttributeSet class
 # used to interact with attribute sets.
 
+require 'set'
+
 # @abstract This namespace is shared with ActveModel.
 module ActiveModel
   module AttributeFilters
@@ -41,12 +43,31 @@ module ActiveModel
       end
       alias_method :<<, :add
 
-      # @private
+      # Returns an array of attribute names.
+      # 
+      # @return [Array<String>]
       def to_a
         keys
       end
 
-      # @private
+      # Returns a hash based on a set.
+      # 
+      # @return [Hash]
+      def to_hash
+        Hash.new.deep_merge(self)
+      end
+      alias_method :to_h, :to_hash
+
+      # Returns self.
+      # 
+      # @return [AttributeSet]
+      def to_attribute_set
+        self
+      end
+
+      # Returns a set containing attribute names.
+      # 
+      # @return [Set<String>]
       def to_set
         keys.to_set
       end
