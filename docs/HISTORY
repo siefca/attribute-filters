@@ -1,11 +1,25 @@
+=== 2.0.1 / 2012-10-04
+
+* major enhancements
+
+  * Virtual attributes changes tracking improved; the `attr_virtual` DSL keyword can be placed anywhere
+  * Internal sets refactored, added abstraction layer that utilizes just two class instance variables:
+    * `@attribute_sets` (for keeping sets, attributes map, virtual and semi-real items)
+    * `@attribute_filters` (for keeping filtering methods)
+
+* minor enhancements
+
+  * Added conversion methods: AttributeSet#to_hash, AttributeSet#to_attribute_set
+  * `MetaSet` improved, removed grandparent.class.bind(self).call
+
 === 2.0.0 / 2012-10-01
 
 * major enhancements
 
   * Operating speed increased by 100%
   * API change:
-    * AttributeSet is now based on a Hash
-    * Added MetaSet for keeping sets of attribute sets
+    * `AttributeSet` is now based on a Hash
+    * Added `MetaSet` for keeping sets of attribute sets
     * Added DSL keyword for registering filtering methods
     * DSL method `filter_attributes` is using filtering methods registered before
   * Creation of duplicates for sets moved to class-level accessors

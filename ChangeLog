@@ -1,3 +1,48 @@
+commit ae4f36ca7f011045898f0d21a2a7c4fad3064446
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Nov 4 16:17:03 2012 +0100
+
+    Tracking changes of virtual attributes improved; wrapping method is now waiting for a getter method
+
+commit de71213689e9246e8694f65fc26b4dfb84e9e940
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Nov 4 16:16:10 2012 +0100
+
+    Added AttributeSet#to_hash and AttributeSet#to_attribute_set
+
+commit 732f6a0546bd2420f676d52dcc6be54fc190ea61
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Nov 4 03:26:57 2012 +0100
+
+    Virtual attributes tracking improved; now the placement of attr_virtual keyword does not matter
+
+commit d7c3b087fd0cdb66ad7a42e30ae55d2d896ff505
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Nov 4 03:25:42 2012 +0100
+
+    Created abstraction layer that allows to keep all needed data in two class instance variables:
+    
+    - @attribute_sets (for sets, attributes map, virtual and semi-real items),
+    - @attribute_filters (for filtering methods).
+
+commit f1e63bc24ceb941e84e354f3f28ead899eaacc77
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Nov 2 08:43:48 2012 +0100
+
+    MetaSet improved, removed grandparent.class.bind(self).call
+
+commit b5a915f50d823d39657a91b1513e0ba4bd690490
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 20:57:25 2012 +0100
+
+    Description updated
+
+commit bda2e1073095712fe1aece55dbf40ac5fb4f4bc9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Nov 1 20:48:24 2012 +0100
+
+    Gem description updated
+
 commit 9d5082a0f3d5b9349b1792a420f273b9898f1a9e
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Nov 1 17:07:24 2012 +0100

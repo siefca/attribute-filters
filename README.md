@@ -157,6 +157,20 @@ class User < ActiveRecord::Base
 end
 ```
 
+Tracking changes and filtering virtual attributes is also easy:
+
+```ruby
+class User < ActiveRecord::Base
+  include ActiveModel::AttributeFilters::Split
+  
+  split_attribute   :real_name => [ :first_name, :last_name ]
+  before_validation :filter_attributes
+  
+  attr_virtual  :real_name
+  attr_accessor :real_name
+end
+```
+
 Usage and more examples
 -----------------------
 
