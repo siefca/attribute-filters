@@ -167,7 +167,11 @@ class User < ActiveRecord::Base
   before_validation :filter_attributes
   
   attr_virtual  :real_name
-  attr_accessor :real_name
+  attr_writer   :real_name
+  
+  def real_name
+    @real_name ||= "#{first_name} #{last_name}"
+  end
 end
 ```
 
