@@ -18,10 +18,19 @@ module ActiveModel
 
       # @private
       def method_added_with_afv(method_name)
-        atr_name = method_name.to_s[0..-2]
-        if atr_name.size > 0
-          a = __attribute_filters_virtual[atr_name]
-          wrap_virtual_attribute_writer(atr_name) if a && a != :no_wrap
+        method_name = method_name.to_s
+        if method_name[-1] == '='
+          atr_name = method_name[0..-2]
+          have_writer = true
+        else
+          atr_name = method_name
+          have_writer = false
+        end
+        a = __attribute_filters_virtual[atr_name]
+        if a && a != :no_wrap
+          if have_writer && method_defined?(atr_name) || !have_writer && method_defined?("#{atr_name}=")
+            wrap_virtual_attribute_writer(atr_name)
+          end
         end
         method_added_without_afv(method_name)
       end
@@ -37,7 +46,7 @@ module ActiveModel
         alias_method(writer_name_wct, writer_name)
         class_eval <<-EVAL
           def #{writer_name}(val)
-            attribute_will_change!('#{atr_name}') if val != '#{atr_name}'
+            attribute_will_change!('#{atr_name}') if val != #{atr_name}
             #{writer_name_wct}(val)
           end
         EVAL
@@ -55,12 +64,12 @@ module ActiveModel
           attribute_names.flatten.compact.uniq.each do |atr_name|
             atr_name = atr_name.to_s
             writer_name = "#{atr_name}=".to_sym
-            if method_defined?(writer_name)
+            if method_defined?(writer_name) && method_defined?(atr_name)
               unless __attribute_filters_virtual.key?(atr_name)
                 wrap_virtual_attribute_writer(atr_name)
               end
             else
-              __attribute_filters_virtual[atr_name] = true
+              __attribute_filters_virtual[atr_name] = :waiting
             end
           end
           nil

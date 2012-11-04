@@ -508,6 +508,45 @@ Example:
   # =>  #<ActiveModel::AttributeSet: {"lol"}> 
 ```
 
+You can check which virtual attribute is automatically tracked for changes (was added using `attr_virtual`
+and has wrapped setter method), which is still waiting for its setter and getter methods to be created,
+and which was added using `treat_as_virtual` with the assumption that the changes tracking will be done
+manually by the properly constructed setter.
+
+Each element of a set containing virtual attributes has a control marker attached to it (instead of annotations) so
+you can read this marker to know what is the status of a certain attribute.
+
+To get a hash of attributes and statuses pairs you may use (in an instance method that belongs to a model):
+
+```ruby
+  all_virtual_attributes.to_hash
+```
+
+or just print them:
+
+```ruby
+  all_virtual_attributes.each_pair{ |k,v| puts "#{k}: #{v}" }
+```
+
+To read the status of a single attribute:
+
+```ruby
+  all_virtual_attributes["attribute_name"]
+```
+
+To select the attributes that are meeting certain criteria:
+
+```ruby
+  all_virtual_attributes.select{|k,v| v == :tracked}
+  end
+```
+
+The statuses are symbols and have the following meanings:
+
+  * `:no_wrap` – a virtual attribute was added using `treat_as_virtual` and changes tracking should be done manually
+  * `:tracked` – a setter method of an attribute was automatically wrapped to track changes
+  * `:waiting` – a virtual attribute is to be tracked when its setter method will be defined
+
 Instead of `all_virtual_attributes` you may also use the alias:
 
   * `virtual_attributes_set`
@@ -1371,7 +1410,9 @@ Note that for Rails version 3 you may need to declare attribute as accessible us
 if you want controllers to be able to update its value through assignment passed to model.
 
 You have to create setter and getter for virtual attributes on you own.
-It may be done before or after `attr_virtual` keyword:
+It may be done before or after `attr_virtual` keyword.
+
+Example:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1392,7 +1433,7 @@ class User < ActiveRecord::Base
   end
   filtering_method :split_attributes, :should_be_splitted
 
-  # inform AF that the model has virtual attribute
+  # inform AF that the model has a virtual attribute
   has_virtual_attribute :real_name
 
   # own setter
@@ -1405,6 +1446,35 @@ class User < ActiveRecord::Base
   def real_name
     # do somehing specific here (or not)
     @real_name
+  end
+
+end
+```
+
+Instead of `attr_virtual` you may also use its alias:
+
+  * `has_virtual_attribute`
+
+There are (rare) cases when you may wish to treat attributes as virtual but without automagically wrapping their setter
+methods to track changes (e.g. setter is already doing it manually). In such cases **make sure that the setter and getter exist** and use low-level method called `treat_as_virtual`, for instance:
+
+```ruby
+class User < ActiveRecord::Base
+
+  splits_attributes :real_name
+  before_validation :filter_attributes
+
+  # inform AF that the model has a virtual attribute
+  # and changes tracking is already implemented
+  treats_as_virtual :real_name
+
+  # own getter
+  attr_reader :real_name
+
+  # own setter that implements changes tracking
+  def real_name=(val)
+    attribute_will_change!('real_name') if val != real_name
+    @real_name = val
   end
 
 end
