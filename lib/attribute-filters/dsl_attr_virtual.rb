@@ -12,7 +12,38 @@ module ActiveModel
   module AttributeFilters
     module ClassMethods
 
+      unless method_defined?(:method_added)
+        def method_added(x); end
+      end
+
+      # @private
+      def method_added_with_afv(method_name)
+        atr_name = method_name.to_s[0..-2]
+        if atr_name.size > 0
+          a = __attribute_filters_virtual[atr_name]
+          wrap_virtual_attribute_writer(atr_name) if a && a != :no_wrap
+        end
+        method_added_without_afv(method_name)
+      end
+      alias_method :method_added_without_afv, :method_added
+      alias_method :method_added, :method_added_with_afv
+
       private
+
+      def wrap_virtual_attribute_writer(atr_name)
+        writer_name = "#{atr_name}=".to_sym
+        writer_name_wct = "#{atr_name}_without_ct"
+        __attribute_filters_virtual[atr_name] = false
+        alias_method(writer_name_wct, writer_name)
+        class_eval <<-EVAL
+          def #{writer_name}(val)
+            attribute_will_change!('#{atr_name}') if val != '#{atr_name}'
+            #{writer_name_wct}(val)
+          end
+        EVAL
+        __attribute_filters_virtual[atr_name] = :tracked
+        nil
+      end
 
       unless method_defined?(:attr_virtual)
         # This method creates setter and getter for attributes of the given names
@@ -22,30 +53,21 @@ module ActiveModel
         #  +attr_virtual+ will overwrite setter. Don't do that.
         def attr_virtual(*attribute_names)
           attribute_names.flatten.compact.uniq.each do |atr_name|
-            writer_name = "#{atr_name}="
-            atr_name = atr_name.to_sym
-            attr_reader(atr_name) unless method_defined?(atr_name)
-            treat_as_virtual(atr_name)
+            atr_name = atr_name.to_s
+            writer_name = "#{atr_name}=".to_sym
             if method_defined?(writer_name)
-              self.class_eval <<-EVAL
-                alias_method :#{atr_name}_without_change_tracking=, :#{writer_name}
-                def #{writer_name}(val)
-                  attribute_will_change!('#{atr_name}') if val != '#{atr_name}'
-                  #{atr_name}_without_change_tracking=(val)
-                end
-              EVAL
+              unless __attribute_filters_virtual.key?(atr_name)
+                wrap_virtual_attribute_writer(atr_name)
+              end
             else
-              self.class_eval <<-EVAL
-                def #{writer_name}(val)
-                  attribute_will_change!('#{atr_name}') if val != '#{atr_name}'
-                  @#{atr_name} = val
-                end
-              EVAL
+              __attribute_filters_virtual[atr_name] = true
             end
           end
           nil
         end # def attr_virtual
+        alias_method :has_virtual_attribute, :attr_virtual
       end # unless method_defined?(:attr_virtual)
+
     end # module ClassMethods
   end # module AttributeFilters
 end # module ActiveModel

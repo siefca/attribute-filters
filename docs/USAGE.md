@@ -1339,8 +1339,8 @@ your setter and you're done.
 This approach can be easily used with predefined filters. The benefit of it,
 contrary to other methods, is that a filter will never be called redundantly.
 
-You should use the built-in DSL keyword **`attr_virtual`** that will create
-setter and getter for you.
+You should use the built-in DSL keyword **`attr_virtual`** that will enable changes
+tracking for your attribute.
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1370,9 +1370,8 @@ end
 Note that for Rails version 3 you may need to declare attribute as accessible using `attr_accessible`
 if you want controllers to be able to update its value through assignment passed to model.
 
-You may change the setter and getter for vitrtual attribute on you own, but it should be done
-somewhere in the code **before** the `attr_virtual` clause. That will allow `attr_virtual`
-to wrap you methods and enable tracking of changes for the attribute.
+You have to create setter and getter for virtual attributes on you own.
+It may be done before or after `attr_virtual` keyword:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -1393,6 +1392,9 @@ class User < ActiveRecord::Base
   end
   filtering_method :split_attributes, :should_be_splitted
 
+  # inform AF that the model has virtual attribute
+  has_virtual_attribute :real_name
+
   # own setter
   def real_name=(val)
     # do somehing specific here (or not)
@@ -1404,8 +1406,6 @@ class User < ActiveRecord::Base
     # do somehing specific here (or not)
     @real_name
   end
-
-  attr_virtual :real_name
 
 end
 ```
