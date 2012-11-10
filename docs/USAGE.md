@@ -1621,7 +1621,7 @@ or
 
 #### After defining sets ####
 
-To create annotations for class-level sets use the [`annotate_attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods.html#annotate_attribute_set-instance_method) method (an its aliases):
+To create annotations for class-level sets use the [`annotate_attribute_set`](http://rubydoc.info/gems/attribute-filters/ActiveModel/AttributeFilters/ClassMethods.html#annotate_attribute_set-instance_method) method or one of its aliases:
 
 * **`annotate_attributes_that_are`**
 * **`annotate_attributes_that`**

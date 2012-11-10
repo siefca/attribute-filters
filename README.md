@@ -312,9 +312,11 @@ You can send me some bitcoins if you would like to support me:
 
 * `13wZbBjs6yQQuAb3zjfHubQSyer2cLAYzH`
 
-Or you can endorse my skills on LinkedIn:
+Or you can endorse my skills on LinkedIn or Coderwall:
 
 * [pl.linkedin.com/in/pwilk](http://www.linkedin.com/profile/view?id=4251568#profile-skills)
+
+* [![endorse](http://api.coderwall.com/siefca/endorsecount.png)](http://coderwall.com/siefca)
 
 License
 -------
